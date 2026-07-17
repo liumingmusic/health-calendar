@@ -1,0 +1,11 @@
+{
+  "name": "health-calendar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "纯静态中国传统时令养生日历（二十四节气 · 七十二候 · 十二时辰），零构建、零 API、纯离线。",
+  "scripts": {
+    "gen": "node scripts/gen-terms.js",
+    "serve": "python3 -m http.server 8080"
+  },
+  "license": "MIT"
+}
