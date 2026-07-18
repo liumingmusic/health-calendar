@@ -54,6 +54,48 @@
 
     <!-- 今日养生 -->
     <div class="tab-panel" id="tab-today">
+      <section class="panel overview-card" id="todayOverview">
+        <div class="panel-head"><h2>今日总览</h2><span class="season-chip" id="ovSeason">—</span></div>
+        <div class="ov-grid">
+          <div class="ov-cell ov-date">
+            <div class="ov-k">公历 / 农历</div>
+            <div class="ov-v" id="ovDate">—</div>
+            <div class="ov-sub" id="ovGanzhi">—</div>
+          </div>
+          <div class="ov-cell ov-term">
+            <div class="ov-k">当前节气</div>
+            <div class="ov-v" id="ovTerm">—</div>
+            <div class="ov-sub" id="ovTermMeta">—</div>
+          </div>
+          <div class="ov-cell ov-hour">
+            <div class="ov-k">当前时辰</div>
+            <div class="ov-v" id="ovHour">—</div>
+            <div class="ov-sub" id="ovOrgan">—</div>
+          </div>
+          <div class="ov-cell ov-bazi">
+            <div class="ov-k">八字四柱</div>
+            <div class="ov-bazi" id="ovBazi">—</div>
+          </div>
+          <div class="ov-cell ov-yiji">
+            <div class="ov-k">今日宜忌</div>
+            <div class="ov-yi" id="ovYi">—</div>
+            <div class="ov-ji" id="ovJi">—</div>
+          </div>
+          <div class="ov-cell ov-dao">
+            <div class="ov-k">道家功课</div>
+            <div class="ov-v-sm" id="ovDao">—</div>
+          </div>
+          <div class="ov-cell ov-sign">
+            <div class="ov-k">今日一签</div>
+            <div class="ov-v-sm" id="ovSign">—</div>
+          </div>
+          <div class="ov-cell ov-fortune">
+            <div class="ov-k">生肖运程</div>
+            <div class="ov-v-sm" id="ovFortune">—</div>
+          </div>
+        </div>
+      </section>
+
       <section class="panel dao-daily" id="daoDaily">
         <div class="dao-daily-tag">道经今读</div>
         <blockquote class="dao-daily-text" id="daoDailyText">—</blockquote>
@@ -166,19 +208,7 @@
         <div class="sign-stage" id="signStage">
           <div class="qian-glow" aria-hidden="true"></div>
           <div class="qian-tong" id="qianTong" role="img" aria-label="竹签筒">
-            <div class="qian-sticks" id="qianSticks" aria-hidden="true"></div>
-            <div class="qian-band" aria-hidden="true"></div>
-            <div class="qian-patch" aria-hidden="true">
-              <svg viewBox="0 0 100 100" class="qian-yin-yang">
-                <circle cx="50" cy="50" r="48" fill="white" stroke="#b23b3b" stroke-width="2"/>
-                <path d="M50,2 A48,48 0 0,1 50,98 A24,24 0 0,1 50,50 A24,24 0 0,0 50,2" fill="black"/>
-                <circle cx="50" cy="26" r="8" fill="black"/>
-                <circle cx="50" cy="26" r="3" fill="white"/>
-                <circle cx="50" cy="74" r="8" fill="white"/>
-                <circle cx="50" cy="74" r="3" fill="black"/>
-              </svg>
-            </div>
-            <div class="qian-rim" aria-hidden="true"></div>
+            <img class="qian-tube-img" src="assets/img/qian-tube.png" alt="竹签筒" draggable="false" />
             <div class="qian-out" id="qianOut" aria-hidden="true">
               <span class="qian-out-no" id="qianOutNo">—</span>
             </div>
