@@ -362,22 +362,57 @@ body {
 
 .loading { color: var(--ink-faint); text-align: center; padding: 30px 0; }
 
-/* ---------- 古历罗盘（奇门遁甲：太极·八卦·八门·十二时辰·洛书意象） ---------- */
+/* ---------- 古历罗盘时钟（太极·八卦·八门·十二时辰·方位·节气 + 时分秒指针） ---------- */
 .clk-rim { fill: none; stroke: var(--line-strong); stroke-width: 1.6; }
 .clk-ring { fill: none; stroke: var(--line); stroke-width: 1; }
 .clk-tick { stroke: var(--line-strong); stroke-width: 1.4; }
-.clk-spin-ticks { transform-box: fill-box; transform-origin: center; animation: clk-spin 140s linear infinite; }
-.clk-scan { stroke: var(--seal-soft); stroke-width: 1; opacity: 0.5; transform-box: fill-box; transform-origin: center; animation: clk-spin 36s linear infinite; }
+.clk-tick.cur { stroke: var(--seal); stroke-width: 2.4; }
 .clk-spin-taiji { transform-box: fill-box; transform-origin: center; animation: clk-spin 16s linear infinite; }
 @keyframes clk-spin { to { transform: rotate(360deg); } }
-.clk-bagua { font-family: var(--serif); font-size: 16px; fill: var(--ink-faint); }
+.clk-jie { font-family: var(--serif); font-size: 8.5px; fill: var(--ink-faint); }
+.clk-jie.cur { fill: var(--seal); font-weight: 700; }
+.clk-bagua { font-family: var(--serif); font-size: 16px; fill: var(--ink-soft); }
+.clk-dir { font-family: var(--serif); font-size: 10px; fill: var(--ink-faint); letter-spacing: 0; }
+.clk-dir.major { font-size: 14px; fill: var(--ink); font-weight: 700; }
 .clk-men { font-family: var(--serif); font-size: 13px; fill: var(--ink-soft); }
-.clk-shichen { font-family: var(--serif); font-size: 16px; fill: var(--ink-soft); transition: fill .3s ease; }
+.clk-shichen { font-family: var(--serif); font-size: 16px; fill: var(--ink-soft); }
 .clk-shichen.cur { fill: var(--seal); font-weight: 700; font-size: 21px; }
-.clk-dial { transition: transform 1.4s cubic-bezier(.34,1.2,.64,1); }
-.clk-pointer { fill: var(--seal); }
-.clk-luo { font-family: var(--serif); font-size: 12px; fill: var(--ink-faint); }
-.clock-cap { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 6px; letter-spacing: 2px; }
+.clk-hand-shi { stroke: var(--seal); stroke-width: 5; stroke-linecap: round; transition: transform .8s cubic-bezier(.34,1.2,.64,1); }
+.clk-hand-min { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; transition: transform .3s linear; }
+.clk-hand-sec { stroke: #c0392b; stroke-width: 1.4; stroke-linecap: round; }
+.clk-hub { fill: var(--seal); stroke: var(--paper); stroke-width: 2; }
+.clock-cap { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 6px; letter-spacing: 1px; }
+
+/* ---------- 黄历八字 ---------- */
+.bazi-pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.bz-pillar {
+  text-align: center; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 4px; background: var(--paper-2); display: flex; flex-direction: column; gap: 3px;
+}
+.bz-label { font-size: 11px; color: var(--ink-faint); }
+.bz-gz { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--seal); letter-spacing: 2px; }
+.bz-wx { font-size: 12px; color: var(--ink-soft); }
+.bz-nayin { font-size: 11px; color: var(--ink-faint); }
+.bazi-wuxing { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.wx-tag { font-size: 13px; padding: 3px 10px; border-radius: 999px; color: #fff; }
+.wx-木 { background: #5f8a3a; } .wx-火 { background: #c4452f; } .wx-土 { background: #cf9a1c; }
+.wx-金 { background: #b08d3a; } .wx-水 { background: #3a5d7a; }
+.bazi-summary { font-size: 13px; color: var(--ink-soft); margin: 0; font-family: var(--serif); }
+
+.alm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.alm-card {
+  border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  background: var(--paper-2); border-top: 3px solid var(--seal-soft);
+}
+.alm-h { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--seal); margin-bottom: 8px; }
+.alm-row { font-size: 13.5px; color: var(--ink); margin: 4px 0; }
+.alm-k { display: inline-block; min-width: 34px; color: var(--ink-faint); font-size: 12px; margin-right: 4px; }
+.alm-yi { font-size: 13px; color: var(--spring); margin: 4px 0; line-height: 1.6; }
+.alm-ji { font-size: 13px; color: #a8445a; margin: 2px 0 6px; line-height: 1.6; }
+.huang { color: var(--spring); } .hei { color: #a8445a; }
+.alm-mer-line { font-size: 14px; margin: 2px 0 6px; }
+.alm-mer-tip { font-size: 11.5px; color: var(--ink-faint); margin: 6px 0 0; line-height: 1.6; }
+.alm-note { font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; line-height: 1.7; }
 
 /* ---------- 道家养生：今日tab顶部「道经今读」 ---------- */
 .dao-daily {
@@ -487,6 +522,11 @@ body {
   .dao-quotes { grid-template-columns: 1fr; }
   .dao-daily-text { font-size: 19px; }
   .dao-daily::after { font-size: 72px; }
+
+  /* 黄历八字：单列 */
+  .alm-grid { grid-template-columns: 1fr; }
+  .bazi-pillars { grid-template-columns: repeat(4, 1fr); }
+  .bz-gz { font-size: 20px; }
 }
 @media (max-width: 380px) {
   .term-grid { grid-template-columns: repeat(3, 1fr); }

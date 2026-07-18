@@ -25,6 +25,15 @@ const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申',
 const TRIGRAMS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷'];
 // 奇门八门：休生伤杜景死惊开
 const EIGHT_MEN = ['休', '生', '伤', '杜', '景', '死', '惊', '开'];
+// 二十四节气顺序（外圈历盘用）
+const TERM_ORDER = ['立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至', '小寒', '大寒'];
+// 方位：北(上) 东(右) 南(下) 西(左) + 四维
+const DIRS = [
+  { name: '北', deg: 0, major: true }, { name: '东北', deg: 45, major: false },
+  { name: '东', deg: 90, major: true }, { name: '东南', deg: 135, major: false },
+  { name: '南', deg: 180, major: true }, { name: '西南', deg: 225, major: false },
+  { name: '西', deg: 270, major: true }, { name: '西北', deg: 315, major: false },
+];
 
 /* ============ 工具 ============ */
 function pad(n) { return String(n).padStart(2, '0'); }
@@ -122,7 +131,20 @@ function healthHTML(t) {
 function renderMainCard(t) {
   document.getElementById('seasonChip').textContent = `${t.season}季 · 交节 ${t.solar}`;
   document.getElementById('seasonChip').style.background = SEASON_COLORS[t.season];
-  document.getElementById('cardBody').innerHTML = healthHTML(t);
+  let html = healthHTML(t);
+  if (CUR_HOUR) {
+    html += `
+      <div class="block">
+        <div class="block-title"><span class="dot"></span>本时辰 · 经络取穴</div>
+        <p class="organ-line">${CUR_HOUR.meridian}（${CUR_HOUR.organ}）</p>
+        <div class="chips">
+          <span class="chip acu">原穴 · ${CUR_HOUR.yuan}</span>
+          <span class="chip acu">络穴 · ${CUR_HOUR.luo}</span>
+          <span class="chip acu">募穴 · ${CUR_HOUR.mu}</span>
+        </div>
+      </div>`;
+  }
+  document.getElementById('cardBody').innerHTML = html;
 }
 
 /* ============ 时辰条 ============ */
@@ -148,79 +170,106 @@ function renderHourDetail(h) {
     <p class="hd-avoid">忌：${h.avoid}</p>`;
 }
 
-/* ============ 古历罗盘（奇门遁甲：太极·八卦·八门·十二时辰） ============ */
+/* ============ 古历罗盘时钟（太极·八卦·八门·十二时辰·方位 + 时分秒指针） ============ */
 function ringPoint(cx, cy, r, deg) {
   const a = deg * Math.PI / 180;
   return { x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) };
 }
+const C1 = n => n.toFixed(1);
 
-function buildLunarClock(hours, curIdx, termName) {
+function buildLunarClock(hours, curIdx) {
   const cx = 160, cy = 160;
-  const R_SHICHEN = 104, R_BAGUA = 128, R_MEN = 62, R_TICK = 150;
-  const C = n => n.toFixed(1);
+  const R_JIE = 150, R_JIE_TICK = 153, R_BAGUA = 128, R_DIR = 106, R_MEN = 86, R_SHI = 64;
+  const curTerm = window.__curTermName;
 
-  // 十二时辰：当前时辰旋转至正上方；每个标签反向旋转保持正立
-  const counter = curIdx * 30;
-  let shichen = '';
-  hours.forEach((h, i) => {
-    const p = ringPoint(cx, cy, R_SHICHEN, i * 30);
-    const cur = i === curIdx ? ' cur' : '';
-    shichen += `<text x="${C(p.x)}" y="${C(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}" transform="rotate(${counter} ${C(p.x)} ${C(p.y)})">${BRANCHES[i]}</text>`;
+  // 外圈：24 节气刻度 + 名称（当前节气高亮）
+  let jie = '';
+  TERM_ORDER.forEach((name, i) => {
+    const deg = i * 15;
+    const p1 = ringPoint(cx, cy, R_JIE_TICK, deg);
+    const p2 = ringPoint(cx, cy, R_JIE_TICK - 7, deg);
+    const isCur = name === curTerm;
+    jie += `<line x1="${C1(p1.x)}" y1="${C1(p1.y)}" x2="${C1(p2.x)}" y2="${C1(p2.y)}" class="clk-tick${isCur ? ' cur' : ''}"/>`;
+    const pn = ringPoint(cx, cy, R_JIE, deg);
+    jie += `<text x="${C1(pn.x)}" y="${C1(pn.y + 3)}" text-anchor="middle" class="clk-jie${isCur ? ' cur' : ''}">${name}</text>`;
   });
-  const dialRot = -curIdx * 30;
 
-  // 八卦（外环，静止正立）
+  // 八卦环
   let bagua = '';
   TRIGRAMS.forEach((g, i) => {
     const p = ringPoint(cx, cy, R_BAGUA, i * 45 + 22.5);
-    bagua += `<text x="${C(p.x)}" y="${C(p.y + 6)}" text-anchor="middle" class="clk-bagua">${g}</text>`;
+    bagua += `<text x="${C1(p.x)}" y="${C1(p.y + 6)}" text-anchor="middle" class="clk-bagua">${g}</text>`;
   });
 
-  // 八门（内环，静止正立）
+  // 方位环（北东南西 + 四维）
+  let dir = '';
+  DIRS.forEach(d => {
+    const p = ringPoint(cx, cy, R_DIR, d.deg);
+    dir += `<text x="${C1(p.x)}" y="${C1(p.y + 4)}" text-anchor="middle" class="clk-dir${d.major ? ' major' : ''}">${d.name}</text>`;
+  });
+
+  // 八门环
   let men = '';
   EIGHT_MEN.forEach((m, i) => {
     const p = ringPoint(cx, cy, R_MEN, i * 45 - 90);
-    men += `<text x="${C(p.x)}" y="${C(p.y + 5)}" text-anchor="middle" class="clk-men">${m}</text>`;
+    men += `<text x="${C1(p.x)}" y="${C1(p.y + 5)}" text-anchor="middle" class="clk-men">${m}</text>`;
   });
 
-  // 24 节气刻度（外环，缓慢旋转）
-  let ticks = '';
-  for (let i = 0; i < 24; i++) {
-    const p1 = ringPoint(cx, cy, R_TICK, i * 15);
-    const p2 = ringPoint(cx, cy, R_TICK - 8, i * 15);
-    ticks += `<line x1="${C(p1.x)}" y1="${C(p1.y)}" x2="${C(p2.x)}" y2="${C(p2.y)}" class="clk-tick"/>`;
-  }
+  // 十二时辰环（静止；当前时辰高亮）
+  let shi = '';
+  hours.forEach((h, i) => {
+    const p = ringPoint(cx, cy, R_SHI, i * 30);
+    const cur = i === curIdx ? ' cur' : '';
+    shi += `<text x="${C1(p.x)}" y="${C1(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}">${BRANCHES[i]}</text>`;
+  });
 
   const svg =
-    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘：太极、八卦、八门与十二时辰">
+    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，含时分秒指针">
       <circle cx="160" cy="160" r="156" class="clk-rim"/>
-      <g class="clk-spin-ticks">${ticks}</g>
-      <circle cx="160" cy="160" r="135" class="clk-ring"/>
+      ${jie}
+      <circle cx="160" cy="160" r="138" class="clk-ring"/>
       ${bagua}
-      <circle cx="160" cy="160" r="78" class="clk-ring"/>
+      <circle cx="160" cy="160" r="116" class="clk-ring"/>
+      ${dir}
+      <circle cx="160" cy="160" r="94" class="clk-ring"/>
       ${men}
-      <circle cx="160" cy="160" r="78" fill="none" stroke="var(--line)" stroke-width="1"/>
-      <g class="clk-dial" transform="rotate(0 160 160)">${shichen}</g>
-      <polygon points="160,4 151,19 169,19" class="clk-pointer"/>
-      <line x1="160" y1="160" x2="160" y2="16" class="clk-scan"/>
-      <circle cx="160" cy="160" r="42" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1"/>
+      <circle cx="160" cy="160" r="72" class="clk-ring"/>
+      ${shi}
+      <g id="clkHands">
+        <line id="clkHandShi" x1="160" y1="162" x2="160" y2="98" class="clk-hand-shi"/>
+        <line id="clkHandMin" x1="160" y1="162" x2="160" y2="56" class="clk-hand-min"/>
+        <line id="clkHandSec" x1="160" y1="170" x2="160" y2="44" class="clk-hand-sec"/>
+        <circle cx="160" cy="160" r="5.5" class="clk-hub"/>
+      </g>
       <g class="clk-spin-taiji">
-        <circle cx="160" cy="160" r="18" fill="var(--seal)"/>
-        <path d="M160 142 A18 18 0 0 1 160 178 A9 9 0 0 1 160 160 A9 9 0 0 0 160 142 Z" fill="var(--paper)"/>
-        <circle cx="160" cy="151" r="3.2" fill="var(--paper)"/>
-        <circle cx="160" cy="169" r="3.2" fill="var(--seal)"/>
+        <circle cx="160" cy="160" r="15" fill="var(--seal)"/>
+        <path d="M160 145 A15 15 0 0 1 160 175 A7.5 7.5 0 0 1 160 160 A7.5 7.5 0 0 0 160 145 Z" fill="var(--paper)"/>
+        <circle cx="160" cy="152.5" r="2.6" fill="var(--paper)"/>
+        <circle cx="160" cy="167.5" r="2.6" fill="var(--seal)"/>
       </g>
     </svg>`;
   document.getElementById('lunarClock').innerHTML = svg;
 
-  // 机关转动：载入后将时辰盘旋至当前时辰（CSS transition 触发）
-  const dial = document.querySelector('.clk-dial');
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    dial.setAttribute('transform', `rotate(${dialRot} 160 160)`);
-  }));
-
   const h = hours[curIdx];
-  document.getElementById('clockCap').textContent = `${h.name}当令 · 太极流转 · 八卦环列`;
+  document.getElementById('clockCap').textContent = `${h.name}当令 · 时辰指针指当前 · 时分秒实时走字`;
+}
+
+/* 真实钟表走字：时辰指针（时）+ 分针 + 秒针 */
+function startClock() {
+  const setRot = (id, deg) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('transform', `rotate(${deg.toFixed(2)} 160 160)`);
+  };
+  const tick = () => {
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    const shiIdx = Math.floor((h + 1) / 2) % 12;
+    setRot('clkHandShi', shiIdx * 30);
+    setRot('clkHandMin', m * 6 + s * 0.1);
+    setRot('clkHandSec', s * 6);
+  };
+  tick();
+  setInterval(tick, 1000);
 }
 
 /* ============ 七十二候 ============ */
@@ -386,10 +435,196 @@ function renderDaoQuotes() {
     </div>`).join('');
 }
 
+/* ============ 八字 · 黄历 · 方位 · 经络取穴 ============ */
+let CUR_HOUR = null;            // 当前时辰数据（取穴用）
+const GAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const ZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const GAN_WX = { 甲: '木', 乙: '木', 丙: '火', 丁: '火', 戊: '土', 己: '土', 庚: '金', 辛: '金', 壬: '水', 癸: '水' };
+const ZHI_WX = { 子: '水', 丑: '土', 寅: '木', 卯: '木', 辰: '土', 巳: '火', 午: '火', 未: '土', 申: '金', 酉: '金', 戌: '土', 亥: '水' };
+const NAYIN = ['海中金', '炉中火', '大林木', '路旁土', '剑锋金', '山头火', '涧下水', '城头土', '白蜡金', '杨柳木', '泉中水', '屋上土', '霹雳火', '松柏木', '长流水', '沙中金', '山下火', '平地木', '壁上土', '金箔金', '覆灯火', '天河水', '大驿土', '钗钏金', '桑柘木', '大溪水', '沙中土', '天上火', '石榴木', '大海水'];
+const PENG_GAN = ['不开仓财物耗散', '不栽植千株不长', '不修灶必见灾殃', '不剃头头必生疮', '不受田田主不祥', '不破券二比并亡', '不经络织机虚张', '不合酱主人不尝', '不汲水更难提防', '不词讼理弱敌强'];
+const PENG_ZHI = ['不问卜自惹祸殃', '不冠带主不还乡', '不祭祀神鬼不尝', '不穿井水泉不香', '不哭泣必主重丧', '不远行财物伏藏', '不苫盖屋主更张', '不服药毒气入肠', '不安床鬼祟入房', '不会客醉坐颠狂', '不吃犬作怪上床', '不嫁娶不利新郎'];
+// 值神（黄黑道），按下地支
+const ZHISHEN = [
+  { z: '子', n: '青龙', type: '黄' }, { z: '丑', n: '明堂', type: '黄' }, { z: '寅', n: '天刑', type: '黑' },
+  { z: '卯', n: '朱雀', type: '黑' }, { z: '辰', n: '金匮', type: '黄' }, { z: '巳', n: '天德', type: '黄' },
+  { z: '午', n: '白虎', type: '黑' }, { z: '未', n: '玉堂', type: '黄' }, { z: '申', n: '天牢', type: '黑' },
+  { z: '酉', n: '玄武', type: '黑' }, { z: '戌', n: '司命', type: '黄' }, { z: '亥', n: '勾陈', type: '黑' },
+];
+// 冲煞，按下地支
+const CHONGSHA = [
+  { z: '子', chong: '马', sha: '南' }, { z: '丑', chong: '羊', sha: '东' }, { z: '寅', chong: '猴', sha: '北' },
+  { z: '卯', chong: '鸡', sha: '西' }, { z: '辰', chong: '狗', sha: '南' }, { z: '巳', chong: '猪', sha: '东' },
+  { z: '午', chong: '鼠', sha: '北' }, { z: '未', chong: '牛', sha: '西' }, { z: '申', chong: '虎', sha: '南' },
+  { z: '酉', chong: '兔', sha: '东' }, { z: '戌', chong: '龙', sha: '北' }, { z: '亥', chong: '蛇', sha: '西' },
+];
+// 喜神 / 财神 / 福神（下日干）
+const XISHEN = { 甲: '东北', 乙: '西北', 丙: '西南', 丁: '正南', 戊: '东南', 己: '东北', 庚: '西北', 辛: '西南', 壬: '正南', 癸: '东南' };
+const CAISHEN = { 甲: '东北', 乙: '东北', 丙: '正南', 丁: '正南', 戊: '正北', 己: '正北', 庚: '正东', 辛: '正东', 壬: '正西', 癸: '正西' };
+const FUSHEN = { 甲: '东南', 乙: '东南', 丙: '正东', 丁: '正东', 戊: '正北', 己: '正北', 庚: '西南', 辛: '西南', 壬: '西北', 癸: '西北' };
+// 月建之「节」与对应月支
+const JIE_MONTH = ['立春', '惊蛰', '清明', '立夏', '芒种', '小暑', '立秋', '白露', '寒露', '立冬', '大雪', '小寒'];
+const JIE_BRANCH = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'];
+// 地支 → 简化方位
+const DIR_OF_ZHI = { 子: '北', 丑: '东北', 寅: '东北', 卯: '东', 辰: '东南', 巳: '东南', 午: '南', 未: '西南', 申: '西南', 酉: '西', 戌: '西北', 亥: '西北' };
+// 建除十二神 + 宜忌
+const JIANCHU = ['建', '除', '满', '平', '定', '执', '破', '危', '成', '收', '开', '闭'];
+const JIANCHU_YIJI = {
+  '建': { yi: ['出行', '祈福', '动土', '订盟', '嫁娶', '修造'], ji: ['开仓', '出货', '乘船'] },
+  '除': { yi: ['沐浴', '求医', '疗病', '扫舍', '祭祀'], ji: ['求官', '上任', '出行'] },
+  '满': { yi: ['祭祀', '祈福', '开市', '交易', '纳财'], ji: ['动土', '安葬', '移徙'] },
+  '平': { yi: ['修造', '嫁娶', '安神', '移徙'], ji: ['开渠', '放水', '栽种'] },
+  '定': { yi: ['祭祀', '祈福', '嫁娶', '造屋', '入宅'], ji: ['词讼', '出行', '医疗'] },
+  '执': { yi: ['捕捉', '修造', '嫁娶', '祈福'], ji: ['开市', '移徙', '出行'] },
+  '破': { yi: ['（诸事不宜）'], ji: ['一切兴作', '嫁娶', '出行'] },
+  '危': { yi: ['安床', '祭祀', '祈福'], ji: ['出行', '登高', '乘船'] },
+  '成': { yi: ['嫁娶', '开市', '入学', '动土', '修造'], ji: ['词讼', '出行'] },
+  '收': { yi: ['收纳', '嫁娶', '入仓', '纳财'], ji: ['放债', '出行', '安葬'] },
+  '开': { yi: ['祭祀', '祈福', '开市', '动土', '出行'], ji: ['安葬', '嫁娶'] },
+  '闭': { yi: ['筑堤', '补垣', '埋穴', '安葬'], ji: ['开市', '出行', '求医'] },
+};
+
+function jdn(y, m, d) {
+  if (m <= 2) { y -= 1; m += 12; }
+  const A = Math.floor(y / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524;
+}
+function gzSolve(ganIdx, zhiIdx) {
+  for (let k = 0; k < 60; k++) if (k % 10 === ganIdx && k % 12 === zhiIdx) return k;
+  return 0;
+}
+// 年柱：以立春为界
+function yearGZ(date, flat) {
+  const y = date.getFullYear();
+  const lc = flat.find(t => t.name === '立春' && t.date.startsWith(y + '-'))
+    || flat.find(t => t.name === '立春' && t.date.startsWith((y - 1) + '-'));
+  let yFor = y;
+  if (lc && dateStr(date) < lc.date) yFor = y - 1;
+  return { gan: (((yFor - 4) % 10) + 10) % 10, zhi: (((yFor - 4) % 12) + 12) % 12 };
+}
+// 月柱：以「节」为界
+function monthGZ(date, flat) {
+  const jieList = flat.filter(t => JIE_MONTH.includes(t.name)).sort((a, b) => a.date.localeCompare(b.date));
+  let cur = jieList[0];
+  for (const t of jieList) if (t.date <= dateStr(date)) cur = t;
+  const branch = JIE_BRANCH[JIE_MONTH.indexOf(cur.name)];
+  const yg = yearGZ(date, flat).gan;
+  const zhengYue = { 甲: 2, 乙: 4, 丙: 6, 丁: 8, 戊: 0, 己: 2, 庚: 4, 辛: 6, 壬: 8, 癸: 0 }[GAN[yg]];
+  const p = (ZHI.indexOf(branch) - ZHI.indexOf('寅') + 12) % 12;
+  return { gan: (zhengYue + p) % 10, zhi: ZHI.indexOf(branch) };
+}
+// 日柱：儒略日算法（偏移 11，0=甲子）
+function dayGZ(date) {
+  const idx = (((jdn(date.getFullYear(), date.getMonth() + 1, date.getDate()) - 11) % 60) + 60) % 60;
+  return { gan: idx % 10, zhi: idx % 12 };
+}
+// 时柱：五鼠遁（日上起时）
+function hourGZ(hourIdx, dayGan) {
+  const ziGan = { 甲: 0, 乙: 2, 丙: 4, 丁: 6, 戊: 8, 己: 0, 庚: 2, 辛: 4, 壬: 6, 癸: 8 }[GAN[dayGan]];
+  return { gan: (ziGan + hourIdx) % 10, zhi: hourIdx };
+}
+function pillar(g, z) {
+  const idx = gzSolve(g, z);
+  return { g, z, gz: GAN[g] + ZHI[z], wx: GAN_WX[GAN[g]] + ZHI_WX[ZHI[z]], nayin: NAYIN[Math.floor(idx / 2)] };
+}
+function computeBazi(date, hourIdx, flat) {
+  const y = yearGZ(date, flat), m = monthGZ(date, flat), d = dayGZ(date), h = hourGZ(hourIdx, d.gan);
+  const pillars = { 年: pillar(y.gan, y.zhi), 月: pillar(m.gan, m.zhi), 日: pillar(d.gan, d.zhi), 时: pillar(h.gan, h.zhi) };
+  // 五行统计（四柱 干支）
+  const cnt = { 木: 0, 火: 0, 土: 0, 金: 0, 水: 0 };
+  ['年', '月', '日', '时'].forEach(k => {
+    cnt[GAN_WX[GAN[pillars[k].g]]]++;
+    cnt[ZHI_WX[ZHI[pillars[k].z]]]++;
+  });
+  return { pillars, riGan: d.gan, wuxing: cnt };
+}
+
+function renderAlmanac(date, hourIdx, flat) {
+  const bz = computeBazi(date, hourIdx, flat);
+  const riZhi = ZHI[bz.pillars.日.z];
+  const riGan = GAN[bz.riGan];
+  // 四柱卡
+  const pillarHTML = ['年', '月', '日', '时'].map(k => {
+    const p = bz.pillars[k];
+    return `<div class="bz-pillar">
+      <span class="bz-label">${k === '日' ? '日主' : k + '柱'}</span>
+      <span class="bz-gz">${p.gz}</span>
+      <span class="bz-wx">${p.wx}</span>
+      <span class="bz-nayin">${p.nayin}</span>
+    </div>`;
+  }).join('');
+  const wxHTML = ['木', '火', '土', '金', '水'].map(w =>
+    `<span class="wx-tag wx-${w}">${w} ${bz.wuxing[w]}</span>`).join('');
+
+  // 值神 / 冲煞
+  const zs = ZHISHEN[ZHI.indexOf(riZhi)];
+  const cs = CHONGSHA[ZHI.indexOf(riZhi)];
+  // 建除
+  const jieBranch = JIE_BRANCH[JIE_MONTH.indexOf(
+    flat.filter(t => JIE_MONTH.includes(t.name)).sort((a, b) => a.date.localeCompare(b.date))
+      .filter(t => t.date <= dateStr(date)).pop().name)];
+  const jcIdx = (ZHI.indexOf(riZhi) - ZHI.indexOf(jieBranch) + 12) % 12;
+  const jc = JIANCHU[jcIdx];
+  const jcYJ = JIANCHU_YIJI[jc];
+  // 方位：喜/财/福（日干）+ 太岁（年支）
+  const nianZhi = ZHI[bz.pillars.年.z];
+  const taiDir = DIR_OF_ZHI[nianZhi];
+  const suiPo = DIR_OF_ZHI[ZHI[(ZHI.indexOf(nianZhi) + 6) % 12]];
+  const sanShaMap = { '申': '南', '子': '南', '辰': '南', '亥': '西', '卯': '西', '未': '西', '寅': '北', '午': '北', '戌': '北', '巳': '东', '酉': '东', '丑': '东' };
+  const sanSha = sanShaMap[nianZhi] || '—';
+  const xi = XISHEN[riGan], cai = CAISHEN[riGan], fu = FUSHEN[riGan];
+  // 经络取穴（当前时辰）
+  const h = CUR_HOUR;
+
+  document.getElementById('baziPillars').innerHTML = pillarHTML;
+  document.getElementById('baziWuxing').innerHTML = wxHTML;
+  document.getElementById('baziSummary').textContent =
+    `日主 ${riGan}，五行${bz.wuxing.木 > 0 ? '' : ''}偏${dominant(bz.wuxing)}；农历 ${lunarLabel(date, bz)}`;
+  document.getElementById('almanacBody').innerHTML = `
+    <div class="alm-grid">
+      <div class="alm-card">
+        <div class="alm-h">黄历宜忌</div>
+        <p class="alm-row"><span class="alm-k">建除</span>${jc}日</p>
+        <p class="alm-yi">宜：${jcYJ.yi.join('、')}</p>
+        <p class="alm-ji">忌：${jcYJ.ji.join('、')}</p>
+        <p class="alm-row"><span class="alm-k">值神</span>${zs.n}（<b class="${zs.type === '黄' ? 'huang' : 'hei'}">${zs.type}道</b>）</p>
+        <p class="alm-row"><span class="alm-k">冲煞</span>冲${cs.chong}煞${cs.sha}</p>
+        <p class="alm-row"><span class="alm-k">彭祖</span>${riGan}${PENG_GAN[bz.riGan]}；${riZhi}${PENG_ZHI[ZHI.indexOf(riZhi)]}</p>
+      </div>
+      <div class="alm-card">
+        <div class="alm-h">吉神方位</div>
+        <p class="alm-row"><span class="alm-k">喜神</span>${xi}</p>
+        <p class="alm-row"><span class="alm-k">财神</span>${cai}</p>
+        <p class="alm-row"><span class="alm-k">福神</span>${fu}</p>
+        <p class="alm-row"><span class="alm-k">太岁</span>${taiDir}（${nianZhi}）</p>
+        <p class="alm-row"><span class="alm-k">岁破</span>${suiPo}</p>
+        <p class="alm-row"><span class="alm-k">三煞</span>${sanSha}方</p>
+      </div>
+      <div class="alm-card alm-meridian">
+        <div class="alm-h">经络 · 取穴（${h.name}）</div>
+        <p class="alm-mer-line"><b>${h.meridian}</b>（${h.organ}）</p>
+        <p class="alm-row"><span class="alm-k">原穴</span>${h.yuan}</p>
+        <p class="alm-row"><span class="alm-k">络穴</span>${h.luo}</p>
+        <p class="alm-row"><span class="alm-k">募穴</span>${h.mu}</p>
+        <p class="alm-mer-tip">原穴为本经气血输注之处，络穴联络表里两经，募穴为脏腑之气结聚于胸腹之所。</p>
+      </div>
+    </div>`;
+}
+function dominant(cnt) {
+  let max = '', v = -1;
+  for (const k in cnt) if (cnt[k] > v) { v = cnt[k]; max = k; }
+  return max;
+}
+function lunarLabel(date, bz) {
+  // 简化农历标注：年干支 + 月 + 日。具体农历月日需农历库，此处给干支月日。
+  return `${bz.pillars.年.gz}年 ${bz.pillars.月.gz}月 ${bz.pillars.日.gz}日`;
+}
+
 /* ============ Tab 切换 ============ */
 function initTabs() {
   const tabs = document.querySelectorAll('.tab');
-  const panels = { today: 'tab-today', dao: 'tab-dao', overview: 'tab-overview' };
+  const panels = { today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', overview: 'tab-overview' };
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -425,16 +660,21 @@ async function init() {
 
     const curIdx = currentHourIndex();
     const curHour = hours[curIdx];
+    CUR_HOUR = curHour;
 
     renderHeaderDate();
     renderHero(cur, daysToNext, curHour, next ? next.name : '');
     renderMainCard(HEALTH_MAP[cur.name]);
     renderHourBar(hours, curIdx);
-    buildLunarClock(hours, curIdx, cur.name);
+    buildLunarClock(hours, curIdx);
+    startClock();
     renderHouCurrent(cur.name);
     renderHouYear();
     renderOverview(health, flat, 'all');
     renderCheckin();
+
+    // 八字 · 黄历 · 方位 · 经络取穴
+    renderAlmanac(new Date(), curIdx, flat);
 
     // 道家养生
     const curSeason = (HEALTH_MAP[cur.name] && HEALTH_MAP[cur.name].season) || '春';
