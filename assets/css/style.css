@@ -124,7 +124,7 @@ body {
 .hero-hour .focus-name { color: var(--winter); }
 .focus-meta { font-size: 14px; color: var(--ink-soft); margin-top: 8px; line-height: 1.5; }
 
-.hero-clock { display: flex; justify-content: center; }
+.hero-clock { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .lunar-clock { width: 320px; height: 320px; flex: none; }
 .clk-svg { width: 100%; height: 100%; display: block; }
 
@@ -392,7 +392,7 @@ body {
     gap: 12px 10px;
     padding: 18px 14px 20px;
   }
-  .hero-clock { grid-column: 1 / -1; order: -1; flex-direction: column; align-items: center; }
+  .hero-clock { grid-column: 1 / -1; order: -1; }
   .lunar-clock { width: 300px; height: 300px; }
   .clock-cap { margin-top: 8px; font-size: 11px; }
   .hero-term { text-align: right; }
