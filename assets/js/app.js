@@ -144,7 +144,7 @@ function renderTodayOverview(date, flat, cur, daysToNext, next, curHour, curIdx)
   document.getElementById('ovJi').textContent = '忌：' + jcYJ.ji.slice(0, 3).join('、');
   document.getElementById('ovDao').textContent = `主修「${daoMethod.name}」· ${daoQuote.source}`;
   document.getElementById('ovSign').innerHTML =
-    `<span class="ov-lv" style="color:${SIGN_COLORS[sign.level] || 'var(--seal)'}">${sign.level}</span>第${sign.no}签「${sign.title}」`;
+    `<span class="ov-lv">吕祖灵签</span>第${sign.no}签「${sign.title}」`;
   document.getElementById('ovFortune').textContent = `今日最利 · ${topZ.s}`;
 }
 
@@ -864,28 +864,16 @@ function lunarLabel(date, bz) {
   return `${bz.pillars.年.gz}年 ${bz.pillars.月.gz}月 ${bz.pillars.日.gz}日`;
 }
 
-/* ============ 每日签运：每日一签 + 今日运程 ============ */
-const SIGN_COLORS = { '上上': '#1f8a5a', '上': '#3f9a4a', '中': '#cf9a1c', '下': '#b06a2c', '凶': '#a8445a' };
-const SIGN_GUIDE = {
-  '上上': '此签大吉。天时人事俱利，谋事可成，宜把握时机、广结善缘，然得意不可忘形。',
-  '上': '此签上吉。诸事顺遂，宜进取、结善缘，守正而行则无往不利。',
-  '中': '此签中平。祸福参半，宜守常、勿躁进，静以待时、修己安人。',
-  '下': '此签下平。事多阻滞，宜守拙、慎言谨行，蓄力待时而动。',
-  '凶': '此签多凶。宜退守、忌兴作大事，静养涵神、避是非以消灾。',
-};
+/* ============ 每日签运：每日一签（吕祖灵签通行本） ============ */
+// 说明：签文录自《吕祖灵签》通行本（吕洞宾，道教全真道纯阳祖师，共一百签）。
+// 原签本不逐签标注吉凶，故本站不伪造吉凶等级与养生解读，仅呈签诗与解曰原文。
+const SIGN_INTRO = '《吕祖灵签》共一百签，吕祖即吕洞宾，道教全真道尊为纯阳祖师。签文古奥，宜自参悟；此处仅录签诗与解曰原文，不作吉凶断言，亦不替代道观实物签谱。';
 
 function renderSignResult(s) {
   document.getElementById('signNo').textContent = `第 ${s.no} 签`;
-  const lvl = document.getElementById('signLevel');
-  lvl.textContent = s.level;
-  lvl.style.background = SIGN_COLORS[s.level] || 'var(--seal)';
   document.getElementById('signTitle').textContent = s.title;
   document.getElementById('signPoem').innerHTML = s.poem.map(p => `<span>${p}</span>`).join('');
   document.getElementById('signJie').textContent = s.jie;
-  document.getElementById('signZhi').textContent = s.zhi;
-  document.getElementById('signYi').textContent = s.yi.join('、');
-  document.getElementById('signJi').textContent = s.ji.join('、');
-  document.getElementById('signGuide').textContent = SIGN_GUIDE[s.level] || '';
 }
 function buildSticks() {
   const holder = document.getElementById('qianSticks');
@@ -924,7 +912,7 @@ function setupSign() {
   const shakingEl = document.getElementById('signShaking');
   const sticks = STICKS.sticks;
   if (!sticks.length) return;
-  document.getElementById('signIntro').textContent = STICKS.intro;
+  document.getElementById('signIntro').textContent = SIGN_INTRO;
   buildSticks();
   const PIOUS = '摇签之前，宜焚香净手、心诚意正，于心中默念所问之事，不可戏谑；签出之后，宜静坐片刻、反求诸己。';
   promptEl.textContent =
