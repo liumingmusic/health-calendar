@@ -801,6 +801,11 @@ function renderAlmanac(date, hourIdx, flat) {
         <p class="alm-mer-tip">原穴为本经气血输注之处，络穴联络表里两经，募穴为脏腑之气结聚于胸腹之所。</p>
       </div>
     </div>`;
+
+  document.getElementById('baziSummaryCard').innerHTML =
+    `<span class="sc-k">今日</span>${riGan}${riZhi}日（${bz.pillars.日.nayin}）· ${jc}日 · ${zs.n}${zs.type}道<br>` +
+    `<span class="sc-yi">宜：${jcYJ.yi.slice(0, 5).join('、')}</span>　<span class="sc-ji">忌：${jcYJ.ji.slice(0, 4).join('、')}</span><br>` +
+    `<span class="sc-k">吉神</span>喜神${xi} · 财神${cai} · 福神${fu}`;
 }
 function dominant(cnt) {
   let max = '', v = -1;
@@ -839,45 +844,57 @@ function setupSign() {
   if (!STICKS) return;
   const stage = document.getElementById('signStage');
   const tong = document.getElementById('qianTong');
+  const out = document.getElementById('qianOut');
   const result = document.getElementById('signResult');
   const shakeBtn = document.getElementById('shakeSign');
   const rerollBtn = document.getElementById('rerollSign');
+  const promptEl = document.getElementById('signPrompt');
+  const shakingEl = document.getElementById('signShaking');
   const sticks = STICKS.sticks;
   if (!sticks.length) return;
   document.getElementById('signIntro').textContent = STICKS.intro;
-  document.getElementById('signPrompt').textContent =
+  const PIOUS = '摇签之前，宜焚香净手、心诚意正，于心中默念所问之事，不可戏谑；签出之后，宜静坐片刻、反求诸己。';
+  promptEl.textContent =
     '焚香净手，心诚意正，于心中默念所问之事，再摇签筒以求今日之签。';
+
+  const SHOW_MS = 5000;   // 真实摇晃 5 秒
   let busy = false;
+
+  function resetOut() { out.classList.remove('popped'); }
+
   function reveal(idx) {
     renderSignResult(sticks[idx]);
     result.classList.remove('hidden'); result.classList.add('show');
     shakeBtn.classList.add('hidden'); rerollBtn.classList.remove('hidden');
+    shakingEl.classList.add('hidden');
+    promptEl.classList.remove('hidden');
+    promptEl.textContent = PIOUS;
     busy = false;
   }
-  // 摇签求今日签（按日确定）
-  shakeBtn.addEventListener('click', () => {
+
+  // 真实摇签：筒中签支剧烈摇晃 5 秒 -> 跳出一根签 -> 展开签文
+  function doShake(dailyIdx) {
     if (busy) return; busy = true;
+    resetOut();
+    result.classList.remove('show'); result.classList.add('hidden');
+    rerollBtn.classList.add('hidden');
+    shakeBtn.classList.add('hidden');
+    promptEl.classList.add('hidden');
+    shakingEl.classList.remove('hidden');
     tong.classList.add('shaking'); stage.classList.add('shaking');
     setTimeout(() => {
       tong.classList.remove('shaking'); stage.classList.remove('shaking');
-      reveal(dateHash(todayStr()) % sticks.length);
-    }, 1400);
-  });
-  // 再摇一签（随机，不与今日签重复）
+      out.classList.add('popped');                 // 一根签从筒口跳出
+      setTimeout(() => { reveal(dailyIdx); }, 820); // 等跳出动画后展开签文
+    }, SHOW_MS);
+  }
+
+  shakeBtn.addEventListener('click', () => doShake(dateHash(todayStr()) % sticks.length));
   rerollBtn.addEventListener('click', () => {
-    if (busy) return; busy = true;
-    rerollBtn.classList.add('hidden'); shakeBtn.classList.add('hidden');
-    result.classList.remove('show'); result.classList.add('hidden');
-    setTimeout(() => {
-      tong.classList.add('shaking'); stage.classList.add('shaking');
-      setTimeout(() => {
-        tong.classList.remove('shaking'); stage.classList.remove('shaking');
-        const cur = dateHash(todayStr()) % sticks.length;
-        let r = cur;
-        if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
-        reveal(r);
-      }, 1400);
-    }, 160);
+    const cur = dateHash(todayStr()) % sticks.length;
+    let r = cur;
+    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
+    doShake(r);
   });
 }
 
@@ -978,10 +995,22 @@ function renderDailyFortune(date, flat) {
     `<span class="dz-h">本日综论</span>${JIANCHU_ZONG[jc]}${zsText}`;
 }
 
+/* ============ 使用说明 ============ */
+function renderHelp(date, flat, curIdx, curHour) {
+  const bz = computeBazi(date, curIdx, flat);
+  const riGan = GAN[bz.riGan], riZhi = ZHI[bz.pillars.日.z];
+  const term = window.__curTermName || '';
+  document.getElementById('helpToday').innerHTML = `
+    <div class="help-today-row"><span class="ht-k">今日节气</span><span class="ht-v">${term}</span></div>
+    <div class="help-today-row"><span class="ht-k">当前时辰</span><span class="ht-v">${curHour.name} · ${curHour.meridian}</span></div>
+    <div class="help-today-row"><span class="ht-k">今日日干支</span><span class="ht-v">${riGan}${riZhi}日</span></div>
+    <div class="help-today-row"><span class="ht-k">农历标注</span><span class="ht-v">${lunarLabel(date, bz)}</span></div>`;
+}
+
 /* ============ Tab 切换 ============ */
 function initTabs() {
   const tabs = document.querySelectorAll('.tab');
-  const panels = { today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', fortune: 'tab-fortune', overview: 'tab-overview' };
+  const panels = { today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', fortune: 'tab-fortune', overview: 'tab-overview', help: 'tab-help' };
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1048,6 +1077,9 @@ async function init() {
     // 每日签运
     setupSign();
     renderDailyFortune(new Date(), flat);
+
+    // 使用说明
+    renderHelp(new Date(), flat, curIdx, curHour);
 
     initTabs();
 
