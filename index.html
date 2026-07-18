@@ -49,6 +49,7 @@
       <button class="tab" type="button" data-tab="dao">道家养生</button>
       <button class="tab" type="button" data-tab="fortune">每日签运</button>
       <button class="tab" type="button" data-tab="overview">全年总览</button>
+      <button class="tab" type="button" data-tab="help">使用说明</button>
     </nav>
 
     <!-- 今日养生 -->
@@ -88,28 +89,41 @@
     <!-- 黄历八字 -->
     <div class="tab-panel hidden" id="tab-bazi">
       <section class="panel bazi-panel">
-        <div class="panel-head"><h2>八字四柱 · 今日命盘</h2></div>
-        <div class="bazi-pillars" id="baziPillars"></div>
-        <div class="bazi-wuxing" id="baziWuxing"></div>
-        <p class="bazi-summary" id="baziSummary"></p>
-      </section>
+        <div class="panel-head"><h2>八字 · 黄历 · 今日一览</h2></div>
+        <p class="bazi-summary-card" id="baziSummaryCard"></p>
 
-      <section class="panel qimen-panel">
-        <div class="panel-head"><h2>奇门遁甲 · 今日局盘</h2></div>
-        <p class="qimen-cap" id="qimenCap"></p>
-        <div class="qimen-board" id="qimenBoard" role="img" aria-label="奇门遁甲九宫排盘"></div>
-        <p class="qimen-note">九宫洛书、八门九星八神与三奇六仪，据当日节气与干支离线排盘，为传统术数文化示意，仅供观赏，不作占断。</p>
-      </section>
+        <details class="coll" open>
+          <summary><span class="coll-t">八字四柱 · 命盘</span><span class="coll-hint">四柱 = 年/月/日/时 各一组干支</span></summary>
+          <div class="coll-body">
+            <div class="bazi-pillars" id="baziPillars"></div>
+            <div class="bazi-wuxing" id="baziWuxing"></div>
+            <p class="bazi-summary" id="baziSummary"></p>
+          </div>
+        </details>
 
-      <section class="panel ganzhi-panel">
-        <div class="panel-head"><h2>天干地支 · 六十甲子</h2></div>
-        <div id="ganzhiBody"></div>
-      </section>
+        <details class="coll">
+          <summary><span class="coll-t">奇门遁甲 · 九宫局盘</span><span class="coll-hint">传统术数排盘，仅作文化示意</span></summary>
+          <div class="coll-body">
+            <p class="qimen-cap" id="qimenCap"></p>
+            <div class="qimen-board" id="qimenBoard" role="img" aria-label="奇门遁甲九宫排盘"></div>
+            <p class="qimen-note">九宫洛书、八门九星八神与三奇六仪，据当日节气与干支离线排盘，为传统术数文化示意，仅供观赏，不作占断。</p>
+          </div>
+        </details>
 
-      <section class="panel almanac-panel">
-        <div class="panel-head"><h2>黄历 · 方位 · 经络取穴</h2></div>
-        <div id="almanacBody"></div>
-        <p class="alm-note">干支、八字、黄历、方位、取穴均由内置历法离线推算，仅供传统养生与文化参考，不替代专业命理或医疗建议。</p>
+        <details class="coll" open>
+          <summary><span class="coll-t">黄历宜忌 · 方位 · 取穴</span><span class="coll-hint">今日宜做什么、忌什么、吉神方位</span></summary>
+          <div class="coll-body">
+            <div id="almanacBody"></div>
+            <p class="alm-note">干支、八字、黄历、方位、取穴均由内置历法离线推算，仅供传统养生与文化参考，不替代专业命理或医疗建议。</p>
+          </div>
+        </details>
+
+        <details class="coll">
+          <summary><span class="coll-t">天干地支 · 六十甲子</span><span class="coll-hint">记年月日时的符号，今日日干支高亮</span></summary>
+          <div class="coll-body">
+            <div id="ganzhiBody"></div>
+          </div>
+        </details>
       </section>
     </div>
 
@@ -120,6 +134,7 @@
           <h2>今日道家功课</h2>
           <span class="season-chip" id="daoLessonDay">—</span>
         </div>
+        <p class="lesson-note">每日功课依公历日期推算，<b>每天不同、人人相同</b>（并非随机）；下方功法与道经点标题即可展开。</p>
         <div class="dao-lesson-body" id="daoLessonBody">
           <p class="loading">正在推算今日功课……</p>
         </div>
@@ -152,12 +167,14 @@
           <div class="qian-glow" aria-hidden="true"></div>
           <div class="qian-tong" id="qianTong" role="img" aria-label="签筒">
             <div class="qian-sticks">
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
             </div>
             <div class="qian-mouth"></div>
             <div class="qian-body"><span class="qian-seal">籤</span></div>
+            <div class="qian-out" id="qianOut" aria-hidden="true"><span class="qian-out-seal">籤</span></div>
           </div>
           <p class="sign-prompt" id="signPrompt"></p>
+          <p class="sign-shaking hidden" id="signShaking">诚心求签中……</p>
         </div>
 
         <div class="sign-result hidden" id="signResult">
@@ -213,6 +230,93 @@
       <section class="panel hou-year-panel">
         <div class="panel-head"><h2>七十二候 · 全年候历</h2></div>
         <div class="hou-year" id="houYear"></div>
+      </section>
+    </div>
+
+    <!-- 使用说明 -->
+    <div class="tab-panel hidden" id="tab-help">
+      <section class="panel help-panel">
+        <div class="panel-head"><h2>使用说明 · 怎么看这款小应用</h2></div>
+        <p class="help-lead">养生日历把「二十四节气、十二时辰、干支八字、道家养生」揉进每一天，离线推算、纯静态展示。下面用大白话讲清楚每个板块怎么看。</p>
+
+        <div class="help-today" id="helpToday"></div>
+
+        <details class="help-item" open>
+          <summary>今日养生</summary>
+          <div class="help-body">
+            <p>首页默认展示<strong>当下节气</strong>与<strong>当下时辰</strong>（古历罗盘实时走字）。</p>
+            <ul>
+              <li><b>道经今读</b>：每日轮换一句《道德经》《庄子》原句与体悟。</li>
+              <li><b>今日养生</b>：当令脏腑、气候、饮食起居宜忌、导引术与保健穴位，并附<strong>当前时辰的经络取穴</strong>（原穴/络穴/募穴）。</li>
+              <li><b>七十二候</b>：当前节气的三候物候。</li>
+              <li><b>每日打卡</b>：喝够水/早睡/八段锦/食养，仅存本机。</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="help-item" open>
+          <summary>黄历八字</summary>
+          <div class="help-body">
+            <p>顶部「今日一眼通」是白话总览；下面四个板块点标题展开：</p>
+            <ul>
+              <li><b>八字四柱</b>：年/月/日/时各一组干支（共八字）、五行与纳音。日柱那一格叫「日主」，是论命的重心。</li>
+              <li><b>奇门遁甲</b>：据节气与日干支排的九宫盘，看九宫里落了哪颗星、哪道门、哪位神，外加三奇六仪。<b>纯文化示意，看着「牛」就好，不必深究。</b></li>
+              <li><b>黄历宜忌</b>：今日宜/忌、建除十二神、值神黄黑道、冲煞、彭祖百忌，及喜神/财神/福神方位。</li>
+              <li><b>天干地支</b>：十天干、十二地支、六十甲子，今日日干支高亮。</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="help-item" open>
+          <summary>道家养生</summary>
+          <div class="help-body">
+            <ul>
+              <li><b>今日道家功课</b>：依公历日期推算，<strong>每天不同、人人相同</strong>（不是随机）。含主修功法、今日诵持、今日心法、当令要旨。</li>
+              <li><b>四时顺要</b>：春生夏长秋收冬藏的顺时养生总纲。</li>
+              <li><b>功法全录 / 道经全览</b>：点标题展开详情（守静、坐忘、六字诀、导引等）。</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="help-item" open>
+          <summary>每日签运</summary>
+          <div class="help-body">
+            <ul>
+              <li><b>每日一签</b>：点「摇签求签」，筒中竹签摇晃约 5 秒后跳出一签，即今日修身签（按日固定）。「再摇一签」可随机娱乐。</li>
+              <li><b>今日运程</b>：十二生肖按今日日支的六合/三合/冲/刑/害与五行生克排定每日运程，并附本日干支综论。</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="help-item">
+          <summary>全年总览</summary>
+          <div class="help-body">
+            <ul>
+              <li><b>二十四节气</b>：可按季节筛选，点格子看某节气详情。</li>
+              <li><b>十二时辰</b>：子午流注，点时段看当令经络与宜忌。</li>
+              <li><b>七十二候</b>：全年候历。</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="help-item">
+          <summary>术语小词典</summary>
+          <div class="help-body">
+            <ul>
+              <li><b>节气</b>：把一年分为 24 段，标记气候与物候的交接点。</li>
+              <li><b>候</b>：每节气分三候（初/二/三候），共七十二候，记物候变化。</li>
+              <li><b>时辰</b>：一天 12 时辰（子丑寅…），每两小时一辰，对应经络当令。</li>
+              <li><b>干支</b>：十天干+十二地支，60 一循环，用来记年月日时。</li>
+              <li><b>八字</b>：出生/当日的年、月、日、时四组干支。</li>
+              <li><b>纳音</b>：干支两两配出的五行「音律」之名，如「海中金」。</li>
+              <li><b>奇门遁甲</b>：传统术数，以九宫排星、门、神、三奇六仪推演时空。</li>
+              <li><b>建除</b>：建/除/满/平…十二神轮值，定每日宜忌基调。</li>
+              <li><b>值神黄黑道</b>：青龙等六黄道吉、天刑等六黑道凶。</li>
+            </ul>
+          </div>
+        </details>
+
+        <p class="help-note">全部内容仅为传统养生与文化参考，不替代专业医疗或命理建议。</p>
       </section>
     </div>
 
