@@ -410,9 +410,11 @@ body {
 .clk-hub { fill: var(--seal); stroke: var(--paper); stroke-width: 2; }
 
 /* 雷达覆盖扇形 */
-.clk-cover { fill: var(--seal); opacity: .09; pointer-events: none; }
-.clk-radar-sweep, .clk-radar-beam { pointer-events: none; }
-.clk-radar-beam { opacity: .9; }
+.clk-cover { fill: var(--seal); opacity: .12; pointer-events: none; }
+.clk-radar-sweep, .clk-radar-trail, .clk-radar-beam, .clk-radar-dot { pointer-events: none; }
+.clk-radar-trail { fill: url(#radarTrailGrad); }
+.clk-radar-beam { stroke: var(--seal); stroke-width: 1.6; stroke-linecap: round; opacity: .92; }
+.clk-radar-dot { fill: var(--seal); opacity: .92; }
 .clock-cap { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 6px; letter-spacing: 1px; }
 
 /* ---------- 黄历八字 ---------- */
@@ -576,14 +578,16 @@ body {
 .sign-title { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: 4px; }
 .sign-poem {
   font-family: var(--serif); font-size: 21px; line-height: 2.1; color: var(--ink);
-  margin: 8px auto 16px; max-width: 18em; letter-spacing: 1px;
+  margin: 0 auto; max-width: 18em; letter-spacing: 1px;
 }
 .sign-poem span { display: block; }
-.sign-jie, .sign-zhi { font-size: 15px; color: var(--ink); line-height: 1.7; margin: 8px auto; max-width: 30em; text-align: left; }
+.sign-section { margin: 18px auto 0; max-width: 32em; }
+.sign-section:first-of-type { margin-top: 8px; }
 .sign-k {
-  display: inline-block; min-width: 30px; font-family: var(--serif); color: var(--seal);
-  font-size: 14px; margin-right: 6px; font-weight: 700;
+  display: block; font-family: var(--serif); font-size: 13px; color: var(--seal);
+  font-weight: 700; letter-spacing: 2px; margin-bottom: 8px;
 }
+.sign-jie { font-size: 15px; color: var(--ink); line-height: 1.8; text-align: left; }
 .sign-yj { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
 .sign-yi, .sign-ji { font-size: 14.5px; margin: 0; }
 .sign-yi { color: var(--spring); }
@@ -809,38 +813,36 @@ body {
 .lesson-note { font-size: 12.5px; color: var(--ink-soft); margin: -4px 0 12px; line-height: 1.7; }
 .lesson-note b { color: var(--seal); }
 
-/* ---------- 每日签运：跳出覆盖竹筒的一根签 ---------- */
-/* 默认藏起；摇完从筒口窜出，落在竹筒正前方覆盖筒身，显示签号，随后签文展开 */
+/* ---------- 每日签运：跳出的签从竹筒口自然伸出，不覆盖筒身 ---------- */
 .qian-out {
-  position: absolute; top: 50%; left: 50%;
-  width: 34px; height: 340px;
-  transform: translate(-50%, -50%) scaleY(0.16);
-  transform-origin: bottom center; border-radius: 10px 10px 5px 5px;
+  position: absolute; top: -150px; left: 50%;
+  width: 24px; height: 150px;
+  transform: translate(-50%, 60%) scaleY(0);
+  transform-origin: bottom center; border-radius: 10px 10px 4px 4px;
   background:
     linear-gradient(90deg, #9c7338 0%, #c9a866 30%, #f3e6c4 50%, #c9a866 70%, #9c7338 100%),
     linear-gradient(180deg, #fbf4e4, #ecdcbb);
   background-blend-mode: overlay;
-  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 14px 30px rgba(110, 75, 20, 0.5);
+  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 10px 22px rgba(110, 75, 20, 0.45);
   opacity: 0; pointer-events: none; z-index: 12;
 }
 .qian-out::before {
-  content: ""; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-  width: 34px; height: 18px; border-radius: 9px;
+  content: ""; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 24px; height: 16px; border-radius: 10px;
   background: linear-gradient(180deg, #d64848, #a82626);
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 .qian-out .qian-out-no {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-family: var(--serif); font-size: 22px; font-weight: 700; color: #b23b3b;
+  position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+  font-family: var(--serif); font-size: 19px; font-weight: 700; color: #b23b3b;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
-.qian-out.popped { animation: stick-cover 1.05s cubic-bezier(.18, .9, .3, 1) forwards; }
-@keyframes stick-cover {
-  0%   { opacity: 0; transform: translate(-50%, 44%) scaleY(0.14); }
-  22%  { opacity: 1; transform: translate(-50%, -78%) scaleY(0.62) rotate(-7deg); }
-  52%  { transform: translate(-50%, -50%) scaleY(1.06) rotate(4deg); }
-  76%  { transform: translate(-50%, -53%) scaleY(1) rotate(-2deg); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scaleY(1) rotate(0deg); }
+.qian-out.popped { animation: stick-out 0.85s cubic-bezier(.2, .8, .3, 1) forwards; }
+@keyframes stick-out {
+  0%   { opacity: 0; transform: translate(-50%, 60%) scaleY(0) rotate(-3deg); }
+  28%  { opacity: 1; transform: translate(-50%, 0) scaleY(0.55) rotate(-4deg); }
+  62%  { transform: translate(-50%, -16%) scaleY(1) rotate(2deg); }
+  100% { opacity: 1; transform: translate(-50%, -6%) scaleY(1) rotate(0deg); }
 }
 .sign-stage.shaking .qian-glow { animation: qian-glow-spin 3.5s linear infinite, glow-pulse 1s ease-in-out infinite; }
 @keyframes glow-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
@@ -925,9 +927,9 @@ body {
   .sign-stage { min-height: 420px; }
   .qian-tong { width: 170px; height: 250px; margin-top: 50px; --stick-scale: 0.72; }
   .qian-sticks { top: 22px; width: 68px; }
-  .qian-out { width: 26px; height: 250px; }
-  .qian-out .qian-out-no { font-size: 18px; }
-  .qian-out::before { width: 26px; height: 14px; top: -10px; }
+  .qian-out { width: 20px; height: 110px; top: -110px; }
+  .qian-out .qian-out-no { font-size: 15px; top: 14px; }
+  .qian-out::before { width: 20px; height: 12px; top: -8px; }
   .sign-poem { font-size: 18px; }
   .sign-title { font-size: 23px; letter-spacing: 3px; }
   .sign-yj { gap: 10px; }
