@@ -1059,7 +1059,7 @@ function renderHelp(date, flat, curIdx, curHour) {
 /* ============ Tab 切换 ============ */
 function initTabs() {
   const tabs = document.querySelectorAll('.tab');
-  const panels = { today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', fortune: 'tab-fortune', overview: 'tab-overview', help: 'tab-help' };
+  const panels = { summary: 'tab-summary', today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', fortune: 'tab-fortune', overview: 'tab-overview', help: 'tab-help' };
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
