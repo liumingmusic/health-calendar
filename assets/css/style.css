@@ -669,50 +669,40 @@ body {
 /* 写实竹签筒：AI 生成图片（竹纹圆柱 + 红箍 + 八卦太极贴 + 插签），筒身与签一并呈现 */
 .qian-tong {
   position: relative; width: 240px; height: 350px; margin-top: 60px;
-  z-index: 2;
+  z-index: 2; --stick-scale: 1;
   filter: drop-shadow(0 18px 30px rgba(80, 55, 18, 0.35));
 }
 .qian-tube-img {
+  position: relative; z-index: 2;
   width: 100%; height: 100%; object-fit: contain; display: block;
   user-select: none; -webkit-user-drag: none;
 }
-/* 签簇：摇签时从筒口激烈抖动，平时静置 */
+/* 签簇：36 根签插在筒口，底部被筒沿自然遮挡，只露出上端 */
 .qian-sticks {
-  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
-  width: 110px; height: 0; z-index: 3; pointer-events: none;
+  position: absolute; left: 50%; top: 24px; transform: translateX(-50%);
+  width: 56px; height: 0; z-index: 1; pointer-events: none;
 }
 .qian-stick {
-  position: absolute; bottom: -10px;
-  width: 6px; height: 92px; border-radius: 4px 4px 0 0;
+  position: absolute; bottom: 0;
+  width: 4px; height: calc(var(--h, 70px) * var(--stick-scale));
+  border-radius: 3px 3px 0 0;
   background: linear-gradient(90deg, #9c7338, #f3e6c4 40%, #c9a866 75%, #8d6630);
   box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.38);
   transform-origin: bottom center;
+  transform: translateX(calc(var(--tx, 0px) * var(--stick-scale))) rotate(var(--rot, 0deg));
 }
 .qian-stick::before {
-  content: ""; position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-  width: 6px; height: 12px; border-radius: 4px 4px 1px 1px;
+  content: ""; position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 9px; border-radius: 3px 3px 1px 1px;
   background: linear-gradient(180deg, #d64848, #a82626);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
-.qian-stick:nth-child(1) { --tx: -30px; --rot: -14deg; }
-.qian-stick:nth-child(2) { --tx: -18px; --rot: -8deg; }
-.qian-stick:nth-child(3) { --tx: -6px; --rot: -2deg; }
-.qian-stick:nth-child(4) { --tx: 7px; --rot: 3deg; }
-.qian-stick:nth-child(5) { --tx: 19px; --rot: 9deg; }
-.qian-stick:nth-child(6) { --tx: 31px; --rot: 15deg; }
-.qian-stick { transform: translateX(var(--tx)) rotate(var(--rot)); }
-/* 摇签：整筒缓慢左右大摆，签簇在上端同时快速抖动 */
+/* 摇签：整筒缓慢左右大摆，签簇在筒口同时快速抖动 */
 .qian-tong.shaking { animation: tong-rock 1.05s ease-in-out infinite; transform-origin: 50% 92%; }
 .qian-tong.shaking .qian-stick {
   animation: stick-jitter .16s ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
-.qian-stick:nth-child(1) { --delay: 0ms; }
-.qian-stick:nth-child(2) { --delay: 30ms; }
-.qian-stick:nth-child(3) { --delay: 60ms; }
-.qian-stick:nth-child(4) { --delay: 15ms; }
-.qian-stick:nth-child(5) { --delay: 45ms; }
-.qian-stick:nth-child(6) { --delay: 75ms; }
 @keyframes tong-rock {
   0%, 100% { transform: rotate(0deg) translateY(0); }
   25% { transform: rotate(-16deg) translateY(-6px); }
@@ -720,10 +710,10 @@ body {
   80% { transform: rotate(-9deg) translateY(-3px); }
 }
 @keyframes stick-jitter {
-  0%, 100% { transform: translateX(var(--tx)) rotate(var(--rot)); }
-  25% { transform: translateX(calc(var(--tx) - 3px)) rotate(calc(var(--rot) - 3deg)); }
-  50% { transform: translateX(calc(var(--tx) + 3px)) rotate(calc(var(--rot) + 3deg)); }
-  75% { transform: translateX(calc(var(--tx) - 1.5px)) rotate(calc(var(--rot) - 1.5deg)); }
+  0%, 100% { transform: translateX(calc(var(--tx, 0px) * var(--stick-scale))) rotate(var(--rot, 0deg)); }
+  25% { transform: translateX(calc((var(--tx, 0px) - 3px) * var(--stick-scale))) rotate(calc(var(--rot, 0deg) - 3deg)); }
+  50% { transform: translateX(calc((var(--tx, 0px) + 3px) * var(--stick-scale))) rotate(calc(var(--rot, 0deg) + 3deg)); }
+  75% { transform: translateX(calc((var(--tx, 0px) - 1.5px) * var(--stick-scale))) rotate(calc(var(--rot, 0deg) - 1.5deg)); }
 }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
@@ -919,16 +909,8 @@ body {
   /* 每日签运：手机端 */
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
   .sign-stage { min-height: 420px; }
-  .qian-tong { width: 170px; height: 250px; margin-top: 50px; }
-  .qian-sticks { width: 78px; }
-  .qian-stick { width: 5px; height: 72px; bottom: -8px; }
-  .qian-stick::before { width: 5px; height: 10px; top: -9px; }
-  .qian-stick:nth-child(1) { --tx: -21px; --rot: -14deg; }
-  .qian-stick:nth-child(2) { --tx: -12px; --rot: -8deg; }
-  .qian-stick:nth-child(3) { --tx: -4px; --rot: -2deg; }
-  .qian-stick:nth-child(4) { --tx: 5px; --rot: 3deg; }
-  .qian-stick:nth-child(5) { --tx: 13px; --rot: 9deg; }
-  .qian-stick:nth-child(6) { --tx: 22px; --rot: 15deg; }
+  .qian-tong { width: 170px; height: 250px; margin-top: 50px; --stick-scale: 0.72; }
+  .qian-sticks { top: 17px; width: 40px; }
   .qian-out { width: 26px; height: 250px; }
   .qian-out .qian-out-no { font-size: 18px; }
   .qian-out::before { width: 26px; height: 14px; top: -10px; }
