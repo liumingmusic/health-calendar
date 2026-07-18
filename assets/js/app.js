@@ -329,30 +329,92 @@ function renderCheckin() {
   document.getElementById('streakLabel').textContent = `连续打卡 ${streak} 天`;
 }
 
+/* ============ 道家养生 ============ */
+let DAO = null;
+
+function dayOfYear(d) {
+  const start = new Date(d.getFullYear(), 0, 0);
+  return Math.floor((d - start) / 86400000);
+}
+
+function renderDaoDaily() {
+  if (!DAO || !DAO.quotes.length) return;
+  const q = DAO.quotes[dayOfYear(new Date()) % DAO.quotes.length];
+  document.getElementById('daoDailyText').textContent = `「${q.text}」`;
+  document.getElementById('daoDailySrc').textContent = q.source;
+  document.getElementById('daoDailyInsight').textContent = q.insight;
+  document.getElementById('footMaxim').textContent = `「${q.text}」—— ${q.source}`;
+}
+
+function renderDaoSeason(curSeason) {
+  const box = document.getElementById('daoSeason');
+  box.innerHTML = DAO.seasonGist.map(s => {
+    const cur = s.season === curSeason ? ' current' : '';
+    const color = SEASON_COLORS[s.season] || 'var(--seal)';
+    return `<div class="dao-season-item${cur}" style="--sg:${color}">
+      <span class="dsg-season">${s.season}</span>
+      <span class="dsg-gist">${s.gist}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderDaoMethods() {
+  const box = document.getElementById('daoMethods');
+  box.innerHTML = DAO.methods.map(m => {
+    const steps = m.how.map(h => `<li>${h}</li>`).join('');
+    return `<div class="dao-method">
+      <div class="dm-head">
+        <span class="dm-name">${m.name}</span>
+        <span class="dm-from">${m.from}</span>
+      </div>
+      <blockquote class="dm-quote">「${m.quote}」</blockquote>
+      <div class="dm-sub">行法要点</div>
+      <ol class="dm-steps">${steps}</ol>
+      <p class="dm-benefit"><span class="dm-tag ok">功效</span>${m.benefit}</p>
+      <p class="dm-note"><span class="dm-tag warn">注意</span>${m.note}</p>
+    </div>`;
+  }).join('');
+}
+
+function renderDaoQuotes() {
+  const box = document.getElementById('daoQuotes');
+  box.innerHTML = DAO.quotes.map(q => `
+    <div class="dao-quote">
+      <blockquote class="dq-text">「${q.text}」</blockquote>
+      <div class="dq-src">${q.source}</div>
+      <p class="dq-plain">${q.plain}</p>
+    </div>`).join('');
+}
+
 /* ============ Tab 切换 ============ */
 function initTabs() {
   const tabs = document.querySelectorAll('.tab');
+  const panels = { today: 'tab-today', dao: 'tab-dao', overview: 'tab-overview' };
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const target = btn.dataset.tab;
-    document.getElementById('tab-today').classList.toggle('hidden', target !== 'today');
-    document.getElementById('tab-overview').classList.toggle('hidden', target !== 'overview');
+    Object.keys(panels).forEach(k => {
+      document.getElementById(panels[k]).classList.toggle('hidden', k !== target);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }));
 }
 
 /* ============ 主流程 ============ */
 async function init() {
   try {
-    const [years, health, hou, hours] = await Promise.all([
+    const [years, health, hou, hours, dao] = await Promise.all([
       loadJSON('data/solar-terms.json'),
       loadJSON('data/health.json'),
       loadJSON('data/hou.json'),
       loadJSON('data/hours.json'),
+      loadJSON('data/daoism.json'),
     ]);
 
     health.forEach(t => { HEALTH_MAP[t.term] = t; });
     hou.forEach(h => { HOU_MAP[h.term] = h.hou; });
+    DAO = dao;
 
     const flat = flattenTerms(years);
     ALL_TERMS_FLAT = flat;
@@ -373,6 +435,14 @@ async function init() {
     renderHouYear();
     renderOverview(health, flat, 'all');
     renderCheckin();
+
+    // 道家养生
+    const curSeason = (HEALTH_MAP[cur.name] && HEALTH_MAP[cur.name].season) || '春';
+    renderDaoDaily();
+    renderDaoSeason(curSeason);
+    renderDaoMethods();
+    renderDaoQuotes();
+
     initTabs();
 
     // 弹层关闭
