@@ -45,6 +45,7 @@
     <!-- Tab 导航 -->
     <nav class="tabs" id="tabs">
       <button class="tab active" type="button" data-tab="today">今日养生</button>
+      <button class="tab" type="button" data-tab="bazi">黄历八字</button>
       <button class="tab" type="button" data-tab="dao">道家养生</button>
       <button class="tab" type="button" data-tab="overview">全年总览</button>
     </nav>
@@ -80,6 +81,22 @@
         </div>
         <div class="habits" id="habits"></div>
         <p class="checkin-tip">打卡记录仅保存在本机浏览器（localStorage），用于见证你的坚持。</p>
+      </section>
+    </div>
+
+    <!-- 黄历八字 -->
+    <div class="tab-panel hidden" id="tab-bazi">
+      <section class="panel bazi-panel">
+        <div class="panel-head"><h2>八字四柱 · 今日命盘</h2></div>
+        <div class="bazi-pillars" id="baziPillars"></div>
+        <div class="bazi-wuxing" id="baziWuxing"></div>
+        <p class="bazi-summary" id="baziSummary"></p>
+      </section>
+
+      <section class="panel almanac-panel">
+        <div class="panel-head"><h2>黄历 · 方位 · 经络取穴</h2></div>
+        <div id="almanacBody"></div>
+        <p class="alm-note">干支、八字、黄历、方位、取穴均由内置历法离线推算，仅供传统养生与文化参考，不替代专业命理或医疗建议。</p>
       </section>
     </div>
 
