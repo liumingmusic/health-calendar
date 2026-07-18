@@ -1,23 +1,23 @@
 :root {
-  --bg: #f4ede0;
-  --paper: #fbf6ec;
-  --paper-2: #f7f0e2;
-  --ink: #3a3327;
-  --ink-soft: #6f6453;
-  --ink-faint: #9a8f7c;
-  --line: #e4d9c4;
-  --line-strong: #d6c8ad;
-  --seal: #b0392e;
-  --seal-soft: #c4564a;
-  --shadow: 0 6px 20px rgba(90, 70, 40, 0.10);
-  --shadow-sm: 0 2px 8px rgba(90, 70, 40, 0.08);
+  --bg: #f4efe9;
+  --paper: #fcf9f4;
+  --paper-2: #f6efe7;
+  --ink: #322c2a;
+  --ink-soft: #6f6457;
+  --ink-faint: #9c9183;
+  --line: #e7ddcc;
+  --line-strong: #d9cab0;
+  --seal: #6e4a8e;          /* 紫晶 · 品牌主色（避开成语故事青瓷绿） */
+  --seal-soft: #9170ab;
+  --shadow: 0 6px 20px rgba(70, 55, 90, 0.10);
+  --shadow-sm: 0 2px 8px rgba(70, 55, 90, 0.08);
 
-  /* 季节色 */
-  --spring: #4a8c6a;
-  --summer: #c0392b;
+  /* 季节色（功能色，区别于品牌紫） */
+  --spring: #5f8a3a;
+  --summer: #c4452f;
   --longsummer: #cf9a1c;
-  --autumn: #c8772e;
-  --winter: #34526e;
+  --autumn: #c47a2c;
+  --winter: #3a5d7a;
 
   --serif: "Songti SC", "STSong", "SimSun", "Noto Serif SC", "Source Han Serif SC", "Georgia", serif;
   --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
@@ -40,8 +40,8 @@ html, body {
 
 body {
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(192, 57, 43, 0.05), transparent 40%),
-    radial-gradient(circle at 88% 82%, rgba(74, 140, 106, 0.06), transparent 42%);
+    radial-gradient(circle at 12% 16%, rgba(110, 74, 142, 0.06), transparent 42%),
+    radial-gradient(circle at 88% 84%, rgba(207, 154, 28, 0.07), transparent 44%);
 }
 
 .scroll-wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 18px 40px; }
@@ -64,7 +64,7 @@ body {
   justify-content: center;
   width: 52px; height: 52px;
   background: var(--seal);
-  color: #fdf3ea;
+  color: #f6eefb;
   font-family: var(--serif);
   font-size: 19px;
   font-weight: 700;
@@ -203,12 +203,12 @@ body {
   font-size: 14px;
   color: var(--ink);
 }
-.chip.acu { border-color: var(--seal-soft); background: #fbeee9; }
+.chip.acu { border-color: var(--seal-soft); background: #f1ebf6; }
 .organ-line { font-family: var(--serif); font-size: 17px; color: var(--seal); font-weight: 700; }
-.key-line { font-size: 15px; color: var(--ink); background: #f3ead7; border-left: 3px solid var(--longsummer); padding: 8px 12px; border-radius: 6px; }
+.key-line { font-size: 15px; color: var(--ink); background: #f2ecdd; border-left: 3px solid var(--longsummer); padding: 8px 12px; border-radius: 6px; }
 .avoid-list { margin: 4px 0; padding-left: 0; list-style: none; }
-.avoid-list li { color: #a23b2e; font-size: 14px; padding-left: 18px; position: relative; }
-.avoid-list li::before { content: "✕"; position: absolute; left: 0; color: #c4564a; }
+.avoid-list li { color: #a8445a; font-size: 14px; padding-left: 18px; position: relative; }
+.avoid-list li::before { content: "✕"; position: absolute; left: 0; color: #b75a6e; }
 
 /* ---------- 时辰条 ---------- */
 .hour-bar { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
@@ -288,8 +288,8 @@ body {
   display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 14px;
   flex: none;
 }
-.habit.done { border-color: var(--spring); background: #eef6f0; }
-.habit.done .box { background: var(--spring); border-color: var(--spring); }
+.habit.done { border-color: var(--seal); background: #efeaf4; }
+.habit.done .box { background: var(--seal); border-color: var(--seal); }
 .habit.done .h-label { color: var(--ink); }
 .checkin-tip { font-size: 12px; color: var(--ink-faint); margin: 12px 0 0; }
 
@@ -315,6 +315,24 @@ body {
 .hidden { display: none !important; }
 
 .loading { color: var(--ink-faint); text-align: center; padding: 30px 0; }
+
+/* ---------- 古历时钟（装饰：太极·八卦·十二时辰） ---------- */
+.clock-inner { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.lunar-clock { width: 190px; height: 190px; flex: none; }
+.clk-svg { width: 100%; height: 100%; display: block; }
+.clk-rim { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+.clk-ring { fill: none; stroke: var(--line); stroke-width: 1; }
+.clk-spin-outer { transform-box: fill-box; transform-origin: center; animation: clk-spin 120s linear infinite; }
+.clk-spin-taiji { transform-box: fill-box; transform-origin: center; animation: clk-spin 18s linear infinite; }
+@keyframes clk-spin { to { transform: rotate(360deg); } }
+.clk-tick { stroke: var(--line-strong); stroke-width: 1; }
+.clk-bagua { font-family: var(--serif); font-size: 13px; fill: var(--ink-faint); }
+.clk-shichen { font-family: var(--serif); font-size: 13px; fill: var(--ink-soft); }
+.clk-shichen.cur { fill: var(--seal); font-weight: 700; font-size: 14px; }
+.clk-pointer { fill: var(--seal); }
+.clock-caption { flex: 1 1 150px; min-width: 150px; }
+.clk-cap-main { font-family: var(--serif); font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: 1px; }
+.clk-cap-sub { font-size: 13px; color: var(--ink-soft); margin-top: 6px; line-height: 1.6; }
 
 /* ---------- 响应式：手机端 ---------- */
 @media (max-width: 720px) {
