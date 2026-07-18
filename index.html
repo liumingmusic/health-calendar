@@ -94,6 +94,18 @@
         <p class="bazi-summary" id="baziSummary"></p>
       </section>
 
+      <section class="panel qimen-panel">
+        <div class="panel-head"><h2>奇门遁甲 · 今日局盘</h2></div>
+        <p class="qimen-cap" id="qimenCap"></p>
+        <div class="qimen-board" id="qimenBoard" role="img" aria-label="奇门遁甲九宫排盘"></div>
+        <p class="qimen-note">九宫洛书、八门九星八神与三奇六仪，据当日节气与干支离线排盘，为传统术数文化示意，仅供观赏，不作占断。</p>
+      </section>
+
+      <section class="panel ganzhi-panel">
+        <div class="panel-head"><h2>天干地支 · 六十甲子</h2></div>
+        <div id="ganzhiBody"></div>
+      </section>
+
       <section class="panel almanac-panel">
         <div class="panel-head"><h2>黄历 · 方位 · 经络取穴</h2></div>
         <div id="almanacBody"></div>
@@ -133,24 +145,42 @@
     <!-- 每日签运 -->
     <div class="tab-panel hidden" id="tab-fortune">
       <section class="panel sign-panel">
-        <div class="panel-head">
-          <h2>每日一签 · 修身签</h2>
-          <button class="reroll-btn" id="rerollSign" type="button">再摇一签</button>
-        </div>
+        <div class="panel-head"><h2>每日一签 · 修身签</h2></div>
         <p class="sign-intro" id="signIntro"></p>
-        <div class="sign-card" id="signCard">
-          <div class="sign-top">
-            <span class="sign-no" id="signNo">—</span>
-            <span class="sign-level" id="signLevel">—</span>
-            <span class="sign-title" id="signTitle">—</span>
+
+        <div class="sign-stage" id="signStage">
+          <div class="qian-glow" aria-hidden="true"></div>
+          <div class="qian-tong" id="qianTong" role="img" aria-label="签筒">
+            <div class="qian-sticks">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="qian-mouth"></div>
+            <div class="qian-body"><span class="qian-seal">籤</span></div>
           </div>
-          <div class="sign-poem" id="signPoem"></div>
-          <div class="sign-jie"><span class="sign-k">解曰</span><span id="signJie">—</span></div>
-          <div class="sign-zhi"><span class="sign-k">指</span><span id="signZhi">—</span></div>
-          <div class="sign-yj">
-            <p class="sign-yi">宜：<span id="signYi">—</span></p>
-            <p class="sign-ji">忌：<span id="signJi">—</span></p>
+          <p class="sign-prompt" id="signPrompt"></p>
+        </div>
+
+        <div class="sign-result hidden" id="signResult">
+          <div class="sign-slip" id="signSlip">
+            <div class="sign-top">
+              <span class="sign-no" id="signNo">—</span>
+              <span class="sign-level" id="signLevel">—</span>
+              <span class="sign-title" id="signTitle">—</span>
+            </div>
+            <div class="sign-poem" id="signPoem"></div>
+            <div class="sign-jie"><span class="sign-k">解曰</span><span id="signJie">—</span></div>
+            <div class="sign-zhi"><span class="sign-k">指</span><span id="signZhi">—</span></div>
+            <div class="sign-yj">
+              <p class="sign-yi">宜：<span id="signYi">—</span></p>
+              <p class="sign-ji">忌：<span id="signJi">—</span></p>
+            </div>
+            <div class="sign-guide" id="signGuide"></div>
           </div>
+        </div>
+
+        <div class="sign-actions">
+          <button class="shake-btn" id="shakeSign" type="button">摇签求签</button>
+          <button class="reroll-btn hidden" id="rerollSign" type="button">再摇一签</button>
         </div>
         <p class="sign-note">签文以守静、顺时、寡欲、涵神为旨，可作每日自省之镜，非占验祸福之术。</p>
       </section>
