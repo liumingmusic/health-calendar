@@ -845,6 +845,7 @@ function setupSign() {
   const stage = document.getElementById('signStage');
   const tong = document.getElementById('qianTong');
   const out = document.getElementById('qianOut');
+  const outNo = document.getElementById('qianOutNo');
   const result = document.getElementById('signResult');
   const shakeBtn = document.getElementById('shakeSign');
   const rerollBtn = document.getElementById('rerollSign');
@@ -884,8 +885,9 @@ function setupSign() {
     tong.classList.add('shaking'); stage.classList.add('shaking');
     setTimeout(() => {
       tong.classList.remove('shaking'); stage.classList.remove('shaking');
-      out.classList.add('popped');                 // 一根签从筒口跳出
-      setTimeout(() => { reveal(dailyIdx); }, 820); // 等跳出动画后展开签文
+      outNo.textContent = sticks[dailyIdx].no;      // 签号写到跳出的签上
+      out.classList.add('popped');                  // 一根签窜出、覆盖竹筒
+      setTimeout(() => { reveal(dailyIdx); }, 900); // 等覆盖动画后再展开签文
     }, SHOW_MS);
   }
 
