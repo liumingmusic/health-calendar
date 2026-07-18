@@ -641,40 +641,65 @@ body {
 /* ---------- 每日签运：摇签动画 ---------- */
 .sign-stage { position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 0 4px; }
 .qian-glow {
-  position: absolute; top: 4px; width: 210px; height: 210px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(110, 74, 142, 0.20), transparent 65%);
-  filter: blur(4px); animation: qian-glow-spin 14s linear infinite;
+  position: absolute; top: 0; width: 240px; height: 240px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 168, 52, 0.22), transparent 65%);
+  filter: blur(5px); animation: qian-glow-spin 14s linear infinite;
 }
 @keyframes qian-glow-spin { to { transform: rotate(360deg); } }
+
+/* 竹黄签筒（道家黄） */
 .qian-tong {
-  position: relative; width: 104px; height: 168px; margin-top: 14px;
-  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, var(--seal-soft), var(--seal) 55%, #4f3568);
-  box-shadow: inset 0 -16px 26px rgba(0, 0, 0, 0.25), 0 8px 18px rgba(70, 55, 90, 0.25);
+  position: relative; width: 122px; height: 188px; margin-top: 42px;
+  border-radius: 14px 14px 12px 12px;
+  background: linear-gradient(90deg, #9c6f1c 0%, #cf9f37 28%, #f4dd8c 50%, #cf9f37 72%, #9c6f1c 100%);
+  box-shadow: inset 0 -20px 30px rgba(110, 72, 16, 0.38), inset 0 8px 12px rgba(255, 244, 206, 0.55), 0 12px 24px rgba(150, 100, 28, 0.34);
 }
-.qian-sticks { position: absolute; top: -26px; left: 0; right: 0; display: flex; justify-content: center; gap: 7px; }
-.qian-sticks i {
-  display: block; width: 5px; height: 40px; border-radius: 3px;
-  background: linear-gradient(180deg, #f6efe7, #e7dcc8);
-  box-shadow: 0 0 0 1px rgba(120, 90, 60, 0.2); transform-origin: bottom center;
+/* 竹节横纹 */
+.qian-tong::before, .qian-tong::after {
+  content: ""; position: absolute; left: 4%; right: 4%; height: 7px; border-radius: 4px;
+  background: linear-gradient(90deg, rgba(110, 72, 16, 0.42), rgba(110, 72, 16, 0.12));
+  box-shadow: 0 1px 0 rgba(255, 244, 206, 0.5);
 }
-.qian-mouth { position: absolute; top: 0; left: 10%; right: 10%; height: 12px; background: rgba(255, 255, 255, 0.18); border-radius: 0 0 40% 40%; }
-.qian-body { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.qian-tong::before { top: 32%; }
+.qian-tong::after { top: 64%; }
+/* 筒口 */
+.qian-rim {
+  position: absolute; top: -9px; left: 7%; right: 7%; height: 18px; border-radius: 50%;
+  background: linear-gradient(180deg, #7e5612, #c79a35);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.32), 0 1px 0 rgba(255, 244, 206, 0.5);
+  z-index: 4;
+}
+.qian-body { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2; }
 .qian-seal {
-  font-family: var(--serif); font-size: 30px; color: var(--paper);
-  border: 2px solid rgba(255, 255, 255, 0.55); border-radius: 8px; padding: 2px 8px;
-  writing-mode: vertical-rl; letter-spacing: 2px;
+  font-family: var(--serif); font-size: 28px; color: #fff;
+  background: #b23b3b; border: 2px solid #f4dd8c; border-radius: 50%;
+  width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
-.qian-tong.shaking { animation: tong-shake .5s ease-in-out infinite; }
-@keyframes tong-shake {
-  0%, 100% { transform: rotate(0) translateY(0); }
-  20% { transform: rotate(-9deg) translateY(-3px); }
-  50% { transform: rotate(8deg) translateY(2px); }
-  80% { transform: rotate(-5deg) translateY(-2px); }
+/* 露出筒口的竹签（红头），摇晃时随筒扇形摇曳 */
+.qian-sticks { position: absolute; top: -50px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 1; }
+.qian-sticks i {
+  position: relative; display: block; width: 6px; height: 60px; border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, #f7eed8, #e2d2b0);
+  box-shadow: 0 0 0 1px rgba(150, 110, 50, 0.28); transform-origin: bottom center;
 }
-.qian-tong.shaking .qian-sticks i { animation: stick-jiggle .28s ease-in-out infinite; }
-.qian-tong.shaking .qian-sticks i:nth-child(odd) { animation-delay: .12s; }
-@keyframes stick-jiggle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(7deg); } }
+.qian-sticks i::after {
+  content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 9px; border-radius: 3px; background: #b23b3b;
+}
+/* 摇签：筒身摆动 + 签支扇形摇曳 */
+.qian-tong.shaking { animation: tong-rock .42s ease-in-out infinite; }
+@keyframes tong-rock {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  20% { transform: rotate(-11deg) translateY(-3px); }
+  55% { transform: rotate(9deg) translateY(2px); }
+  80% { transform: rotate(-6deg) translateY(-2px); }
+}
+.qian-tong.shaking .qian-sticks i { animation: stick-sway .2s ease-in-out infinite; }
+.qian-tong.shaking .qian-sticks i:nth-child(odd) { animation-delay: .05s; }
+.qian-tong.shaking .qian-sticks i:nth-child(3n) { animation-delay: .1s; }
+.qian-tong.shaking .qian-sticks i:nth-child(2n) { animation-delay: .03s; }
+@keyframes stick-sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(7deg); } }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
 .sign-result { margin-top: 6px; }
@@ -755,47 +780,28 @@ body {
 .lesson-note { font-size: 12.5px; color: var(--ink-soft); margin: -4px 0 12px; line-height: 1.7; }
 .lesson-note b { color: var(--seal); }
 
-/* ---------- 每日签运：摇签动画（真实摇晃 5 秒 + 跳出一根签） ---------- */
-.qian-sticks { position: absolute; top: -40px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; }
-.qian-sticks i {
-  display: block; width: 6px; height: 52px; border-radius: 3px;
-  background: linear-gradient(180deg, #f6efe7, #e7dcc8);
-  box-shadow: 0 0 0 1px rgba(120, 90, 60, 0.22); transform-origin: bottom center;
-}
-/* 跳出的一根签（默认藏在筒内，摇完弹出） */
+/* ---------- 每日签运：跳出覆盖竹筒的一根签 ---------- */
+/* 默认藏起；摇完从筒口窜出，落在竹筒正前方覆盖筒身，显示签号，随后签文展开 */
 .qian-out {
-  position: absolute; top: 8px; left: 50%; width: 15px; height: 132px; transform: translate(-50%, 12px);
-  transform-origin: bottom center; border-radius: 6px 6px 3px 3px;
-  background: linear-gradient(180deg, #fbf6ec, #ecdfc8);
-  box-shadow: 0 0 0 1px rgba(120, 90, 60, 0.3), 0 6px 14px rgba(70, 55, 90, 0.25);
-  opacity: 0; pointer-events: none; z-index: 6;
+  position: absolute; top: 50%; left: 50%;
+  width: 28px; height: 200px;
+  transform: translate(-50%, -50%) scaleY(0.16);
+  transform-origin: bottom center; border-radius: 9px 9px 5px 5px;
+  background: linear-gradient(180deg, #fbf4e4, #ecdcbb);
+  box-shadow: 0 0 0 1px rgba(150, 110, 50, 0.38), 0 10px 22px rgba(120, 80, 20, 0.4);
+  opacity: 0; pointer-events: none; z-index: 12;
 }
-.qian-out .qian-out-seal {
-  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-  font-family: var(--serif); font-size: 12px; color: #a8445a; writing-mode: vertical-rl; letter-spacing: 1px;
+.qian-out .qian-out-no {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-family: var(--serif); font-size: 17px; font-weight: 700; color: #b23b3b;
 }
-.qian-out.popped { animation: stick-pop 0.85s cubic-bezier(.2, .9, .3, 1) forwards; }
-@keyframes stick-pop {
-  0% { opacity: 0; transform: translate(-50%, 14px) rotate(0); }
-  18% { opacity: 1; }
-  55% { transform: translate(-50%, -98px) rotate(-8deg); }
-  78% { transform: translate(-50%, -90px) rotate(3deg); }
-  100% { opacity: 1; transform: translate(-50%, -104px) rotate(-4deg); }
-}
-.qian-tong.shaking { animation: tong-rock 0.44s ease-in-out infinite; }
-@keyframes tong-rock {
-  0%, 100% { transform: rotate(0deg) translateY(0); }
-  15% { transform: rotate(-12deg) translateY(-3px); }
-  45% { transform: rotate(10deg) translateY(2px); }
-  75% { transform: rotate(-7deg) translateY(-2px); }
-}
-.qian-tong.shaking .qian-sticks i { animation: stick-rattle 0.16s ease-in-out infinite; }
-.qian-tong.shaking .qian-sticks i:nth-child(odd) { animation-delay: .06s; }
-.qian-tong.shaking .qian-sticks i:nth-child(3n) { animation-delay: .11s; }
-.qian-tong.shaking .qian-sticks i:nth-child(2n) { animation-delay: .03s; }
-@keyframes stick-rattle {
-  0%, 100% { transform: rotate(0deg) translateY(0); }
-  50% { transform: rotate(10deg) translateY(-4px); }
+.qian-out.popped { animation: stick-cover .92s cubic-bezier(.18, .9, .3, 1) forwards; }
+@keyframes stick-cover {
+  0%   { opacity: 0; transform: translate(-50%, 44%) scaleY(0.14); }
+  22%  { opacity: 1; transform: translate(-50%, -78%) scaleY(0.62) rotate(-7deg); }
+  52%  { transform: translate(-50%, -50%) scaleY(1.06) rotate(4deg); }
+  76%  { transform: translate(-50%, -53%) scaleY(1) rotate(-2deg); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scaleY(1) rotate(0deg); }
 }
 .sign-stage.shaking .qian-glow { animation: qian-glow-spin 3.5s linear infinite, glow-pulse 1s ease-in-out infinite; }
 @keyframes glow-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
@@ -872,6 +878,11 @@ body {
 
   /* 每日签运：手机端 */
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
+  .qian-tong { width: 104px; height: 168px; margin-top: 38px; }
+  .qian-sticks { top: -44px; gap: 5px; }
+  .qian-sticks i { width: 5px; height: 52px; }
+  .qian-out { width: 24px; height: 180px; }
+  .qian-out .qian-out-no { font-size: 15px; }
   .sign-poem { font-size: 17px; }
   .sign-title { font-size: 21px; letter-spacing: 2px; }
   .sign-yj { gap: 10px; }
