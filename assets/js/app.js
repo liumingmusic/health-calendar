@@ -114,7 +114,7 @@ function healthHTML(t) {
 }
 
 function renderMainCard(t) {
-  document.getElementById('seasonChip').textContent = `${t.season} · ${t.solar}`;
+  document.getElementById('seasonChip').textContent = `${t.season}季 · 交节 ${t.solar}`;
   document.getElementById('seasonChip').style.background = SEASON_COLORS[t.season];
   document.getElementById('cardBody').innerHTML = healthHTML(t);
 }
@@ -140,6 +140,60 @@ function renderHourDetail(h) {
     <div><span class="hd-title">${h.name}时</span><span class="hd-meridian">${h.meridian} · ${h.range}</span></div>
     <p class="hd-advice">宜：${h.advice}</p>
     <p class="hd-avoid">忌：${h.avoid}</p>`;
+}
+
+/* ============ 古历时钟（装饰：太极·八卦·十二时辰） ============ */
+const TRIGRAMS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷'];
+function buildLunarClock(hours, curIdx, termName) {
+  const cx = 120, cy = 120;
+  const R_SHICHEN = 86, R_BAGUA = 104, R_TICK = 113;
+  // 十二时辰：当前时辰旋转至正上方并高亮
+  let shichen = '';
+  hours.forEach((h, i) => {
+    const a = (i * 30) * Math.PI / 180;
+    const x = (cx + R_SHICHEN * Math.sin(a)).toFixed(1);
+    const y = (cy - R_SHICHEN * Math.cos(a)).toFixed(1);
+    const cur = i === curIdx ? ' cur' : '';
+    shichen += `<text x="${x}" y="${(+y + 4).toFixed(1)}" text-anchor="middle" class="clk-shichen${cur}">${h.name}</text>`;
+  });
+  const dialRot = -curIdx * 30;
+  // 八卦（外环，缓慢旋转）
+  let bagua = '';
+  TRIGRAMS.forEach((g, i) => {
+    const a = (i * 45 + 22.5) * Math.PI / 180;
+    const x = (cx + R_BAGUA * Math.sin(a)).toFixed(1);
+    const y = (cy - R_BAGUA * Math.cos(a)).toFixed(1);
+    bagua += `<text x="${x}" y="${(+y + 5).toFixed(1)}" text-anchor="middle" class="clk-bagua">${g}</text>`;
+  });
+  // 24 节气刻度（外环，缓慢旋转）
+  let ticks = '';
+  for (let i = 0; i < 24; i++) {
+    const a = (i * 15) * Math.PI / 180;
+    const x1 = (cx + R_TICK * Math.sin(a)).toFixed(1);
+    const y1 = (cy - R_TICK * Math.cos(a)).toFixed(1);
+    const x2 = (cx + (R_TICK - 5) * Math.sin(a)).toFixed(1);
+    const y2 = (cy - (R_TICK - 5) * Math.cos(a)).toFixed(1);
+    ticks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="clk-tick"/>`;
+  }
+  const svg =
+    `<svg viewBox="0 0 240 240" class="clk-svg" role="img" aria-label="古历时钟：太极、八卦与十二时辰">
+      <circle cx="120" cy="120" r="118" class="clk-rim"/>
+      <g class="clk-spin-outer">${ticks}${bagua}</g>
+      <circle cx="120" cy="120" r="96" class="clk-ring"/>
+      <g class="clk-dial" transform="rotate(${dialRot} 120 120)">${shichen}</g>
+      <g class="clk-spin-taiji">
+        <circle cx="120" cy="120" r="17" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1"/>
+        <path d="M120 103 A17 17 0 0 1 120 137 A8.5 8.5 0 0 1 120 120 A8.5 8.5 0 0 0 120 103 Z" fill="var(--seal)"/>
+        <circle cx="120" cy="111.5" r="3" fill="var(--seal)"/>
+        <circle cx="120" cy="128.5" r="3" fill="var(--paper)"/>
+      </g>
+      <polygon points="120,3 114,15 126,15" class="clk-pointer"/>
+    </svg>`;
+  document.getElementById('lunarClock').innerHTML = svg;
+  const h = hours[curIdx];
+  document.getElementById('clockCaption').innerHTML =
+    `<div class="clk-cap-main">${h.name} · ${h.meridian.replace('当令', '')}</div>
+     <div class="clk-cap-sub">当前节气：${termName}　|　太极流转 · 八卦环绕</div>`;
 }
 
 /* ============ 渲染：七十二候 ============ */
@@ -198,7 +252,7 @@ function openTermModal(termName) {
   const houHTML = hou.map(h => `<div class="hou-year-row"><span class="hy-name">${['初候', '二候', '三候'][h.idx - 1]} ${h.name}</span><span class="hy-phenom">${h.phenom}</span></div>`).join('');
   document.getElementById('modalBody').innerHTML = `
     <h3 style="color:${SEASON_COLORS[t.season]}">${t.term}</h3>
-    <p class="m-sub">${t.season}季 · 公历 ${t.solar} · 当令脏腑：${t.organ}</p>
+    <p class="m-sub">${t.season}季 · 公历 ${t.solar}（交节） · 当令脏腑：${t.organ}</p>
     ${healthHTML(t)}
     <div class="block"><div class="block-title"><span class="dot"></span>七十二候</div>${houHTML}</div>`;
   document.getElementById('modal').classList.remove('hidden');
@@ -274,6 +328,7 @@ async function init() {
     renderHeader(cur, daysToNext, curHour, next ? next.name : '');
     renderMainCard(HEALTH_MAP[cur.name]);
     renderHourBar(hours, curIdx);
+    buildLunarClock(hours, curIdx, cur.name);
     renderHouCurrent(cur.name);
     renderHouYear();
     renderOverview(health, flat, 'all');
