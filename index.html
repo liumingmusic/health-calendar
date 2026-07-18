@@ -19,73 +19,83 @@
       </div>
       <div class="meta">
         <div class="today-date" id="todayDate">—</div>
-        <div class="focus-row">
-          <div class="badge term-badge" id="termBadge"><span class="badge-label">当前节气</span><span class="badge-main">—</span></div>
-          <div class="badge hour-badge" id="hourBadge"><span class="badge-label">当前时辰</span><span class="badge-main">—</span></div>
-        </div>
       </div>
     </header>
 
-    <main class="layout">
-      <!-- 左：全年总览 -->
-      <aside class="panel overview" id="overview">
+    <!-- 英雄区：古历罗盘 + 当前节气 / 当前时辰 双焦点 -->
+    <section class="hero">
+      <div class="hero-focus hero-term">
+        <span class="focus-label">当前节气</span>
+        <div class="focus-name" id="heroTermName">—</div>
+        <div class="focus-meta" id="heroTermMeta">—</div>
+      </div>
+
+      <div class="hero-clock">
+        <div class="lunar-clock" id="lunarClock" role="img" aria-label="古历罗盘：太极流转、八卦环绕、十二时辰当令"></div>
+        <div class="clock-cap" id="clockCap"></div>
+      </div>
+
+      <div class="hero-focus hero-hour">
+        <span class="focus-label">当前时辰</span>
+        <div class="focus-name" id="heroHourName">—</div>
+        <div class="focus-meta" id="heroHourMeta">—</div>
+      </div>
+    </section>
+
+    <!-- Tab 导航 -->
+    <nav class="tabs" id="tabs">
+      <button class="tab active" type="button" data-tab="today">今日养生</button>
+      <button class="tab" type="button" data-tab="overview">全年总览</button>
+    </nav>
+
+    <!-- 今日养生 -->
+    <div class="tab-panel" id="tab-today">
+      <section class="panel main-card" id="mainCard">
         <div class="panel-head">
-          <h2>全年总览</h2>
+          <h2>今日养生</h2>
+          <span class="season-chip" id="seasonChip">—</span>
+        </div>
+        <div class="card-body" id="cardBody">
+          <p class="loading">正在推算今日节气与时辰……</p>
+        </div>
+      </section>
+
+      <section class="panel hou-panel">
+        <div class="panel-head"><h2>七十二候 · 当下三候</h2></div>
+        <div class="hou-current" id="houCurrent"></div>
+      </section>
+
+      <section class="panel checkin-panel">
+        <div class="panel-head">
+          <h2>每日微习惯打卡</h2>
+          <span class="streak" id="streakLabel">—</span>
+        </div>
+        <div class="habits" id="habits"></div>
+        <p class="checkin-tip">打卡记录仅保存在本机浏览器（localStorage），用于见证你的坚持。</p>
+      </section>
+    </div>
+
+    <!-- 全年总览 -->
+    <div class="tab-panel hidden" id="tab-overview">
+      <section class="panel overview">
+        <div class="panel-head">
+          <h2>二十四节气 · 全年总览</h2>
           <div class="season-tabs" id="seasonTabs"></div>
         </div>
         <div class="term-grid" id="termGrid"></div>
-      </aside>
+      </section>
 
-      <!-- 右：主内容 -->
-      <div class="content">
-        <!-- 古历时钟 -->
-        <section class="panel clock-panel">
-          <div class="panel-head"><h2>古历时钟</h2></div>
-          <div class="clock-inner">
-            <div class="lunar-clock" id="lunarClock" role="img" aria-label="古历时钟：太极流转、八卦环绕、十二时辰当令"></div>
-            <div class="clock-caption" id="clockCaption"></div>
-          </div>
-        </section>
+      <section class="panel hour-bar-panel">
+        <div class="panel-head"><h2>十二时辰 · 子午流注</h2></div>
+        <div class="hour-bar" id="hourBar"></div>
+        <div class="hour-detail" id="hourDetail"></div>
+      </section>
 
-        <!-- 今日养生主卡 -->
-        <section class="panel main-card" id="mainCard">
-          <div class="panel-head">
-            <h2>今日养生</h2>
-            <span class="season-chip" id="seasonChip">—</span>
-          </div>
-          <div class="card-body" id="cardBody">
-            <p class="loading">正在推算今日节气与时辰……</p>
-          </div>
-        </section>
-
-        <!-- 十二时辰条 -->
-        <section class="panel hour-bar-panel">
-          <div class="panel-head"><h2>十二时辰 · 子午流注</h2></div>
-          <div class="hour-bar" id="hourBar"></div>
-          <div class="hour-detail" id="hourDetail"></div>
-        </section>
-
-        <!-- 七十二候 -->
-        <section class="panel hou-panel">
-          <div class="panel-head">
-            <h2>七十二候</h2>
-            <button class="link-btn" id="toggleHouYear" type="button">查看全年候历</button>
-          </div>
-          <div class="hou-current" id="houCurrent"></div>
-          <div class="hou-year hidden" id="houYear"></div>
-        </section>
-
-        <!-- 打卡区 -->
-        <section class="panel checkin-panel">
-          <div class="panel-head">
-            <h2>每日微习惯打卡</h2>
-            <span class="streak" id="streakLabel">—</span>
-          </div>
-          <div class="habits" id="habits"></div>
-          <p class="checkin-tip">打卡记录仅保存在本机浏览器（localStorage），用于见证你的坚持。</p>
-        </section>
-      </div>
-    </main>
+      <section class="panel hou-year-panel">
+        <div class="panel-head"><h2>七十二候 · 全年候历</h2></div>
+        <div class="hou-year" id="houYear"></div>
+      </section>
+    </div>
 
     <footer class="site-footer">
       <p class="maxim">「法于阴阳，和于术数，食饮有节，起居有常。」—— 《黄帝内经·素问》</p>
