@@ -352,7 +352,7 @@ body {
 .ov-sub { font-size: 12px; color: var(--seal); }
 .ov-bazi {
   font-family: var(--serif); font-size: 17px; font-weight: 700; letter-spacing: 2px;
-  color: var(--seal); align-self: center; margin: auto 0;
+  color: var(--seal); margin-top: 2px;
 }
 .ov-yi { font-size: 13px; color: var(--spring); }
 .ov-ji { font-size: 13px; color: #a8445a; }
