@@ -229,6 +229,18 @@ function ringPoint(cx, cy, r, deg) {
   return { x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) };
 }
 const C1 = n => n.toFixed(1);
+/* 环形扇形路径（rIn~rOut 之间的扇环，角度自正上方顺时针，与 ringPoint 同约定） */
+function annSector(cx, cy, rIn, rOut, a0, a1) {
+  const o0 = ringPoint(cx, cy, rOut, a0);
+  const o1 = ringPoint(cx, cy, rOut, a1);
+  const i0 = ringPoint(cx, cy, rIn, a0);
+  const i1 = ringPoint(cx, cy, rIn, a1);
+  const large = (a1 - a0) > 180 ? 1 : 0;
+  return `M ${C1(o0.x)} ${C1(o0.y)} ` +
+         `A ${rOut} ${rOut} 0 ${large} 1 ${C1(o1.x)} ${C1(o1.y)} ` +
+         `L ${C1(i1.x)} ${C1(i1.y)} ` +
+         `A ${rIn} ${rIn} 0 ${large} 0 ${C1(i0.x)} ${C1(i0.y)} Z`;
+}
 
 function buildLunarClock(hours, curIdx) {
   const cx = 160, cy = 160;
@@ -276,9 +288,24 @@ function buildLunarClock(hours, curIdx) {
     shi += `<text x="${C1(p.x)}" y="${C1(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}">${BRANCHES[i]}</text>`;
   });
 
+  // 雷达覆盖扇形：当前时辰 30° 静态覆盖扇 + 旋转的雷达扫描扇
+  const radarCoverage = `<path class="clk-cover" d="${annSector(cx, cy, 20, 148, curIdx * 30 - 15, curIdx * 30 + 15)}"/>`;
+  const radarSweep = `<path class="clk-radar-beam" d="${annSector(cx, cy, 20, 148, 0, 62)}" fill="url(#radarGrad)"/>`;
+
   const svg =
     `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，含时分秒指针">
       <circle cx="160" cy="160" r="156" class="clk-rim"/>
+      <defs>
+        <linearGradient id="radarGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="var(--seal)" stop-opacity="0"/>
+          <stop offset="1" stop-color="var(--seal)" stop-opacity="0.40"/>
+        </linearGradient>
+      </defs>
+      ${radarCoverage}
+      <g class="clk-radar-sweep">
+        ${radarSweep}
+        <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="7s" repeatCount="indefinite"/>
+      </g>
       ${jie}
       <circle cx="160" cy="160" r="138" class="clk-ring"/>
       ${bagua}
@@ -304,25 +331,27 @@ function buildLunarClock(hours, curIdx) {
   document.getElementById('lunarClock').innerHTML = svg;
 
   const h = hours[curIdx];
-  document.getElementById('clockCap').textContent = `${h.name}当令 · 时辰指针指当前 · 时分秒实时走字`;
+  document.getElementById('clockCap').textContent = `${h.name}当令 · 罗盘指针平滑走字 · 雷达缓扫覆盖当前时辰`;
 }
 
-/* 真实钟表走字：时辰指针（时）+ 分针 + 秒针 */
+/* 真实钟表走字：时辰指针（时）+ 分针 + 秒针，平滑走动（逐帧细分角度，无跳秒） */
 function startClock() {
   const setRot = (id, deg) => {
     const el = document.getElementById(id);
-    if (el) el.setAttribute('transform', `rotate(${deg.toFixed(2)} 160 160)`);
+    if (el) el.setAttribute('transform', `rotate(${deg.toFixed(3)} 160 160)`);
   };
-  const tick = () => {
+  const loop = () => {
     const now = new Date();
-    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-    const shiIdx = Math.floor((h + 1) / 2) % 12;
-    setRot('clkHandShi', shiIdx * 30);
-    setRot('clkHandMin', m * 6 + s * 0.1);
+    const ms = now.getMilliseconds();
+    const s = now.getSeconds() + ms / 1000;
+    const m = now.getMinutes() + s / 60;
+    const hh = (now.getHours() % 12) + m / 60;
     setRot('clkHandSec', s * 6);
+    setRot('clkHandMin', m * 6);
+    setRot('clkHandShi', hh * 30);
+    requestAnimationFrame(loop);
   };
-  tick();
-  setInterval(tick, 1000);
+  requestAnimationFrame(loop);
 }
 
 /* ============ 七十二候 ============ */
