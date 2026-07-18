@@ -44,7 +44,7 @@ body {
     radial-gradient(circle at 88% 84%, rgba(207, 154, 28, 0.07), transparent 44%);
 }
 
-.scroll-wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 18px 40px; }
+.scroll-wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 18px 40px; }
 
 /* ---------- Header ---------- */
 .site-header {
@@ -53,20 +53,19 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 26px 4px 18px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 22px;
+  padding: 24px 4px 14px;
+  margin-bottom: 14px;
 }
 .brand { display: flex; align-items: center; gap: 14px; }
 .seal {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px; height: 52px;
+  width: 50px; height: 50px;
   background: var(--seal);
   color: #f6eefb;
   font-family: var(--serif);
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.05;
   text-align: center;
@@ -78,31 +77,82 @@ body {
 }
 .brand-text h1 {
   font-family: var(--serif);
-  font-size: 30px;
+  font-size: 28px;
   margin: 0;
   letter-spacing: 4px;
   color: var(--ink);
 }
-.subtitle { margin: 2px 0 0; font-size: 13px; color: var(--ink-faint); letter-spacing: 3px; }
-
+.subtitle { margin: 2px 0 0; font-size: 12px; color: var(--ink-faint); letter-spacing: 3px; }
 .meta { text-align: right; }
-.today-date { font-family: var(--serif); font-size: 18px; color: var(--ink-soft); letter-spacing: 1px; }
-.focus-row { display: flex; gap: 10px; margin-top: 8px; justify-content: flex-end; }
-.badge {
-  background: var(--paper);
-  border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  padding: 7px 12px;
-  min-width: 120px;
-  box-shadow: var(--shadow-sm);
-}
-.badge-label { display: block; font-size: 11px; color: var(--ink-faint); letter-spacing: 2px; }
-.badge-main { display: block; font-family: var(--serif); font-size: 18px; font-weight: 700; margin-top: 2px; }
-.term-badge { border-left: 4px solid var(--spring); }
-.hour-badge { border-left: 4px solid var(--seal); }
+.today-date { font-family: var(--serif); font-size: 17px; color: var(--ink-soft); letter-spacing: 1px; }
 
-/* ---------- Layout ---------- */
-.layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+/* ---------- 英雄区：罗盘 + 双焦点 ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 22px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+.hero-focus { text-align: center; }
+.hero-term { text-align: right; }
+.hero-hour { text-align: left; }
+.focus-label {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: var(--ink-faint);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 2px 12px;
+  margin-bottom: 10px;
+}
+.focus-name {
+  font-family: var(--serif);
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: 2px;
+}
+.hero-term .focus-name { color: var(--seal); }
+.hero-hour .focus-name { color: var(--winter); }
+.focus-meta { font-size: 14px; color: var(--ink-soft); margin-top: 8px; line-height: 1.5; }
+
+.hero-clock { display: flex; justify-content: center; }
+.lunar-clock { width: 320px; height: 320px; flex: none; }
+.clk-svg { width: 100%; height: 100%; display: block; }
+
+/* ---------- Tabs ---------- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0;
+}
+.tab {
+  font-family: var(--serif);
+  font-size: 17px;
+  letter-spacing: 2px;
+  padding: 10px 18px 12px;
+  border: none;
+  background: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s ease, border-color .15s ease;
+}
+.tab:hover { color: var(--ink-soft); }
+.tab.active { color: var(--seal); border-bottom-color: var(--seal); font-weight: 700; }
+
+/* ---------- Panel ---------- */
 .panel {
   background: var(--paper);
   border: 1px solid var(--line);
@@ -111,7 +161,7 @@ body {
   box-shadow: var(--shadow);
   margin-bottom: 18px;
 }
-.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .panel-head h2 {
   font-family: var(--serif);
   font-size: 20px;
@@ -148,7 +198,7 @@ body {
 .season-tab.active[data-season="冬"] { background: var(--winter); }
 
 /* ---------- 总览网格 ---------- */
-.term-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.term-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .term-cell {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -247,10 +297,6 @@ body {
 .hour-detail .hd-avoid { color: #a23b2e; font-size: 13px; }
 
 /* ---------- 七十二候 ---------- */
-.link-btn {
-  background: none; border: none; color: var(--seal); cursor: pointer;
-  font-size: 13px; font-family: var(--sans); padding: 4px 2px; text-decoration: underline dotted;
-}
 .hou-current { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .hou-item {
   background: var(--paper-2);
@@ -261,7 +307,7 @@ body {
 .hou-item .h-idx { font-size: 12px; color: var(--ink-faint); }
 .hou-item .h-name { display: block; font-family: var(--serif); font-size: 17px; font-weight: 700; margin: 3px 0 5px; }
 .hou-item .h-phenom { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
-.hou-year { margin-top: 14px; border-top: 1px dashed var(--line-strong); padding-top: 12px; max-height: 360px; overflow-y: auto; }
+.hou-year { border-top: 1px dashed var(--line-strong); padding-top: 12px; max-height: 420px; overflow-y: auto; }
 .hou-year-group { margin-bottom: 12px; }
 .hou-year-group h4 { font-family: var(--serif); margin: 0 0 6px; font-size: 15px; color: var(--seal); }
 .hou-year-row { display: flex; gap: 10px; font-size: 13px; padding: 3px 0; border-bottom: 1px solid var(--line); }
@@ -316,35 +362,46 @@ body {
 
 .loading { color: var(--ink-faint); text-align: center; padding: 30px 0; }
 
-/* ---------- 古历时钟（装饰：太极·八卦·十二时辰） ---------- */
-.clock-inner { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.lunar-clock { width: 190px; height: 190px; flex: none; }
-.clk-svg { width: 100%; height: 100%; display: block; }
-.clk-rim { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+/* ---------- 古历罗盘（奇门遁甲：太极·八卦·八门·十二时辰·洛书意象） ---------- */
+.clk-rim { fill: none; stroke: var(--line-strong); stroke-width: 1.6; }
 .clk-ring { fill: none; stroke: var(--line); stroke-width: 1; }
-.clk-spin-outer { transform-box: fill-box; transform-origin: center; animation: clk-spin 120s linear infinite; }
-.clk-spin-taiji { transform-box: fill-box; transform-origin: center; animation: clk-spin 18s linear infinite; }
+.clk-tick { stroke: var(--line-strong); stroke-width: 1.4; }
+.clk-spin-ticks { transform-box: fill-box; transform-origin: center; animation: clk-spin 140s linear infinite; }
+.clk-scan { stroke: var(--seal-soft); stroke-width: 1; opacity: 0.5; transform-box: fill-box; transform-origin: center; animation: clk-spin 36s linear infinite; }
+.clk-spin-taiji { transform-box: fill-box; transform-origin: center; animation: clk-spin 16s linear infinite; }
 @keyframes clk-spin { to { transform: rotate(360deg); } }
-.clk-tick { stroke: var(--line-strong); stroke-width: 1; }
-.clk-bagua { font-family: var(--serif); font-size: 13px; fill: var(--ink-faint); }
-.clk-shichen { font-family: var(--serif); font-size: 13px; fill: var(--ink-soft); }
-.clk-shichen.cur { fill: var(--seal); font-weight: 700; font-size: 14px; }
+.clk-bagua { font-family: var(--serif); font-size: 16px; fill: var(--ink-faint); }
+.clk-men { font-family: var(--serif); font-size: 13px; fill: var(--ink-soft); }
+.clk-shichen { font-family: var(--serif); font-size: 16px; fill: var(--ink-soft); transition: fill .3s ease; }
+.clk-shichen.cur { fill: var(--seal); font-weight: 700; font-size: 21px; }
+.clk-dial { transition: transform 1.4s cubic-bezier(.34,1.2,.64,1); }
 .clk-pointer { fill: var(--seal); }
-.clock-caption { flex: 1 1 150px; min-width: 150px; }
-.clk-cap-main { font-family: var(--serif); font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: 1px; }
-.clk-cap-sub { font-size: 13px; color: var(--ink-soft); margin-top: 6px; line-height: 1.6; }
+.clk-luo { font-family: var(--serif); font-size: 12px; fill: var(--ink-faint); }
+.clock-cap { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 6px; letter-spacing: 2px; }
 
 /* ---------- 响应式：手机端 ---------- */
 @media (max-width: 720px) {
   .scroll-wrap { padding: 0 13px 30px; }
-  .site-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px 2px 14px; }
+  .site-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px 2px 12px; }
   .meta { text-align: left; width: 100%; }
-  .focus-row { justify-content: flex-start; flex-wrap: wrap; }
-  .badge { flex: 1 1 auto; min-width: 140px; }
-  .layout { grid-template-columns: 1fr; gap: 14px; }
-  .overview { position: static; }
+  .brand-text h1 { font-size: 24px; }
+
+  /* 英雄区：时钟置顶，节气/时辰分列其下 */
+  .hero {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 10px;
+    padding: 18px 14px 20px;
+  }
+  .hero-clock { grid-column: 1 / -1; order: -1; flex-direction: column; align-items: center; }
+  .lunar-clock { width: 300px; height: 300px; }
+  .clock-cap { margin-top: 8px; font-size: 11px; }
+  .hero-term { text-align: right; }
+  .hero-hour { text-align: left; }
+  .focus-name { font-size: 34px; }
+  .focus-label { font-size: 11px; letter-spacing: 2px; }
+
+  .tab-panel { }
   .term-grid { grid-template-columns: repeat(4, 1fr); }
-  .brand-text h1 { font-size: 25px; }
   .hou-current { grid-template-columns: 1fr; }
   .habits { grid-template-columns: 1fr; }
   .hour-bar { grid-template-columns: repeat(6, 1fr); row-gap: 6px; }
@@ -352,4 +409,6 @@ body {
 @media (max-width: 380px) {
   .term-grid { grid-template-columns: repeat(3, 1fr); }
   .hour-bar { grid-template-columns: repeat(4, 1fr); }
+  .lunar-clock { width: 280px; height: 280px; }
+  .focus-name { font-size: 26px; }
 }

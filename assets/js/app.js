@@ -19,6 +19,13 @@ const HABITS = [
 ];
 const CHECKIN_KEY = 'yc_checkins_v1';
 
+// 十二地支（时辰盘用单字，更似罗盘）
+const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+// 八卦（先天卦序：乾兑离震巽坎艮坤）
+const TRIGRAMS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷'];
+// 奇门八门：休生伤杜景死惊开
+const EIGHT_MEN = ['休', '生', '伤', '杜', '景', '死', '惊', '开'];
+
 /* ============ 工具 ============ */
 function pad(n) { return String(n).padStart(2, '0'); }
 function dateStr(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
@@ -59,28 +66,27 @@ function daysBetween(aStr, bStr) {
   return Math.round((b - a) / 86400000);
 }
 
-/* ============ 渲染：头部 ============ */
-function renderHeader(term, daysToNext, hour, nextName) {
-  const now = new Date();
-  const dateText = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${WEEK[now.getDay()]}`;
-  document.getElementById('todayDate').textContent = dateText;
-
-  const termMain = document.getElementById('termBadge').querySelector('.badge-main');
-  termMain.textContent = daysToNext > 0
-    ? `${term.name} · 距${nextName} ${daysToNext}天`
-    : `${term.name}`;
-
-  const hourMain = document.getElementById('hourBadge').querySelector('.badge-main');
-  hourMain.textContent = `${hour.name} · ${hour.meridian.replace('当令', '')}`;
-  document.getElementById('termBadge').style.borderLeftColor = SEASON_COLORS[termSeasonOf(term.name)] || '#4a8c6a';
-}
-
-// 由节气名反查季节
+/* ============ 头部 + 英雄区 ============ */
 let HEALTH_MAP = {};
 let HOU_MAP = {};
 function termSeasonOf(name) { return HEALTH_MAP[name] ? HEALTH_MAP[name].season : '春'; }
 
-/* ============ 渲染：今日养生主卡 ============ */
+function renderHeaderDate() {
+  const now = new Date();
+  document.getElementById('todayDate').textContent =
+    `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${WEEK[now.getDay()]}`;
+}
+
+function renderHero(term, daysToNext, hour, nextName) {
+  const season = (HEALTH_MAP[term.name] && HEALTH_MAP[term.name].season) || term.season || '春';
+  document.getElementById('heroTermName').textContent = term.name;
+  document.getElementById('heroTermMeta').textContent =
+    daysToNext > 0 ? `${season}季 · 距${nextName} ${daysToNext}天` : `${season}季 · 今日交节`;
+  document.getElementById('heroHourName').textContent = hour.name;
+  document.getElementById('heroHourMeta').textContent = `${hour.meridian} · ${hour.range}`;
+}
+
+/* ============ 今日养生主卡 ============ */
 function healthHTML(t) {
   const diet = t.diet.map(d => `<span class="chip">${d}</span>`).join('');
   const living = t.living.map(d => `<span class="chip">${d}</span>`).join('');
@@ -119,7 +125,7 @@ function renderMainCard(t) {
   document.getElementById('cardBody').innerHTML = healthHTML(t);
 }
 
-/* ============ 渲染：时辰条 ============ */
+/* ============ 时辰条 ============ */
 function renderHourBar(hours, curIdx) {
   const bar = document.getElementById('hourBar');
   bar.innerHTML = hours.map((h, i) => `
@@ -142,61 +148,82 @@ function renderHourDetail(h) {
     <p class="hd-avoid">忌：${h.avoid}</p>`;
 }
 
-/* ============ 古历时钟（装饰：太极·八卦·十二时辰） ============ */
-const TRIGRAMS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷'];
+/* ============ 古历罗盘（奇门遁甲：太极·八卦·八门·十二时辰） ============ */
+function ringPoint(cx, cy, r, deg) {
+  const a = deg * Math.PI / 180;
+  return { x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) };
+}
+
 function buildLunarClock(hours, curIdx, termName) {
-  const cx = 120, cy = 120;
-  const R_SHICHEN = 86, R_BAGUA = 104, R_TICK = 113;
-  // 十二时辰：当前时辰旋转至正上方并高亮
+  const cx = 160, cy = 160;
+  const R_SHICHEN = 104, R_BAGUA = 128, R_MEN = 62, R_TICK = 150;
+  const C = n => n.toFixed(1);
+
+  // 十二时辰：当前时辰旋转至正上方；每个标签反向旋转保持正立
+  const counter = curIdx * 30;
   let shichen = '';
   hours.forEach((h, i) => {
-    const a = (i * 30) * Math.PI / 180;
-    const x = (cx + R_SHICHEN * Math.sin(a)).toFixed(1);
-    const y = (cy - R_SHICHEN * Math.cos(a)).toFixed(1);
+    const p = ringPoint(cx, cy, R_SHICHEN, i * 30);
     const cur = i === curIdx ? ' cur' : '';
-    shichen += `<text x="${x}" y="${(+y + 4).toFixed(1)}" text-anchor="middle" class="clk-shichen${cur}">${h.name}</text>`;
+    shichen += `<text x="${C(p.x)}" y="${C(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}" transform="rotate(${counter} ${C(p.x)} ${C(p.y)})">${BRANCHES[i]}</text>`;
   });
   const dialRot = -curIdx * 30;
-  // 八卦（外环，缓慢旋转）
+
+  // 八卦（外环，静止正立）
   let bagua = '';
   TRIGRAMS.forEach((g, i) => {
-    const a = (i * 45 + 22.5) * Math.PI / 180;
-    const x = (cx + R_BAGUA * Math.sin(a)).toFixed(1);
-    const y = (cy - R_BAGUA * Math.cos(a)).toFixed(1);
-    bagua += `<text x="${x}" y="${(+y + 5).toFixed(1)}" text-anchor="middle" class="clk-bagua">${g}</text>`;
+    const p = ringPoint(cx, cy, R_BAGUA, i * 45 + 22.5);
+    bagua += `<text x="${C(p.x)}" y="${C(p.y + 6)}" text-anchor="middle" class="clk-bagua">${g}</text>`;
   });
+
+  // 八门（内环，静止正立）
+  let men = '';
+  EIGHT_MEN.forEach((m, i) => {
+    const p = ringPoint(cx, cy, R_MEN, i * 45 - 90);
+    men += `<text x="${C(p.x)}" y="${C(p.y + 5)}" text-anchor="middle" class="clk-men">${m}</text>`;
+  });
+
   // 24 节气刻度（外环，缓慢旋转）
   let ticks = '';
   for (let i = 0; i < 24; i++) {
-    const a = (i * 15) * Math.PI / 180;
-    const x1 = (cx + R_TICK * Math.sin(a)).toFixed(1);
-    const y1 = (cy - R_TICK * Math.cos(a)).toFixed(1);
-    const x2 = (cx + (R_TICK - 5) * Math.sin(a)).toFixed(1);
-    const y2 = (cy - (R_TICK - 5) * Math.cos(a)).toFixed(1);
-    ticks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="clk-tick"/>`;
+    const p1 = ringPoint(cx, cy, R_TICK, i * 15);
+    const p2 = ringPoint(cx, cy, R_TICK - 8, i * 15);
+    ticks += `<line x1="${C(p1.x)}" y1="${C(p1.y)}" x2="${C(p2.x)}" y2="${C(p2.y)}" class="clk-tick"/>`;
   }
+
   const svg =
-    `<svg viewBox="0 0 240 240" class="clk-svg" role="img" aria-label="古历时钟：太极、八卦与十二时辰">
-      <circle cx="120" cy="120" r="118" class="clk-rim"/>
-      <g class="clk-spin-outer">${ticks}${bagua}</g>
-      <circle cx="120" cy="120" r="96" class="clk-ring"/>
-      <g class="clk-dial" transform="rotate(${dialRot} 120 120)">${shichen}</g>
+    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘：太极、八卦、八门与十二时辰">
+      <circle cx="160" cy="160" r="156" class="clk-rim"/>
+      <g class="clk-spin-ticks">${ticks}</g>
+      <circle cx="160" cy="160" r="135" class="clk-ring"/>
+      ${bagua}
+      <circle cx="160" cy="160" r="78" class="clk-ring"/>
+      ${men}
+      <circle cx="160" cy="160" r="78" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <g class="clk-dial" transform="rotate(0 160 160)">${shichen}</g>
+      <polygon points="160,4 151,19 169,19" class="clk-pointer"/>
+      <line x1="160" y1="160" x2="160" y2="16" class="clk-scan"/>
+      <circle cx="160" cy="160" r="42" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1"/>
       <g class="clk-spin-taiji">
-        <circle cx="120" cy="120" r="17" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1"/>
-        <path d="M120 103 A17 17 0 0 1 120 137 A8.5 8.5 0 0 1 120 120 A8.5 8.5 0 0 0 120 103 Z" fill="var(--seal)"/>
-        <circle cx="120" cy="111.5" r="3" fill="var(--seal)"/>
-        <circle cx="120" cy="128.5" r="3" fill="var(--paper)"/>
+        <circle cx="160" cy="160" r="18" fill="var(--seal)"/>
+        <path d="M160 142 A18 18 0 0 1 160 178 A9 9 0 0 1 160 160 A9 9 0 0 0 160 142 Z" fill="var(--paper)"/>
+        <circle cx="160" cy="151" r="3.2" fill="var(--paper)"/>
+        <circle cx="160" cy="169" r="3.2" fill="var(--seal)"/>
       </g>
-      <polygon points="120,3 114,15 126,15" class="clk-pointer"/>
     </svg>`;
   document.getElementById('lunarClock').innerHTML = svg;
+
+  // 机关转动：载入后将时辰盘旋至当前时辰（CSS transition 触发）
+  const dial = document.querySelector('.clk-dial');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    dial.setAttribute('transform', `rotate(${dialRot} 160 160)`);
+  }));
+
   const h = hours[curIdx];
-  document.getElementById('clockCaption').innerHTML =
-    `<div class="clk-cap-main">${h.name} · ${h.meridian.replace('当令', '')}</div>
-     <div class="clk-cap-sub">当前节气：${termName}　|　太极流转 · 八卦环绕</div>`;
+  document.getElementById('clockCap').textContent = `${h.name}当令 · 太极流转 · 八卦环列`;
 }
 
-/* ============ 渲染：七十二候 ============ */
+/* ============ 七十二候 ============ */
 function renderHouCurrent(termName) {
   const arr = HOU_MAP[termName] || [];
   document.getElementById('houCurrent').innerHTML = arr.map(h => `
@@ -216,7 +243,7 @@ function renderHouYear() {
     </div>`).join('');
 }
 
-/* ============ 渲染：全年总览 ============ */
+/* ============ 全年总览 ============ */
 let ALL_TERMS_FLAT = [];
 function renderOverview(health, flat, activeSeason) {
   const tabs = document.getElementById('seasonTabs');
@@ -302,6 +329,18 @@ function renderCheckin() {
   document.getElementById('streakLabel').textContent = `连续打卡 ${streak} 天`;
 }
 
+/* ============ Tab 切换 ============ */
+function initTabs() {
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(btn => btn.addEventListener('click', () => {
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.tab;
+    document.getElementById('tab-today').classList.toggle('hidden', target !== 'today');
+    document.getElementById('tab-overview').classList.toggle('hidden', target !== 'overview');
+  }));
+}
+
 /* ============ 主流程 ============ */
 async function init() {
   try {
@@ -325,7 +364,8 @@ async function init() {
     const curIdx = currentHourIndex();
     const curHour = hours[curIdx];
 
-    renderHeader(cur, daysToNext, curHour, next ? next.name : '');
+    renderHeaderDate();
+    renderHero(cur, daysToNext, curHour, next ? next.name : '');
     renderMainCard(HEALTH_MAP[cur.name]);
     renderHourBar(hours, curIdx);
     buildLunarClock(hours, curIdx, cur.name);
@@ -333,14 +373,7 @@ async function init() {
     renderHouYear();
     renderOverview(health, flat, 'all');
     renderCheckin();
-
-    // 全年候历 切换
-    const toggleBtn = document.getElementById('toggleHouYear');
-    const houYear = document.getElementById('houYear');
-    toggleBtn.addEventListener('click', () => {
-      const hidden = houYear.classList.toggle('hidden');
-      toggleBtn.textContent = hidden ? '查看全年候历' : '收起全年候历';
-    });
+    initTabs();
 
     // 弹层关闭
     document.getElementById('modalClose').addEventListener('click', closeModal);
