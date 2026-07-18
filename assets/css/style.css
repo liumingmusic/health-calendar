@@ -647,45 +647,71 @@ body {
 }
 @keyframes qian-glow-spin { to { transform: rotate(360deg); } }
 
-/* 竹黄签筒（道家黄） */
+/* 真实竹签筒：竹黄圆柱 + 竹纹 + 红箍 + 八卦太极贴 */
 .qian-tong {
-  position: relative; width: 122px; height: 188px; margin-top: 42px;
-  border-radius: 14px 14px 12px 12px;
-  background: linear-gradient(90deg, #9c6f1c 0%, #cf9f37 28%, #f4dd8c 50%, #cf9f37 72%, #9c6f1c 100%);
-  box-shadow: inset 0 -20px 30px rgba(110, 72, 16, 0.38), inset 0 8px 12px rgba(255, 244, 206, 0.55), 0 12px 24px rgba(150, 100, 28, 0.34);
+  position: relative; width: 120px; height: 186px; margin-top: 64px;
+  border-radius: 18px 18px 16px 16px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(50, 30, 8, 0.65) 0 18%, transparent 32%),
+    repeating-linear-gradient(90deg, rgba(140, 95, 30, 0.14) 0 2px, transparent 2px 9px),
+    linear-gradient(90deg, #8b5a1c 0%, #b3812b 18%, #e3c46e 36%, #f8e8aa 50%, #e3c46e 64%, #b3812b 82%, #8b5a1c 100%);
+  background-blend-mode: normal, multiply, normal;
+  box-shadow:
+    inset 0 -22px 30px rgba(90, 55, 14, 0.42),
+    inset 0 10px 16px rgba(255, 248, 214, 0.6),
+    0 14px 26px rgba(120, 78, 22, 0.35);
+  z-index: 2;
 }
-/* 竹节横纹 */
+/* 竹节上下两圈 */
 .qian-tong::before, .qian-tong::after {
-  content: ""; position: absolute; left: 4%; right: 4%; height: 7px; border-radius: 4px;
-  background: linear-gradient(90deg, rgba(110, 72, 16, 0.42), rgba(110, 72, 16, 0.12));
-  box-shadow: 0 1px 0 rgba(255, 244, 206, 0.5);
+  content: ""; position: absolute; left: 3%; right: 3%; height: 8px; border-radius: 4px;
+  background: linear-gradient(90deg, rgba(100, 62, 16, 0.55), rgba(120, 78, 22, 0.18), rgba(100, 62, 16, 0.55));
+  box-shadow: 0 1px 0 rgba(255, 248, 214, 0.5);
 }
-.qian-tong::before { top: 32%; }
-.qian-tong::after { top: 64%; }
+.qian-tong::before { top: 26%; }
+.qian-tong::after { bottom: 16%; }
+/* 红箍 */
+.qian-band {
+  position: absolute; top: 10%; left: 0; right: 0; height: 22px;
+  background: linear-gradient(180deg, #c63c3c, #a82a2a 60%, #8a1c1c);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25), 0 3px 5px rgba(0, 0, 0, 0.25);
+  z-index: 3;
+}
+/* 八卦太极贴（红色八角形） */
+.qian-patch {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 64px; height: 64px; z-index: 4;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  background: linear-gradient(135deg, #d14545, #a82626);
+  box-shadow: 0 0 0 2px rgba(255, 220, 180, 0.5), 0 6px 14px rgba(0, 0, 0, 0.35);
+  display: flex; align-items: center; justify-content: center;
+}
+.qian-patch .qian-yin-yang { width: 48px; height: 48px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
 /* 筒口 */
 .qian-rim {
-  position: absolute; top: -9px; left: 7%; right: 7%; height: 18px; border-radius: 50%;
-  background: linear-gradient(180deg, #7e5612, #c79a35);
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.32), 0 1px 0 rgba(255, 244, 206, 0.5);
-  z-index: 4;
+  position: absolute; top: -11px; left: 5%; right: 5%; height: 22px; border-radius: 50%;
+  background: linear-gradient(180deg, #6d4611, #b3812b 55%, #6d4611);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 248, 214, 0.5);
+  z-index: 5;
 }
-.qian-body { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2; }
-.qian-seal {
-  font-family: var(--serif); font-size: 28px; color: #fff;
-  background: #b23b3b; border: 2px solid #f4dd8c; border-radius: 50%;
-  width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+/* 筒内阴影 */
+.qian-tong .inner-shadow {
+  position: absolute; top: -8px; left: 8%; right: 8%; height: 18px; border-radius: 50%;
+  background: rgba(50, 30, 8, 0.55); z-index: 1;
 }
-/* 露出筒口的竹签（红头），摇晃时随筒扇形摇曳 */
-.qian-sticks { position: absolute; top: -50px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 1; }
+/* 露出筒口的竹签（红头） */
+.qian-sticks {
+  position: absolute; top: -62px; left: 50%; transform: translateX(-50%);
+  width: 100px; height: 80px; z-index: 0;
+}
 .qian-sticks i {
-  position: relative; display: block; width: 6px; height: 60px; border-radius: 4px 4px 2px 2px;
-  background: linear-gradient(180deg, #f7eed8, #e2d2b0);
-  box-shadow: 0 0 0 1px rgba(150, 110, 50, 0.28); transform-origin: bottom center;
+  position: absolute; bottom: 0; left: 50%; width: 5.5px; height: 68px; border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(90deg, #f1e3c0, #fff9e8, #e6d5aa);
+  box-shadow: 0 0 0 1px rgba(140, 105, 50, 0.32); transform-origin: bottom center;
 }
-.qian-sticks i::after {
-  content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
-  width: 6px; height: 9px; border-radius: 3px; background: #b23b3b;
+.qian-sticks i::before {
+  content: ""; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  width: 5.5px; height: 10px; border-radius: 3px; background: #b23b3b;
 }
 /* 摇签：筒身摆动 + 签支扇形摇曳 */
 .qian-tong.shaking { animation: tong-rock .42s ease-in-out infinite; }
@@ -696,10 +722,7 @@ body {
   80% { transform: rotate(-6deg) translateY(-2px); }
 }
 .qian-tong.shaking .qian-sticks i { animation: stick-sway .2s ease-in-out infinite; }
-.qian-tong.shaking .qian-sticks i:nth-child(odd) { animation-delay: .05s; }
-.qian-tong.shaking .qian-sticks i:nth-child(3n) { animation-delay: .1s; }
-.qian-tong.shaking .qian-sticks i:nth-child(2n) { animation-delay: .03s; }
-@keyframes stick-sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(7deg); } }
+@keyframes stick-sway { 0%, 100% { transform: translateX(-50%) rotate(-4deg); } 50% { transform: translateX(-50%) rotate(6deg); } }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
 .sign-result { margin-top: 6px; }
@@ -784,16 +807,23 @@ body {
 /* 默认藏起；摇完从筒口窜出，落在竹筒正前方覆盖筒身，显示签号，随后签文展开 */
 .qian-out {
   position: absolute; top: 50%; left: 50%;
-  width: 28px; height: 200px;
+  width: 26px; height: 202px;
   transform: translate(-50%, -50%) scaleY(0.16);
   transform-origin: bottom center; border-radius: 9px 9px 5px 5px;
-  background: linear-gradient(180deg, #fbf4e4, #ecdcbb);
+  background:
+    repeating-linear-gradient(90deg, rgba(160, 115, 55, 0.18) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, #fbf4e4, #ecdcbb);
   box-shadow: 0 0 0 1px rgba(150, 110, 50, 0.38), 0 10px 22px rgba(120, 80, 20, 0.4);
   opacity: 0; pointer-events: none; z-index: 12;
+}
+.qian-out::before {
+  content: ""; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  width: 26px; height: 12px; border-radius: 6px; background: #b23b3b;
 }
 .qian-out .qian-out-no {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   font-family: var(--serif); font-size: 17px; font-weight: 700; color: #b23b3b;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 .qian-out.popped { animation: stick-cover .92s cubic-bezier(.18, .9, .3, 1) forwards; }
 @keyframes stick-cover {
@@ -878,10 +908,14 @@ body {
 
   /* 每日签运：手机端 */
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
-  .qian-tong { width: 104px; height: 168px; margin-top: 38px; }
-  .qian-sticks { top: -44px; gap: 5px; }
-  .qian-sticks i { width: 5px; height: 52px; }
-  .qian-out { width: 24px; height: 180px; }
+  .qian-tong { width: 104px; height: 168px; margin-top: 58px; }
+  .qian-band { height: 20px; top: 9%; }
+  .qian-patch { width: 54px; height: 54px; }
+  .qian-patch .qian-yin-yang { width: 40px; height: 40px; }
+  .qian-sticks { top: -52px; width: 86px; }
+  .qian-sticks i { width: 5px; height: 56px; }
+  .qian-sticks i::before { height: 9px; }
+  .qian-out { width: 22px; height: 180px; }
   .qian-out .qian-out-no { font-size: 15px; }
   .sign-poem { font-size: 17px; }
   .sign-title { font-size: 21px; letter-spacing: 2px; }
