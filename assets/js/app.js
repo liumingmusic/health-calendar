@@ -887,6 +887,30 @@ function renderSignResult(s) {
   document.getElementById('signJi').textContent = s.ji.join('、');
   document.getElementById('signGuide').textContent = SIGN_GUIDE[s.level] || '';
 }
+function buildSticks() {
+  const holder = document.getElementById('qianSticks');
+  if (!holder) return;
+  holder.innerHTML = '';
+  const COUNT = 11;
+  const seed = dateHash(todayStr());
+  for (let i = 0; i < COUNT; i++) {
+    const s = document.createElement('span');
+    s.className = 'qian-stick';
+    const n1 = (seed * 9301 + 49297 + i * 113) % 233280;
+    const n2 = (seed * 49297 + 9301 + i * 131) % 233280;
+    const n3 = (seed * 233280 + 49297 + i * 97) % 233280;
+    const n4 = (seed * 35537 + 11113 + i * 71) % 233280;
+    const tx = -26 + (n1 / 233280) * 52;
+    const rot = -16 + (n2 / 233280) * 32;
+    const h = 30 + (n3 / 233280) * 22;
+    const delay = (n4 / 233280) * 150;
+    s.style.setProperty('--tx', tx.toFixed(1) + 'px');
+    s.style.setProperty('--rot', rot.toFixed(1) + 'deg');
+    s.style.setProperty('--h', Math.round(h) + 'px');
+    s.style.setProperty('--delay', Math.round(delay) + 'ms');
+    holder.appendChild(s);
+  }
+}
 function setupSign() {
   if (!STICKS) return;
   const stage = document.getElementById('signStage');
@@ -901,6 +925,7 @@ function setupSign() {
   const sticks = STICKS.sticks;
   if (!sticks.length) return;
   document.getElementById('signIntro').textContent = STICKS.intro;
+  buildSticks();
   const PIOUS = '摇签之前，宜焚香净手、心诚意正，于心中默念所问之事，不可戏谑；签出之后，宜静坐片刻、反求诸己。';
   promptEl.textContent =
     '焚香净手，心诚意正，于心中默念所问之事，再摇签筒以求今日之签。';
