@@ -416,30 +416,42 @@ function renderDaoSeason(curSeason) {
 
 function renderDaoMethods() {
   const box = document.getElementById('daoMethods');
-  box.innerHTML = DAO.methods.map(m => {
+  box.innerHTML = DAO.methods.map((m, idx) => {
     const steps = m.how.map(h => `<li>${h}</li>`).join('');
-    return `<div class="dao-method">
-      <div class="dm-head">
+    return `<div class="dao-method" data-i="${idx}">
+      <div class="dm-summary">
+        <span class="dm-caret">▸</span>
         <span class="dm-name">${m.name}</span>
         <span class="dm-from">${m.from}</span>
       </div>
-      <blockquote class="dm-quote">「${m.quote}」</blockquote>
-      <div class="dm-sub">行法要点</div>
-      <ol class="dm-steps">${steps}</ol>
-      <p class="dm-benefit"><span class="dm-tag ok">功效</span>${m.benefit}</p>
-      <p class="dm-note"><span class="dm-tag warn">注意</span>${m.note}</p>
+      <div class="dm-detail"><div>
+        <blockquote class="dm-quote">「${m.quote}」</blockquote>
+        <div class="dm-sub">行法要点</div>
+        <ol class="dm-steps">${steps}</ol>
+        <p class="dm-benefit"><span class="dm-tag ok">功效</span>${m.benefit}</p>
+        <p class="dm-note"><span class="dm-tag warn">注意</span>${m.note}</p>
+      </div></div>
     </div>`;
   }).join('');
+  box.querySelectorAll('.dao-method').forEach(el =>
+    el.addEventListener('click', () => el.classList.toggle('open')));
 }
 
 function renderDaoQuotes() {
   const box = document.getElementById('daoQuotes');
-  box.innerHTML = DAO.quotes.map(q => `
-    <div class="dao-quote">
-      <blockquote class="dq-text">「${q.text}」</blockquote>
-      <div class="dq-src">${q.source}</div>
-      <p class="dq-plain">${q.plain}</p>
+  box.innerHTML = DAO.quotes.map((q, idx) => `
+    <div class="dao-quote" data-i="${idx}">
+      <div class="dq-summary">
+        <span class="dq-caret">▸</span>
+        <blockquote class="dq-text">「${q.text}」</blockquote>
+        <div class="dq-src">${q.source}</div>
+      </div>
+      <div class="dq-detail"><div>
+        <p class="dq-plain">${q.plain}</p>
+      </div></div>
     </div>`).join('');
+  box.querySelectorAll('.dao-quote').forEach(el =>
+    el.addEventListener('click', () => el.classList.toggle('open')));
 }
 
 /* 今日道家功课：按日确定地轮换，使「道家养生」每天不同、各有侧重 */
@@ -531,6 +543,137 @@ const JIANCHU_YIJI = {
   '开': { yi: ['祭祀', '祈福', '开市', '动土', '出行'], ji: ['安葬', '嫁娶'] },
   '闭': { yi: ['筑堤', '补垣', '埋穴', '安葬'], ji: ['开市', '出行', '求医'] },
 };
+
+/* ============ 奇门遁甲（简化示意排盘） ============ */
+const QIMEN_STARS = ['天蓬', '天芮', '天冲', '天辅', '天禽', '天心', '天柱', '天任', '天英']; // 宫1..9
+const QIMEN_MEN = ['休', '生', '伤', '杜', '景', '死', '惊', '开']; // 八门顺序
+const MEN_PALACE = { 1: '休', 3: '伤', 4: '杜', 2: '死', 9: '景', 7: '惊', 8: '生', 6: '开' }; // 门本宫
+const QIMEN_SHEN = ['值符', '螣蛇', '太阴', '六合', '白虎', '玄武', '九地', '九天'];
+const PALACE_INFO = {
+  1: { gua: '坎', dir: '北' }, 2: { gua: '坤', dir: '西南' }, 3: { gua: '震', dir: '东' },
+  4: { gua: '巽', dir: '东南' }, 5: { gua: '中', dir: '中' }, 6: { gua: '乾', dir: '西北' },
+  7: { gua: '兑', dir: '西' }, 8: { gua: '艮', dir: '东北' }, 9: { gua: '离', dir: '南' },
+};
+// 九宫格在屏幕上的洛书位置（行、列）
+const LUOSHU_POS = {
+  4: [1, 1], 9: [1, 2], 2: [1, 3],
+  3: [2, 1], 5: [2, 2], 7: [2, 3],
+  8: [3, 1], 1: [3, 2], 6: [3, 3],
+};
+// 节气 -> 局数（上元局号，阳遁取奇数值/阴遁取偶数值，仅作示意）
+const QIMEN_JU = {
+  '冬至': 1, '小寒': 2, '大寒': 3, '立春': 8, '雨水': 9, '惊蛰': 1,
+  '春分': 3, '清明': 4, '谷雨': 5, '立夏': 4, '小满': 5, '芒种': 6,
+  '夏至': 9, '小暑': 8, '大暑': 7, '立秋': 2, '处暑': 1, '白露': 9,
+  '秋分': 7, '寒露': 6, '霜降': 5, '立冬': 6, '小雪': 5, '大雪': 4,
+};
+const YANG_TERMS = ['冬至', '小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种'];
+const XUN_LIUYI = { '甲子': '戊', '甲戌': '己', '甲申': '庚', '甲午': '辛', '甲辰': '壬', '甲寅': '癸' };
+const LIUYI_ORDER = ['戊', '己', '庚', '辛', '壬', '癸', '丁', '丙', '乙'];
+function nextPalace(p, yang) { return yang ? (p % 9) + 1 : (p === 1 ? 9 : p - 1); }
+
+function renderQimen(date) {
+  const termName = window.__curTermName || '夏至';
+  const yang = YANG_TERMS.includes(termName);
+  const ju = QIMEN_JU[termName] || 1;
+  const dg = dayGZ(date);
+  const riIdx = gzSolve(dg.gan, dg.zhi);
+  const xunStart = Math.floor(riIdx / 10) * 10;
+  const xunShouZhi = ZHI[xunStart % 12];
+  const liuyiChar = XUN_LIUYI['甲' + xunShouZhi];
+
+  // 三奇六仪布局（阳遁顺、阴遁逆，起局于 ju 宫）
+  const yiMap = {};
+  let p = ju;
+  for (let i = 0; i < 9; i++) { yiMap[p] = LIUYI_ORDER[i]; p = nextPalace(p, yang); }
+  // 旬首落宫 = 含 liuyiChar 的宫
+  let valuePalace = 5;
+  for (const k in yiMap) if (yiMap[k] === liuyiChar) { valuePalace = +k; break; }
+  // 九星布局：值符星起于旬首落宫
+  const starAtValue = valuePalace - 1;
+  const starMap = {};
+  p = valuePalace;
+  for (let i = 0; i < 9; i++) {
+    starMap[p] = QIMEN_STARS[((starAtValue + (yang ? i : -i)) % 9 + 9) % 9];
+    p = nextPalace(p, yang);
+  }
+  // 八门布局：值使门起于旬首落宫
+  const menAtValue = MEN_PALACE[valuePalace] || null;
+  const menMap = {};
+  if (menAtValue) {
+    const menIdx = QIMEN_MEN.indexOf(menAtValue);
+    menMap[valuePalace] = menAtValue;
+    p = nextPalace(valuePalace, yang);
+    for (let i = 1; i < 8; i++) {
+      menMap[p] = QIMEN_MEN[((menIdx + (yang ? i : -i)) % 8 + 8) % 8];
+      p = nextPalace(p, yang);
+    }
+  }
+  // 八神布局（阳顺阴逆，顺序固定）
+  const shenMap = {};
+  shenMap[valuePalace] = '值符';
+  p = nextPalace(valuePalace, yang);
+  for (let i = 1; i < 8; i++) {
+    shenMap[p] = QIMEN_SHEN[yang ? (i % 8) : ((8 - i) % 8)];
+    p = nextPalace(p, yang);
+  }
+
+  let cells = '';
+  for (let g = 1; g <= 9; g++) {
+    const [r, c] = LUOSHU_POS[g];
+    const info = PALACE_INFO[g];
+    const star = starMap[g] || '';
+    const men = menMap[g] || '';
+    const shen = shenMap[g] || '';
+    const yi = yiMap[g] || '';
+    const cls = ['qm-cell'];
+    if (g === 5) cls.push('center');
+    if (g === valuePalace) cls.push('zhifu');       // 值符落宫
+    if (menAtValue && g === valuePalace) cls.push('zhishi'); // 值使落宫
+    cells += `<div class="${cls.join(' ')}" style="grid-row:${r};grid-column:${c}">
+      <span class="qm-luoshu">${g}</span>
+      <span class="qm-gua">${info.gua}</span>
+      <span class="qm-dir">${info.dir}</span>
+      ${shen ? `<span class="qm-shen">${shen}</span>` : ''}
+      <span class="qm-star">${star}</span>
+      ${men ? `<span class="qm-men">${men}</span>` : ''}
+      <span class="qm-yi">${yi}</span>
+    </div>`;
+  }
+  document.getElementById('qimenBoard').innerHTML = cells;
+  document.getElementById('qimenCap').textContent =
+    `今日${yang ? '阳遁' : '阴遁'}${ju}局 · 旬首甲${xunShouZhi}${liuyiChar} · 值符${starMap[valuePalace]} · 值使${menAtValue || '—'}门`;
+}
+
+/* ============ 天干地支全览 ============ */
+function renderGanzhi(date) {
+  const GAN_YIN = { 甲: '阳', 乙: '阴', 丙: '阳', 丁: '阴', 戊: '阳', 己: '阴', 庚: '阳', 辛: '阴', 壬: '阳', 癸: '阴' };
+  const ZHI_YIN = {}; ZHI.forEach((z, i) => { ZHI_YIN[z] = (i % 2 === 0 ? '阳' : '阴'); });
+  const ZODIAC_ZHI = { 子: '鼠', 丑: '牛', 寅: '虎', 卯: '兔', 辰: '龙', 巳: '蛇', 午: '马', 未: '羊', 申: '猴', 酉: '鸡', 戌: '狗', 亥: '猪' };
+  const dg = dayGZ(date);
+  const riGan = GAN[dg.gan], riZhi = ZHI[dg.zhi];
+  const nowIdx = gzSolve(dg.gan, dg.zhi);
+  const ganRows = GAN.map(g => `<tr class="${g === riGan ? 'gz-now' : ''}"><td>${g}</td><td>${GAN_YIN[g]}</td><td>${GAN_WX[g]}</td></tr>`).join('');
+  const zhiRows = ZHI.map(z => `<tr class="${z === riZhi ? 'gz-now' : ''}"><td>${z}</td><td>${ZHI_YIN[z]}</td><td>${ZHI_WX[z]}</td><td>${ZODIAC_ZHI[z]}</td></tr>`).join('');
+  const jiazi = [];
+  for (let i = 0; i < 60; i++) {
+    const g = GAN[i % 10], z = ZHI[i % 12];
+    jiazi.push(`<div class="gz-jz${i === nowIdx ? ' now' : ''}">${g}${z}</div>`);
+  }
+  document.getElementById('ganzhiBody').innerHTML = `
+    <div class="gz-section">
+      <div class="gz-h">十天干（今日日干 ${riGan} 高亮）</div>
+      <table class="gz-table"><thead><tr><th>天干</th><th>阴阳</th><th>五行</th></tr></thead><tbody>${ganRows}</tbody></table>
+    </div>
+    <div class="gz-section">
+      <div class="gz-h">十二地支（今日日支 ${riZhi} 高亮）</div>
+      <table class="gz-table"><thead><tr><th>地支</th><th>阴阳</th><th>五行</th><th>生肖</th></tr></thead><tbody>${zhiRows}</tbody></table>
+    </div>
+    <div class="gz-section">
+      <div class="gz-h">六十甲子（今日 ${riGan}${riZhi} 高亮）</div>
+      <div class="gz-jiazi">${jiazi.join('')}</div>
+    </div>`;
+}
 
 function jdn(y, m, d) {
   if (m <= 2) { y -= 1; m += 12; }
@@ -671,14 +814,15 @@ function lunarLabel(date, bz) {
 
 /* ============ 每日签运：每日一签 + 今日运程 ============ */
 const SIGN_COLORS = { '上上': '#1f8a5a', '上': '#3f9a4a', '中': '#cf9a1c', '下': '#b06a2c', '凶': '#a8445a' };
+const SIGN_GUIDE = {
+  '上上': '此签大吉。天时人事俱利，谋事可成，宜把握时机、广结善缘，然得意不可忘形。',
+  '上': '此签上吉。诸事顺遂，宜进取、结善缘，守正而行则无往不利。',
+  '中': '此签中平。祸福参半，宜守常、勿躁进，静以待时、修己安人。',
+  '下': '此签下平。事多阻滞，宜守拙、慎言谨行，蓄力待时而动。',
+  '凶': '此签多凶。宜退守、忌兴作大事，静养涵神、避是非以消灾。',
+};
 
-function renderDailySign(date, rerollIdx) {
-  if (!STICKS) return;
-  const sticks = STICKS.sticks;
-  if (!sticks.length) return;
-  const idx = (typeof rerollIdx === 'number') ? rerollIdx : (dateHash(dateStr(date)) % sticks.length);
-  const s = sticks[idx];
-  document.getElementById('signIntro').textContent = STICKS.intro;
+function renderSignResult(s) {
   document.getElementById('signNo').textContent = `第 ${s.no} 签`;
   const lvl = document.getElementById('signLevel');
   lvl.textContent = s.level;
@@ -689,19 +833,51 @@ function renderDailySign(date, rerollIdx) {
   document.getElementById('signZhi').textContent = s.zhi;
   document.getElementById('signYi').textContent = s.yi.join('、');
   document.getElementById('signJi').textContent = s.ji.join('、');
+  document.getElementById('signGuide').textContent = SIGN_GUIDE[s.level] || '';
 }
-function bindReroll() {
-  const btn = document.getElementById('rerollSign');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    const sticks = STICKS ? STICKS.sticks : [];
-    if (!sticks.length) return;
-    const cur = dateHash(todayStr()) % sticks.length;
-    let r = cur;
-    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
-    const card = document.getElementById('signCard');
-    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
-    renderDailySign(new Date(), r);
+function setupSign() {
+  if (!STICKS) return;
+  const stage = document.getElementById('signStage');
+  const tong = document.getElementById('qianTong');
+  const result = document.getElementById('signResult');
+  const shakeBtn = document.getElementById('shakeSign');
+  const rerollBtn = document.getElementById('rerollSign');
+  const sticks = STICKS.sticks;
+  if (!sticks.length) return;
+  document.getElementById('signIntro').textContent = STICKS.intro;
+  document.getElementById('signPrompt').textContent =
+    '焚香净手，心诚意正，于心中默念所问之事，再摇签筒以求今日之签。';
+  let busy = false;
+  function reveal(idx) {
+    renderSignResult(sticks[idx]);
+    result.classList.remove('hidden'); result.classList.add('show');
+    shakeBtn.classList.add('hidden'); rerollBtn.classList.remove('hidden');
+    busy = false;
+  }
+  // 摇签求今日签（按日确定）
+  shakeBtn.addEventListener('click', () => {
+    if (busy) return; busy = true;
+    tong.classList.add('shaking'); stage.classList.add('shaking');
+    setTimeout(() => {
+      tong.classList.remove('shaking'); stage.classList.remove('shaking');
+      reveal(dateHash(todayStr()) % sticks.length);
+    }, 1400);
+  });
+  // 再摇一签（随机，不与今日签重复）
+  rerollBtn.addEventListener('click', () => {
+    if (busy) return; busy = true;
+    rerollBtn.classList.add('hidden'); shakeBtn.classList.add('hidden');
+    result.classList.remove('show'); result.classList.add('hidden');
+    setTimeout(() => {
+      tong.classList.add('shaking'); stage.classList.add('shaking');
+      setTimeout(() => {
+        tong.classList.remove('shaking'); stage.classList.remove('shaking');
+        const cur = dateHash(todayStr()) % sticks.length;
+        let r = cur;
+        if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
+        reveal(r);
+      }, 1400);
+    }, 160);
   });
 }
 
@@ -858,6 +1034,8 @@ async function init() {
 
     // 八字 · 黄历 · 方位 · 经络取穴
     renderAlmanac(new Date(), curIdx, flat);
+    renderQimen(new Date());
+    renderGanzhi(new Date());
 
     // 道家养生
     const curSeason = (HEALTH_MAP[cur.name] && HEALTH_MAP[cur.name].season) || '春';
@@ -868,8 +1046,7 @@ async function init() {
     renderDaoTodayLesson(new Date(), curSeason);
 
     // 每日签运
-    renderDailySign(new Date());
-    bindReroll();
+    setupSign();
     renderDailyFortune(new Date(), flat);
 
     initTabs();
