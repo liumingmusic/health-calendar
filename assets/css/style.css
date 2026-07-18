@@ -379,6 +379,82 @@ body {
 .clk-luo { font-family: var(--serif); font-size: 12px; fill: var(--ink-faint); }
 .clock-cap { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 6px; letter-spacing: 2px; }
 
+/* ---------- 道家养生：今日tab顶部「道经今读」 ---------- */
+.dao-daily {
+  position: relative;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(110, 74, 142, 0.07), transparent 46%),
+    var(--paper);
+  border-left: 4px solid var(--seal);
+  overflow: hidden;
+}
+.dao-daily::after {
+  content: "道";
+  position: absolute; right: 14px; bottom: -14px;
+  font-family: var(--serif); font-size: 96px; font-weight: 700;
+  color: rgba(110, 74, 142, 0.06); line-height: 1; pointer-events: none;
+}
+.dao-daily-tag {
+  display: inline-block; font-family: var(--serif); font-size: 12px; letter-spacing: 3px;
+  color: #fff; background: var(--seal); border-radius: 999px; padding: 2px 12px; margin-bottom: 10px;
+}
+.dao-daily-text {
+  font-family: var(--serif); font-size: 21px; line-height: 1.7; color: var(--ink);
+  margin: 0 0 6px; letter-spacing: 1px; position: relative; z-index: 1;
+}
+.dao-daily-src { font-size: 13px; color: var(--seal); font-family: var(--serif); margin-bottom: 8px; }
+.dao-daily-insight { font-size: 14px; color: var(--ink-soft); margin: 0; position: relative; z-index: 1; }
+
+/* ---------- 道家养生 Tab ---------- */
+.dao-lead { font-size: 14px; color: var(--ink-soft); margin: 0 0 14px; line-height: 1.8; }
+.dao-season { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.dao-season-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  border: 1px solid var(--line); border-left: 4px solid var(--sg);
+  border-radius: 10px; padding: 10px 14px; background: var(--paper-2);
+}
+.dao-season-item.current { box-shadow: 0 0 0 2px var(--sg); background: var(--paper); }
+.dsg-season {
+  flex: none; font-family: var(--serif); font-size: 18px; font-weight: 700;
+  color: #fff; background: var(--sg); border-radius: 8px; width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.dsg-gist { font-size: 14px; color: var(--ink); line-height: 1.7; }
+
+.dao-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.dao-method {
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 16px;
+  background: var(--paper-2); position: relative;
+}
+.dm-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.dm-name { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--seal); letter-spacing: 1px; }
+.dm-from { font-size: 11px; color: var(--ink-faint); }
+.dm-quote {
+  font-family: var(--serif); font-size: 15px; color: var(--ink-soft); font-style: normal;
+  margin: 0 0 10px; padding: 8px 12px; background: #f1ebf6; border-radius: 8px; line-height: 1.6;
+}
+.dm-sub { font-family: var(--serif); font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.dm-steps { margin: 0 0 10px; padding-left: 20px; }
+.dm-steps li { font-size: 13.5px; color: var(--ink); line-height: 1.7; margin-bottom: 2px; }
+.dm-benefit, .dm-note { font-size: 13px; margin: 6px 0 0; line-height: 1.7; }
+.dm-benefit { color: var(--ink); }
+.dm-note { color: var(--ink-soft); }
+.dm-tag {
+  display: inline-block; font-size: 11px; color: #fff; border-radius: 5px;
+  padding: 1px 7px; margin-right: 6px; letter-spacing: 1px; vertical-align: 1px;
+}
+.dm-tag.ok { background: var(--spring); }
+.dm-tag.warn { background: var(--autumn); }
+
+.dao-quotes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.dao-quote {
+  border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  background: var(--paper-2); border-top: 3px solid var(--seal-soft);
+}
+.dq-text { font-family: var(--serif); font-size: 16px; color: var(--ink); margin: 0 0 5px; line-height: 1.7; font-style: normal; }
+.dq-src { font-size: 12px; color: var(--seal); font-family: var(--serif); margin-bottom: 6px; }
+.dq-plain { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.7; }
+
 /* ---------- 响应式：手机端 ---------- */
 @media (max-width: 720px) {
   .scroll-wrap { padding: 0 13px 30px; }
@@ -405,6 +481,12 @@ body {
   .hou-current { grid-template-columns: 1fr; }
   .habits { grid-template-columns: 1fr; }
   .hour-bar { grid-template-columns: repeat(6, 1fr); row-gap: 6px; }
+
+  /* 道家养生：单列 */
+  .dao-methods { grid-template-columns: 1fr; }
+  .dao-quotes { grid-template-columns: 1fr; }
+  .dao-daily-text { font-size: 19px; }
+  .dao-daily::after { font-size: 72px; }
 }
 @media (max-width: 380px) {
   .term-grid { grid-template-columns: repeat(3, 1fr); }
