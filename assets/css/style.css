@@ -580,6 +580,145 @@ body {
 .day-zong .dz-h { font-family: var(--serif); font-weight: 700; color: var(--seal); display: block; margin-bottom: 6px; }
 .fortune-note { font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; line-height: 1.7; }
 
+/* ---------- 奇门遁甲 · 九宫排盘 ---------- */
+.qimen-cap {
+  font-family: var(--serif); font-size: 14px; color: var(--seal);
+  margin: 0 0 14px; letter-spacing: 1px; text-align: center;
+}
+.qimen-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px; max-width: 360px; margin: 0 auto; aspect-ratio: 1 / 1;
+}
+.qm-cell {
+  position: relative; border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--paper-2); padding: 6px 7px 4px; display: flex; flex-direction: column;
+  overflow: hidden; transition: box-shadow .3s ease;
+}
+.qm-cell.center { background: #f3ecdd; border-color: var(--seal-soft); }
+.qm-luoshu { position: absolute; top: 4px; left: 6px; font-family: var(--serif); font-size: 11px; color: var(--ink-faint); }
+.qm-gua { position: absolute; top: 3px; right: 7px; font-family: var(--serif); font-size: 15px; color: var(--ink-soft); }
+.qm-dir { position: absolute; top: 5px; right: 29px; font-size: 10px; color: var(--ink-faint); }
+.qm-shen { position: absolute; top: 22px; left: 6px; font-size: 10px; color: var(--seal); font-family: var(--serif); }
+.qm-star {
+  font-family: var(--serif); font-size: 19px; font-weight: 700; color: var(--ink);
+  text-align: center; margin-top: 20px; line-height: 1.1;
+}
+.qm-men {
+  align-self: center; margin-top: 5px; font-family: var(--serif); font-size: 12px;
+  color: #fff; background: var(--ink-soft); padding: 1px 10px; border-radius: 999px;
+}
+.qm-yi { position: absolute; bottom: 4px; right: 7px; font-family: var(--serif); font-size: 14px; color: var(--seal); font-weight: 700; }
+.qm-zhi { position: absolute; bottom: 4px; left: 7px; font-size: 10px; color: var(--ink-faint); }
+.qm-cell.zhifu { animation: qm-pulse 2.4s ease-in-out infinite; }
+.qm-cell.zhifu .qm-star { color: var(--seal); }
+.qm-cell.zhishi .qm-men { background: var(--seal); }
+@keyframes qm-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px var(--seal), 0 0 10px -3px var(--seal); }
+  50% { box-shadow: 0 0 0 3px var(--seal), 0 0 22px 1px var(--seal); }
+}
+.qimen-note { font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; line-height: 1.7; text-align: center; }
+
+/* ---------- 天干地支 · 全览 ---------- */
+.gz-section { margin-bottom: 14px; }
+.gz-h {
+  font-family: var(--serif); font-size: 14px; color: var(--seal); font-weight: 700;
+  margin: 0 0 8px; padding-left: 10px; border-left: 3px solid var(--seal);
+}
+.gz-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gz-table th, .gz-table td { border: 1px solid var(--line); padding: 6px 6px; text-align: center; }
+.gz-table th { background: var(--paper-2); color: var(--ink-soft); font-weight: 700; font-family: var(--serif); }
+.gz-table td.gz-now { background: #efeaf4; color: var(--seal); font-weight: 700; box-shadow: inset 0 0 0 2px var(--seal); }
+.gz-wx { font-size: 11px; color: var(--ink-faint); }
+.gz-jiazi { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-height: 176px; overflow-y: auto; padding: 2px; }
+.gz-jz {
+  font-family: var(--serif); font-size: 12px; text-align: center; border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 0; background: var(--paper-2);
+}
+.gz-jz.now { background: var(--seal); color: #fff; border-color: var(--seal); font-weight: 700; }
+
+/* ---------- 每日签运：摇签动画 ---------- */
+.sign-stage { position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 0 4px; }
+.qian-glow {
+  position: absolute; top: 4px; width: 210px; height: 210px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(110, 74, 142, 0.20), transparent 65%);
+  filter: blur(4px); animation: qian-glow-spin 14s linear infinite;
+}
+@keyframes qian-glow-spin { to { transform: rotate(360deg); } }
+.qian-tong {
+  position: relative; width: 104px; height: 168px; margin-top: 14px;
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, var(--seal-soft), var(--seal) 55%, #4f3568);
+  box-shadow: inset 0 -16px 26px rgba(0, 0, 0, 0.25), 0 8px 18px rgba(70, 55, 90, 0.25);
+}
+.qian-sticks { position: absolute; top: -26px; left: 0; right: 0; display: flex; justify-content: center; gap: 7px; }
+.qian-sticks i {
+  display: block; width: 5px; height: 40px; border-radius: 3px;
+  background: linear-gradient(180deg, #f6efe7, #e7dcc8);
+  box-shadow: 0 0 0 1px rgba(120, 90, 60, 0.2); transform-origin: bottom center;
+}
+.qian-mouth { position: absolute; top: 0; left: 10%; right: 10%; height: 12px; background: rgba(255, 255, 255, 0.18); border-radius: 0 0 40% 40%; }
+.qian-body { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.qian-seal {
+  font-family: var(--serif); font-size: 30px; color: var(--paper);
+  border: 2px solid rgba(255, 255, 255, 0.55); border-radius: 8px; padding: 2px 8px;
+  writing-mode: vertical-rl; letter-spacing: 2px;
+}
+.qian-tong.shaking { animation: tong-shake .5s ease-in-out infinite; }
+@keyframes tong-shake {
+  0%, 100% { transform: rotate(0) translateY(0); }
+  20% { transform: rotate(-9deg) translateY(-3px); }
+  50% { transform: rotate(8deg) translateY(2px); }
+  80% { transform: rotate(-5deg) translateY(-2px); }
+}
+.qian-tong.shaking .qian-sticks i { animation: stick-jiggle .28s ease-in-out infinite; }
+.qian-tong.shaking .qian-sticks i:nth-child(odd) { animation-delay: .12s; }
+@keyframes stick-jiggle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(7deg); } }
+.sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
+
+.sign-result { margin-top: 6px; }
+.sign-slip {
+  border: 1px solid var(--line-strong); border-radius: 14px; padding: 18px 18px 16px;
+  background: radial-gradient(circle at 12% 0%, rgba(110, 74, 142, 0.07), transparent 40%), var(--paper);
+  text-align: center;
+}
+.sign-result.show .sign-slip { animation: slip-reveal .7s cubic-bezier(.2, .9, .3, 1); }
+@keyframes slip-reveal {
+  0% { opacity: 0; transform: translateY(16px) scale(.97); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.sign-guide {
+  font-family: var(--serif); font-size: 13.5px; color: var(--seal); margin: 14px auto 0;
+  max-width: 26em; line-height: 1.8; background: #f1ebf6; border-radius: 10px; padding: 10px 12px;
+}
+.sign-actions { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+.shake-btn {
+  font-family: var(--serif); font-size: 16px; letter-spacing: 3px; padding: 11px 30px; border: none;
+  color: #fff; cursor: pointer; background: linear-gradient(180deg, var(--seal-soft), var(--seal));
+  border-radius: 999px; box-shadow: 0 6px 16px rgba(110, 74, 142, 0.32);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.shake-btn:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(110, 74, 142, 0.4); }
+.shake-btn:active { transform: translateY(0) scale(.97); }
+
+/* ---------- 道家养生：折叠（渐进展示） ---------- */
+.dao-method, .dao-quote { cursor: pointer; }
+.dm-summary, .dq-summary {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.dm-caret, .dq-caret {
+  font-family: var(--serif); color: var(--seal); font-size: 13px; transition: transform .2s ease; flex: none;
+}
+.dao-method.open .dm-caret, .dao-quote.open .dq-caret { transform: rotate(90deg); }
+.dm-detail, .dq-detail {
+  display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s ease;
+}
+.dao-method.open .dm-detail, .dao-quote.open .dq-detail { grid-template-rows: 1fr; }
+.dm-detail > div, .dq-detail > div { overflow: hidden; }
+.dm-quote { margin: 0 0 10px; } /* 与展开内容间距 */
+
 /* ---------- 响应式：手机端 ---------- */
 @media (max-width: 720px) {
   .scroll-wrap { padding: 0 13px 30px; }
@@ -617,6 +756,9 @@ body {
   .alm-grid { grid-template-columns: 1fr; }
   .bazi-pillars { grid-template-columns: repeat(4, 1fr); }
   .bz-gz { font-size: 20px; }
+  .qimen-board { max-width: 320px; }
+  .gz-jiazi { grid-template-columns: repeat(6, 1fr); }
+  .gz-table { font-size: 12px; }
 
   /* 每日签运：手机端 */
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
