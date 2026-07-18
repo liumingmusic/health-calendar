@@ -39,6 +39,12 @@ const DIRS = [
 function pad(n) { return String(n).padStart(2, '0'); }
 function dateStr(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 function todayStr() { return dateStr(new Date()); }
+// 日期散列：用于按日确定地选取内容（同一天稳定、跨天不同）
+function dateHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
 
 async function loadJSON(url) {
   const res = await fetch(url, { cache: 'no-cache' });
@@ -380,6 +386,7 @@ function renderCheckin() {
 
 /* ============ 道家养生 ============ */
 let DAO = null;
+let STICKS = null;
 
 function dayOfYear(d) {
   const start = new Date(d.getFullYear(), 0, 0);
@@ -433,6 +440,47 @@ function renderDaoQuotes() {
       <div class="dq-src">${q.source}</div>
       <p class="dq-plain">${q.plain}</p>
     </div>`).join('');
+}
+
+/* 今日道家功课：按日确定地轮换，使「道家养生」每天不同、各有侧重 */
+const DAO_PROMPTS = [
+  '今日静坐一刻，观息归根，不随念转。',
+  '晨起缓行，披发广步，与生发之气相和。',
+  '遇事少言，先吸三息，再作回应。',
+  '食不知味时停箸，问己：此身所需几何？',
+  '睡前放下万缘，如舟泊岸，神归丹田。',
+  '行住坐卧，常令脊直肩松，气自下沉。',
+];
+function renderDaoTodayLesson(date, curSeason) {
+  if (!DAO) return;
+  const h = dateHash(dateStr(date));
+  const method = DAO.methods[h % DAO.methods.length];
+  const quote = DAO.quotes[(Math.floor(h / 7) + 3) % DAO.quotes.length];
+  const prompt = DAO_PROMPTS[h % DAO_PROMPTS.length];
+  const gist = (DAO.seasonGist.find(s => s.season === curSeason) || DAO.seasonGist[0]).gist;
+
+  document.getElementById('daoLessonDay').textContent = `${curSeason}季 · 今日功课`;
+  document.getElementById('daoLessonBody').innerHTML = `
+    <div class="dao-lesson-block">
+      <span class="dl-k">主修功法</span>
+      <div class="dl-method-name">${method.name}</div>
+      <blockquote class="dl-method-quote">「${method.quote}」</blockquote>
+      <ol class="dl-method-steps">${method.how.slice(0, 2).map(s => `<li>${s}</li>`).join('')}</ol>
+      <p class="dl-method-benefit"><b>功效：</b>${method.benefit}</p>
+    </div>
+    <div class="dao-lesson-block">
+      <span class="dl-k">今日诵持</span>
+      <p class="dl-quote-text">「${quote.text}」</p>
+      <div class="dl-quote-src">${quote.source}</div>
+    </div>
+    <div class="dao-lesson-block">
+      <span class="dl-k">今日心法</span>
+      <p class="dl-prompt">${prompt}</p>
+    </div>
+    <div class="dao-lesson-block">
+      <span class="dl-k">当令要旨</span>
+      <p class="dl-season">${gist}</p>
+    </div>`;
 }
 
 /* ============ 八字 · 黄历 · 方位 · 经络取穴 ============ */
@@ -621,10 +669,143 @@ function lunarLabel(date, bz) {
   return `${bz.pillars.年.gz}年 ${bz.pillars.月.gz}月 ${bz.pillars.日.gz}日`;
 }
 
+/* ============ 每日签运：每日一签 + 今日运程 ============ */
+const SIGN_COLORS = { '上上': '#1f8a5a', '上': '#3f9a4a', '中': '#cf9a1c', '下': '#b06a2c', '凶': '#a8445a' };
+
+function renderDailySign(date, rerollIdx) {
+  if (!STICKS) return;
+  const sticks = STICKS.sticks;
+  if (!sticks.length) return;
+  const idx = (typeof rerollIdx === 'number') ? rerollIdx : (dateHash(dateStr(date)) % sticks.length);
+  const s = sticks[idx];
+  document.getElementById('signIntro').textContent = STICKS.intro;
+  document.getElementById('signNo').textContent = `第 ${s.no} 签`;
+  const lvl = document.getElementById('signLevel');
+  lvl.textContent = s.level;
+  lvl.style.background = SIGN_COLORS[s.level] || 'var(--seal)';
+  document.getElementById('signTitle').textContent = s.title;
+  document.getElementById('signPoem').innerHTML = s.poem.map(p => `<span>${p}</span>`).join('');
+  document.getElementById('signJie').textContent = s.jie;
+  document.getElementById('signZhi').textContent = s.zhi;
+  document.getElementById('signYi').textContent = s.yi.join('、');
+  document.getElementById('signJi').textContent = s.ji.join('、');
+}
+function bindReroll() {
+  const btn = document.getElementById('rerollSign');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const sticks = STICKS ? STICKS.sticks : [];
+    if (!sticks.length) return;
+    const cur = dateHash(todayStr()) % sticks.length;
+    let r = cur;
+    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
+    const card = document.getElementById('signCard');
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    renderDailySign(new Date(), r);
+  });
+}
+
+/* 今日运程：生肖 12 运程（依当日干支）+ 本日干支综论 */
+const ZODIAC = [
+  { s: '鼠', z: '子' }, { s: '牛', z: '丑' }, { s: '虎', z: '寅' }, { s: '兔', z: '卯' },
+  { s: '龙', z: '辰' }, { s: '蛇', z: '巳' }, { s: '马', z: '午' }, { s: '羊', z: '未' },
+  { s: '猴', z: '申' }, { s: '鸡', z: '酉' }, { s: '狗', z: '戌' }, { s: '猪', z: '亥' },
+];
+const Z_WX = { 子: '水', 丑: '土', 寅: '木', 卯: '木', 辰: '土', 巳: '火', 午: '火', 未: '土', 申: '金', 酉: '金', 戌: '土', 亥: '水' };
+const SIX_HE = { 子: '丑', 丑: '子', 寅: '亥', 亥: '寅', 卯: '戌', 戌: '卯', 辰: '酉', 酉: '辰', 巳: '申', 申: '巳', 午: '未', 未: '午' };
+const SAN_HE = [['申', '子', '辰'], ['亥', '卯', '未'], ['寅', '午', '戌'], ['巳', '酉', '丑']];
+const LIU_CHONG = { 子: '午', 午: '子', 丑: '未', 未: '丑', 寅: '申', 申: '寅', 卯: '酉', 酉: '卯', 辰: '戌', 戌: '辰', 巳: '亥', 亥: '巳' };
+const LIU_HAI = { 子: '未', 未: '子', 丑: '午', 午: '丑', 寅: '巳', 巳: '寅', 卯: '辰', 辰: '卯', 申: '亥', 亥: '申', 酉: '戌', 戌: '酉' };
+const SAN_XING = [['寅', '巳'], ['巳', '寅'], ['寅', '申'], ['申', '寅'], ['巳', '申'], ['申', '巳'], ['丑', '戌'], ['戌', '丑'], ['丑', '未'], ['未', '丑'], ['戌', '未'], ['未', '戌'], ['子', '卯'], ['卯', '子']];
+const WX_SHENG = { 木: '火', 火: '土', 土: '金', 金: '水', 水: '木' };
+const WX_KE = { 木: '土', 土: '水', 水: '火', 火: '金', 金: '木' };
+const REL_COMMENT = {
+  '六合': '与今日六合，贵人暗助，宜主动谋事、结善缘。',
+  '三合': '逢三合之局，朋侪助力，合作可成、谋事顺遂。',
+  '六冲': '冲犯日支，变动宜慎，守成为上，忌远行重大决策。',
+  '三刑': '遇刑伤，易生口舌波折，宜忍让避让、勿争闲气。',
+  '六害': '犯六害，防小人暗扰，慎言谨行以避是非。',
+  '值日': '值日守中，稳健行事，宜静不宜躁、随分而安。',
+};
+const LUCK_COLORS = { '大吉': '#1f8a5a', '中吉': '#3f9a4a', '平': '#cf9a1c', '小凶': '#b06a2c', '凶': '#a8445a' };
+function luckOf(rank) {
+  if (rank <= 1) return '大吉';
+  if (rank <= 4) return '中吉';
+  if (rank <= 7) return '平';
+  if (rank <= 9) return '小凶';
+  return '凶';
+}
+function zodiacScore(branch, rz) {
+  let score = 0, rel = '值日';
+  if (branch === rz) { /* 自身 */ }
+  else if (SIX_HE[branch] === rz) { score += 3; rel = '六合'; }
+  else if (SAN_HE.some(g => g.includes(branch) && g.includes(rz))) { score += 2; rel = '三合'; }
+  else if (LIU_CHONG[branch] === rz) { score -= 3; rel = '六冲'; }
+  else if (SAN_XING.some(p => p[0] === branch && p[1] === rz)) { score -= 2; rel = '三刑'; }
+  else if (LIU_HAI[branch] === rz) { score -= 1; rel = '六害'; }
+  const a = Z_WX[branch], b = Z_WX[rz];
+  if (WX_SHENG[a] === b) score -= 0.5;       // 我生（泄）
+  else if (WX_SHENG[b] === a) score += 1;    // 生我（印）
+  else if (WX_KE[a] === b) score += 0.3;     // 我克（得）
+  else if (WX_KE[b] === a) score -= 1;       // 被克
+  return { score, rel };
+}
+const JIANCHU_ZONG = {
+  '建': '万物始生，宜立新规、出行谋划，忌仓促兴作。',
+  '除': '除旧布新，宜沐浴祛秽、疗病扫舍，忌上任赴官。',
+  '满': '丰盈之时，宜祭祀纳财、开市交易，忌动土安葬。',
+  '平': '平顺守常，宜修造嫁娶、安神移徙，忌放水栽种。',
+  '定': '安定可成，宜祈福造屋、入宅订盟，忌词讼出行。',
+  '执': '执守为用，宜捕捉修造、祈福嫁娶，忌开市移徙。',
+  '破': '破败之日，诸事不宜，尤忌兴作嫁娶远行。',
+  '危': '登高临危，宜安床祈福，忌出行乘船登高。',
+  '成': '事成可就，宜嫁娶开市、入学动土，忌词讼。',
+  '收': '收敛纳藏，宜收纳嫁娶、入仓纳财，忌放债出行。',
+  '开': '开通顺利，宜祭祀开市、动土出行，忌安葬嫁娶。',
+  '闭': '闭藏为宜，宜筑堤补垣、安葬，忌开市求医出行。',
+};
+function renderDailyFortune(date, flat) {
+  const dg = dayGZ(date);
+  const riGanIdx = dg.gan, riZhi = ZHI[dg.zhi];
+  const nayin = NAYIN[Math.floor(gzSolve(riGanIdx, dg.zhi) / 2)];
+
+  // 建除 + 值神（复用既有常量）
+  const jieList = flat.filter(t => JIE_MONTH.includes(t.name)).sort((a, b) => a.date.localeCompare(b.date));
+  const curJie = jieList.filter(t => t.date <= dateStr(date)).pop();
+  const jieBranch = JIE_BRANCH[JIE_MONTH.indexOf(curJie.name)];
+  const jcIdx = (ZHI.indexOf(riZhi) - ZHI.indexOf(jieBranch) + 12) % 12;
+  const jc = JIANCHU[jcIdx];
+  const zs = ZHISHEN[ZHI.indexOf(riZhi)];
+
+  // 生肖运程
+  const ranked = ZODIAC.map(z => {
+    const r = zodiacScore(z.z, riZhi);
+    return { s: z.s, z: z.z, score: r.score, rel: r.rel };
+  }).sort((x, y) => y.score - x.score);
+
+  const cells = ranked.map((z, i) => {
+    const lv = luckOf(i);
+    return `<div class="zodiac" style="border-top-color:${LUCK_COLORS[lv]}">
+      <div class="zx-name">${z.s}</div>
+      <div class="zx-zhi">${z.z}</div>
+      <span class="zx-badge" style="background:${LUCK_COLORS[lv]}">${lv}</span>
+      <div class="zx-comment">${REL_COMMENT[z.rel]}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('zodiacGrid').innerHTML = cells;
+
+  // 本日综论
+  document.getElementById('fortuneLead').textContent =
+    `今日为 ${GAN[riGanIdx]}${riZhi} 日（${nayin}），${jc}日，值神${zs.n}（${zs.type}道）。`;
+  const zsText = zs.type === '黄' ? '值黄道，百事可为、顺势而动。' : '值黑道，宜静守、忌兴作大事。';
+  document.getElementById('dayZong').innerHTML =
+    `<span class="dz-h">本日综论</span>${JIANCHU_ZONG[jc]}${zsText}`;
+}
+
 /* ============ Tab 切换 ============ */
 function initTabs() {
   const tabs = document.querySelectorAll('.tab');
-  const panels = { today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', overview: 'tab-overview' };
+  const panels = { today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', fortune: 'tab-fortune', overview: 'tab-overview' };
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -639,17 +820,19 @@ function initTabs() {
 /* ============ 主流程 ============ */
 async function init() {
   try {
-    const [years, health, hou, hours, dao] = await Promise.all([
+    const [years, health, hou, hours, dao, fortune] = await Promise.all([
       loadJSON('data/solar-terms.json'),
       loadJSON('data/health.json'),
       loadJSON('data/hou.json'),
       loadJSON('data/hours.json'),
       loadJSON('data/daoism.json'),
+      loadJSON('data/fortune-sticks.json'),
     ]);
 
     health.forEach(t => { HEALTH_MAP[t.term] = t; });
     hou.forEach(h => { HOU_MAP[h.term] = h.hou; });
     DAO = dao;
+    STICKS = fortune;
 
     const flat = flattenTerms(years);
     ALL_TERMS_FLAT = flat;
@@ -682,6 +865,12 @@ async function init() {
     renderDaoSeason(curSeason);
     renderDaoMethods();
     renderDaoQuotes();
+    renderDaoTodayLesson(new Date(), curSeason);
+
+    // 每日签运
+    renderDailySign(new Date());
+    bindReroll();
+    renderDailyFortune(new Date(), flat);
 
     initTabs();
 
