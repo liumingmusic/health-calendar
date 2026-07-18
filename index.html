@@ -166,12 +166,22 @@
         <div class="sign-stage" id="signStage">
           <div class="qian-glow" aria-hidden="true"></div>
           <div class="qian-tong" id="qianTong" role="img" aria-label="竹签筒">
-            <div class="qian-sticks">
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <div class="qian-sticks" id="qianSticks" aria-hidden="true"></div>
+            <div class="qian-band" aria-hidden="true"></div>
+            <div class="qian-patch" aria-hidden="true">
+              <svg viewBox="0 0 100 100" class="qian-yin-yang">
+                <circle cx="50" cy="50" r="48" fill="white" stroke="#b23b3b" stroke-width="2"/>
+                <path d="M50,2 A48,48 0 0,1 50,98 A24,24 0 0,1 50,50 A24,24 0 0,0 50,2" fill="black"/>
+                <circle cx="50" cy="26" r="8" fill="black"/>
+                <circle cx="50" cy="26" r="3" fill="white"/>
+                <circle cx="50" cy="74" r="8" fill="white"/>
+                <circle cx="50" cy="74" r="3" fill="black"/>
+              </svg>
             </div>
-            <div class="qian-body"><span class="qian-seal">籤</span></div>
             <div class="qian-rim" aria-hidden="true"></div>
-            <div class="qian-out" id="qianOut" aria-hidden="true"><span class="qian-out-no" id="qianOutNo">—</span></div>
+            <div class="qian-out" id="qianOut" aria-hidden="true">
+              <span class="qian-out-no" id="qianOutNo">—</span>
+            </div>
           </div>
           <p class="sign-prompt" id="signPrompt"></p>
           <p class="sign-shaking hidden" id="signShaking">诚心求签中……</p>
