@@ -131,7 +131,8 @@ body {
 /* ---------- Tabs ---------- */
 .tabs {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px 8px;
   margin-bottom: 16px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 0;
@@ -490,6 +491,95 @@ body {
 .dq-src { font-size: 12px; color: var(--seal); font-family: var(--serif); margin-bottom: 6px; }
 .dq-plain { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.7; }
 
+/* ---------- 道家养生：今日功课（每日轮换） ---------- */
+.dao-today-lesson { border-left: 4px solid var(--seal); }
+.dao-lesson-body { display: grid; gap: 12px; }
+.dao-lesson-block { background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.dao-lesson-block .dl-k {
+  display: inline-block; font-family: var(--serif); font-size: 12px; letter-spacing: 2px;
+  color: #fff; background: var(--seal-soft); border-radius: 999px; padding: 2px 10px; margin-bottom: 8px;
+}
+.dl-method-name { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--seal); letter-spacing: 1px; }
+.dl-method-quote { font-family: var(--serif); font-size: 15px; color: var(--ink-soft); margin: 4px 0 8px; padding: 6px 10px; background: #f1ebf6; border-radius: 8px; line-height: 1.6; }
+.dl-method-steps { margin: 0; padding-left: 20px; }
+.dl-method-steps li { font-size: 13.5px; color: var(--ink); line-height: 1.7; }
+.dl-method-benefit { font-size: 13px; color: var(--ink); margin: 8px 0 0; }
+.dl-quote-text { font-family: var(--serif); font-size: 17px; color: var(--ink); line-height: 1.7; margin: 0 0 4px; }
+.dl-quote-src { font-size: 12px; color: var(--seal); font-family: var(--serif); }
+.dl-prompt { font-family: var(--serif); font-size: 16px; color: var(--ink); line-height: 1.8; margin: 0; }
+.dl-season { font-size: 14px; color: var(--ink-soft); line-height: 1.7; margin: 0; }
+
+/* ---------- 每日签运：每日一签 ---------- */
+.sign-panel { position: relative; }
+.reroll-btn {
+  font-family: var(--serif); font-size: 14px; letter-spacing: 1px;
+  padding: 6px 16px; border: 1px solid var(--seal); color: var(--seal);
+  background: var(--paper); border-radius: 999px; cursor: pointer;
+  transition: all .15s ease;
+}
+.reroll-btn:hover { background: var(--seal); color: #fff; }
+.reroll-btn:active { transform: scale(0.96); }
+.sign-intro { font-size: 13px; color: var(--ink-soft); margin: 0 0 12px; line-height: 1.7; }
+.sign-card {
+  border: 1px solid var(--line-strong); border-radius: 14px; padding: 18px 18px 16px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(110, 74, 142, 0.06), transparent 40%),
+    var(--paper);
+  text-align: center;
+}
+.sign-card.shake { animation: sign-shake .5s ease; }
+@keyframes sign-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px) rotate(-1deg); }
+  40% { transform: translateX(7px) rotate(1deg); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+.sign-top { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.sign-no { font-family: var(--serif); font-size: 13px; color: var(--ink-faint); }
+.sign-level {
+  font-family: var(--serif); font-size: 14px; color: #fff; font-weight: 700;
+  padding: 3px 12px; border-radius: 999px; letter-spacing: 1px;
+}
+.sign-title { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: 3px; }
+.sign-poem {
+  font-family: var(--serif); font-size: 19px; line-height: 2; color: var(--ink);
+  margin: 6px auto 14px; max-width: 18em; letter-spacing: 1px;
+}
+.sign-poem span { display: block; }
+.sign-jie, .sign-zhi { font-size: 14px; color: var(--ink); line-height: 1.7; margin: 6px auto; max-width: 30em; text-align: left; }
+.sign-k {
+  display: inline-block; min-width: 30px; font-family: var(--serif); color: var(--seal);
+  font-size: 13px; margin-right: 6px; font-weight: 700;
+}
+.sign-yj { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+.sign-yi, .sign-ji { font-size: 13.5px; margin: 0; }
+.sign-yi { color: var(--spring); }
+.sign-ji { color: #a8445a; }
+.sign-note { font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; line-height: 1.7; }
+
+/* ---------- 每日签运：今日运程 ---------- */
+.fortune-lead { font-family: var(--serif); font-size: 15px; color: var(--ink-soft); margin: 0 0 14px; line-height: 1.8; }
+.zodiac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.zodiac {
+  border: 1px solid var(--line); border-radius: 12px; padding: 12px 10px;
+  background: var(--paper-2); text-align: center; display: flex; flex-direction: column; gap: 6px;
+  border-top: 3px solid var(--line-strong);
+}
+.zx-name { font-family: var(--serif); font-size: 19px; font-weight: 700; color: var(--ink); }
+.zx-zhi { font-size: 11px; color: var(--ink-faint); margin-top: -4px; }
+.zx-badge {
+  align-self: center; font-family: var(--serif); font-size: 13px; color: #fff;
+  padding: 2px 12px; border-radius: 999px; letter-spacing: 1px; font-weight: 700;
+}
+.zx-comment { font-size: 12.5px; color: var(--ink-soft); line-height: 1.65; text-align: left; min-height: 3.2em; }
+.day-zong {
+  background: var(--paper-2); border: 1px solid var(--line); border-left: 4px solid var(--seal);
+  border-radius: 10px; padding: 14px 16px; font-size: 14px; color: var(--ink); line-height: 1.85;
+}
+.day-zong .dz-h { font-family: var(--serif); font-weight: 700; color: var(--seal); display: block; margin-bottom: 6px; }
+.fortune-note { font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; line-height: 1.7; }
+
 /* ---------- 响应式：手机端 ---------- */
 @media (max-width: 720px) {
   .scroll-wrap { padding: 0 13px 30px; }
@@ -527,6 +617,12 @@ body {
   .alm-grid { grid-template-columns: 1fr; }
   .bazi-pillars { grid-template-columns: repeat(4, 1fr); }
   .bz-gz { font-size: 20px; }
+
+  /* 每日签运：手机端 */
+  .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
+  .sign-poem { font-size: 17px; }
+  .sign-title { font-size: 21px; letter-spacing: 2px; }
+  .sign-yj { gap: 10px; }
 }
 @media (max-width: 380px) {
   .term-grid { grid-template-columns: repeat(3, 1fr); }
