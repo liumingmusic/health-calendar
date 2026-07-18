@@ -45,11 +45,19 @@
     <!-- Tab 导航 -->
     <nav class="tabs" id="tabs">
       <button class="tab active" type="button" data-tab="today">今日养生</button>
+      <button class="tab" type="button" data-tab="dao">道家养生</button>
       <button class="tab" type="button" data-tab="overview">全年总览</button>
     </nav>
 
     <!-- 今日养生 -->
     <div class="tab-panel" id="tab-today">
+      <section class="panel dao-daily" id="daoDaily">
+        <div class="dao-daily-tag">道经今读</div>
+        <blockquote class="dao-daily-text" id="daoDailyText">—</blockquote>
+        <div class="dao-daily-src" id="daoDailySrc">—</div>
+        <p class="dao-daily-insight" id="daoDailyInsight">—</p>
+      </section>
+
       <section class="panel main-card" id="mainCard">
         <div class="panel-head">
           <h2>今日养生</h2>
@@ -72,6 +80,25 @@
         </div>
         <div class="habits" id="habits"></div>
         <p class="checkin-tip">打卡记录仅保存在本机浏览器（localStorage），用于见证你的坚持。</p>
+      </section>
+    </div>
+
+    <!-- 道家养生 -->
+    <div class="tab-panel hidden" id="tab-dao">
+      <section class="panel dao-intro">
+        <div class="panel-head"><h2>道家养生 · 顺应自然</h2></div>
+        <p class="dao-lead">道家养生以「清静无为、顺应自然」为纲，重在恬淡寡欲、形神双养。以下皆为传统静功与吐纳导引之法，点到即止、不涉宗教仪轨，可作日常调养参考。</p>
+        <div class="dao-season" id="daoSeason"></div>
+      </section>
+
+      <section class="panel dao-methods-panel">
+        <div class="panel-head"><h2>正经功法 · 守静 · 吐纳 · 导引</h2></div>
+        <div class="dao-methods" id="daoMethods"></div>
+      </section>
+
+      <section class="panel dao-quotes-panel">
+        <div class="panel-head"><h2>道经拾遗 · 养生名句</h2></div>
+        <div class="dao-quotes" id="daoQuotes"></div>
       </section>
     </div>
 
@@ -98,7 +125,7 @@
     </div>
 
     <footer class="site-footer">
-      <p class="maxim">「法于阴阳，和于术数，食饮有节，起居有常。」—— 《黄帝内经·素问》</p>
+      <p class="maxim" id="footMaxim">「致虚极，守静笃。」—— 《道德经·十六章》</p>
       <p class="foot-note">养生日历 · 纯静态离线小站 · 内容仅为传统养生参考，不替代专业医疗</p>
     </footer>
   </div>
