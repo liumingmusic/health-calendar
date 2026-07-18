@@ -47,6 +47,7 @@
       <button class="tab active" type="button" data-tab="today">今日养生</button>
       <button class="tab" type="button" data-tab="bazi">黄历八字</button>
       <button class="tab" type="button" data-tab="dao">道家养生</button>
+      <button class="tab" type="button" data-tab="fortune">每日签运</button>
       <button class="tab" type="button" data-tab="overview">全年总览</button>
     </nav>
 
@@ -102,20 +103,64 @@
 
     <!-- 道家养生 -->
     <div class="tab-panel hidden" id="tab-dao">
+      <section class="panel dao-today-lesson" id="daoTodayLesson">
+        <div class="panel-head">
+          <h2>今日道家功课</h2>
+          <span class="season-chip" id="daoLessonDay">—</span>
+        </div>
+        <div class="dao-lesson-body" id="daoLessonBody">
+          <p class="loading">正在推算今日功课……</p>
+        </div>
+      </section>
+
       <section class="panel dao-intro">
-        <div class="panel-head"><h2>道家养生 · 顺应自然</h2></div>
+        <div class="panel-head"><h2>四时顺要 · 顺应自然</h2></div>
         <p class="dao-lead">道家养生以「清静无为、顺应自然」为纲，重在恬淡寡欲、形神双养。以下皆为传统静功与吐纳导引之法，点到即止、不涉宗教仪轨，可作日常调养参考。</p>
         <div class="dao-season" id="daoSeason"></div>
       </section>
 
       <section class="panel dao-methods-panel">
-        <div class="panel-head"><h2>正经功法 · 守静 · 吐纳 · 导引</h2></div>
+        <div class="panel-head"><h2>功法全录 · 守静 · 吐纳 · 导引</h2></div>
         <div class="dao-methods" id="daoMethods"></div>
       </section>
 
       <section class="panel dao-quotes-panel">
-        <div class="panel-head"><h2>道经拾遗 · 养生名句</h2></div>
+        <div class="panel-head"><h2>道经全览 · 养生名句</h2></div>
         <div class="dao-quotes" id="daoQuotes"></div>
+      </section>
+    </div>
+
+    <!-- 每日签运 -->
+    <div class="tab-panel hidden" id="tab-fortune">
+      <section class="panel sign-panel">
+        <div class="panel-head">
+          <h2>每日一签 · 修身签</h2>
+          <button class="reroll-btn" id="rerollSign" type="button">再摇一签</button>
+        </div>
+        <p class="sign-intro" id="signIntro"></p>
+        <div class="sign-card" id="signCard">
+          <div class="sign-top">
+            <span class="sign-no" id="signNo">—</span>
+            <span class="sign-level" id="signLevel">—</span>
+            <span class="sign-title" id="signTitle">—</span>
+          </div>
+          <div class="sign-poem" id="signPoem"></div>
+          <div class="sign-jie"><span class="sign-k">解曰</span><span id="signJie">—</span></div>
+          <div class="sign-zhi"><span class="sign-k">指</span><span id="signZhi">—</span></div>
+          <div class="sign-yj">
+            <p class="sign-yi">宜：<span id="signYi">—</span></p>
+            <p class="sign-ji">忌：<span id="signJi">—</span></p>
+          </div>
+        </div>
+        <p class="sign-note">签文以守静、顺时、寡欲、涵神为旨，可作每日自省之镜，非占验祸福之术。</p>
+      </section>
+
+      <section class="panel fortune-panel">
+        <div class="panel-head"><h2>今日运程 · 生肖 · 干支</h2></div>
+        <p class="fortune-lead" id="fortuneLead">—</p>
+        <div class="zodiac-grid" id="zodiacGrid"></div>
+        <div class="day-zong" id="dayZong"></div>
+        <p class="fortune-note">运程依据当日干支、建除十二神与值神黄黑道离线推算，仅供传统养生与文化参考，不替代专业命理或医疗建议。</p>
       </section>
     </div>
 
