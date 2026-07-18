@@ -101,6 +101,53 @@ function renderHero(term, daysToNext, hour, nextName) {
   document.getElementById('heroHourMeta').textContent = `${hour.meridian} · ${hour.range}`;
 }
 
+/* ============ 今日总览：首页汇总卡 ============ */
+function renderTodayOverview(date, flat, cur, daysToNext, next, curHour, curIdx) {
+  const bz = computeBazi(date, curIdx, flat);
+  const riZhi = ZHI[bz.pillars.日.z];
+  const riGan = GAN[bz.riGan];
+  // 建除 + 宜忌
+  const jieBranch = JIE_BRANCH[JIE_MONTH.indexOf(
+    flat.filter(t => JIE_MONTH.includes(t.name)).sort((a, b) => a.date.localeCompare(b.date))
+      .filter(t => t.date <= dateStr(date)).pop().name)];
+  const jcIdx = (ZHI.indexOf(riZhi) - ZHI.indexOf(jieBranch) + 12) % 12;
+  const jc = JIANCHU[jcIdx];
+  const jcYJ = JIANCHU_YIJI[jc];
+
+  // 道家今日功课
+  const dh = dateHash(dateStr(date));
+  const daoMethod = DAO.methods[dh % DAO.methods.length];
+  const daoQuote = DAO.quotes[(Math.floor(dh / 7) + 3) % DAO.quotes.length];
+
+  // 今日一签
+  const sign = STICKS.sticks[dateHash(todayStr()) % STICKS.sticks.length];
+
+  // 生肖运程最佳
+  const dg = dayGZ(date);
+  const rz = ZHI[dg.zhi];
+  const ranked = ZODIAC.map(z => ({ s: z.s, score: zodiacScore(z.z, rz).score }))
+    .sort((a, b) => b.score - a.score);
+  const topZ = ranked[0];
+
+  const now = new Date();
+  const season = (HEALTH_MAP[cur.name] && HEALTH_MAP[cur.name].season) || '春';
+
+  document.getElementById('ovSeason').textContent = season + '季';
+  document.getElementById('ovDate').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${WEEK[now.getDay()]}`;
+  document.getElementById('ovGanzhi').textContent = `${bz.pillars.年.gz}年 ${bz.pillars.月.gz}月 ${bz.pillars.日.gz}日 ${bz.pillars.时.gz}时`;
+  document.getElementById('ovTerm').textContent = cur.name;
+  document.getElementById('ovTermMeta').textContent = daysToNext > 0 ? `距${next ? next.name : ''} ${daysToNext}天` : '今日交节';
+  document.getElementById('ovHour').textContent = curHour.name;
+  document.getElementById('ovOrgan').textContent = '当令 · ' + curHour.organ;
+  document.getElementById('ovBazi').textContent = ['年', '月', '日', '时'].map(k => bz.pillars[k].gz).join(' ');
+  document.getElementById('ovYi').textContent = '宜：' + jcYJ.yi.slice(0, 4).join('、');
+  document.getElementById('ovJi').textContent = '忌：' + jcYJ.ji.slice(0, 3).join('、');
+  document.getElementById('ovDao').textContent = `主修「${daoMethod.name}」· ${daoQuote.source}`;
+  document.getElementById('ovSign').innerHTML =
+    `<span class="ov-lv" style="color:${SIGN_COLORS[sign.level] || 'var(--seal)'}">${sign.level}</span>第${sign.no}签「${sign.title}」`;
+  document.getElementById('ovFortune').textContent = `今日最利 · ${topZ.s}`;
+}
+
 /* ============ 今日养生主卡 ============ */
 function healthHTML(t) {
   const diet = t.diet.map(d => `<span class="chip">${d}</span>`).join('');
@@ -840,33 +887,8 @@ function renderSignResult(s) {
   document.getElementById('signJi').textContent = s.ji.join('、');
   document.getElementById('signGuide').textContent = SIGN_GUIDE[s.level] || '';
 }
-function buildNaturalSticks() {
-  const box = document.getElementById('qianSticks');
-  if (!box) return;
-  box.innerHTML = '';
-  const count = 15;
-  for (let i = 0; i < count; i++) {
-    const el = document.createElement('i');
-    // 扇形分布：角度从 -34° 到 +34°，中间高两边低，增加自然错落
-    const t = (i / (count - 1)) - 0.5; // -0.5 .. 0.5
-    const angle = t * 68 + (Math.sin(i * 3.7) * 3);
-    const height = 54 + Math.abs(t) * 18 + Math.cos(i * 2.3) * 4;
-    const left = 50 + t * 70 + Math.sin(i * 4.1) * 3;
-    const z = 10 - Math.abs(t) * 8; // 中间靠前
-    el.style.cssText = `
-      left: ${left}%;
-      height: ${height}px;
-      transform: translateX(-50%) rotate(${angle}deg);
-      z-index: ${z.toFixed(0)};
-      animation-delay: ${(i * 0.02).toFixed(2)}s;
-    `;
-    box.appendChild(el);
-  }
-}
-
 function setupSign() {
   if (!STICKS) return;
-  buildNaturalSticks();
   const stage = document.getElementById('signStage');
   const tong = document.getElementById('qianTong');
   const out = document.getElementById('qianOut');
@@ -1079,6 +1101,7 @@ async function init() {
 
     renderHeaderDate();
     renderHero(cur, daysToNext, curHour, next ? next.name : '');
+    renderTodayOverview(new Date(), flat, cur, daysToNext, next, curHour, curIdx);
     renderMainCard(HEALTH_MAP[cur.name]);
     renderHourBar(hours, curIdx);
     buildLunarClock(hours, curIdx);
