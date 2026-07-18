@@ -840,8 +840,33 @@ function renderSignResult(s) {
   document.getElementById('signJi').textContent = s.ji.join('、');
   document.getElementById('signGuide').textContent = SIGN_GUIDE[s.level] || '';
 }
+function buildNaturalSticks() {
+  const box = document.getElementById('qianSticks');
+  if (!box) return;
+  box.innerHTML = '';
+  const count = 15;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('i');
+    // 扇形分布：角度从 -34° 到 +34°，中间高两边低，增加自然错落
+    const t = (i / (count - 1)) - 0.5; // -0.5 .. 0.5
+    const angle = t * 68 + (Math.sin(i * 3.7) * 3);
+    const height = 54 + Math.abs(t) * 18 + Math.cos(i * 2.3) * 4;
+    const left = 50 + t * 70 + Math.sin(i * 4.1) * 3;
+    const z = 10 - Math.abs(t) * 8; // 中间靠前
+    el.style.cssText = `
+      left: ${left}%;
+      height: ${height}px;
+      transform: translateX(-50%) rotate(${angle}deg);
+      z-index: ${z.toFixed(0)};
+      animation-delay: ${(i * 0.02).toFixed(2)}s;
+    `;
+    box.appendChild(el);
+  }
+}
+
 function setupSign() {
   if (!STICKS) return;
+  buildNaturalSticks();
   const stage = document.getElementById('signStage');
   const tong = document.getElementById('qianTong');
   const out = document.getElementById('qianOut');
