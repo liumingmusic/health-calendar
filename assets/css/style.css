@@ -554,25 +554,25 @@ body {
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
 }
-.sign-top { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-.sign-no { font-family: var(--serif); font-size: 13px; color: var(--ink-faint); }
+.sign-top { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.sign-no { font-family: var(--serif); font-size: 15px; color: var(--ink-faint); }
 .sign-level {
-  font-family: var(--serif); font-size: 14px; color: #fff; font-weight: 700;
-  padding: 3px 12px; border-radius: 999px; letter-spacing: 1px;
+  font-family: var(--serif); font-size: 15px; color: #fff; font-weight: 700;
+  padding: 4px 14px; border-radius: 999px; letter-spacing: 1px;
 }
-.sign-title { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: 3px; }
+.sign-title { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: 4px; }
 .sign-poem {
-  font-family: var(--serif); font-size: 19px; line-height: 2; color: var(--ink);
-  margin: 6px auto 14px; max-width: 18em; letter-spacing: 1px;
+  font-family: var(--serif); font-size: 21px; line-height: 2.1; color: var(--ink);
+  margin: 8px auto 16px; max-width: 18em; letter-spacing: 1px;
 }
 .sign-poem span { display: block; }
-.sign-jie, .sign-zhi { font-size: 14px; color: var(--ink); line-height: 1.7; margin: 6px auto; max-width: 30em; text-align: left; }
+.sign-jie, .sign-zhi { font-size: 15px; color: var(--ink); line-height: 1.7; margin: 8px auto; max-width: 30em; text-align: left; }
 .sign-k {
   display: inline-block; min-width: 30px; font-family: var(--serif); color: var(--seal);
-  font-size: 13px; margin-right: 6px; font-weight: 700;
+  font-size: 14px; margin-right: 6px; font-weight: 700;
 }
-.sign-yj { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-.sign-yi, .sign-ji { font-size: 13.5px; margin: 0; }
+.sign-yj { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+.sign-yi, .sign-ji { font-size: 14.5px; margin: 0; }
 .sign-yi { color: var(--spring); }
 .sign-ji { color: #a8445a; }
 .sign-note { font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; line-height: 1.7; }
@@ -658,9 +658,9 @@ body {
 .gz-jz.now { background: var(--seal); color: #fff; border-color: var(--seal); font-weight: 700; }
 
 /* ---------- 每日签运：摇签动画 ---------- */
-.sign-stage { position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 0 4px; }
+.sign-stage { position: relative; display: flex; flex-direction: column; align-items: center; padding: 18px 0 8px; min-height: 500px; }
 .qian-glow {
-  position: absolute; top: 0; width: 240px; height: 240px; border-radius: 50%;
+  position: absolute; top: 0; width: 320px; height: 320px; border-radius: 50%;
   background: radial-gradient(circle, rgba(216, 168, 52, 0.22), transparent 65%);
   filter: blur(5px); animation: qian-glow-spin 14s linear infinite;
 }
@@ -668,45 +668,86 @@ body {
 
 /* 写实竹签筒：AI 生成图片（竹纹圆柱 + 红箍 + 八卦太极贴 + 插签），筒身与签一并呈现 */
 .qian-tong {
-  position: relative; width: 138px; height: 202px; margin-top: 70px;
+  position: relative; width: 240px; height: 350px; margin-top: 60px;
   z-index: 2;
-  filter: drop-shadow(0 14px 22px rgba(80, 55, 18, 0.35));
+  filter: drop-shadow(0 18px 30px rgba(80, 55, 18, 0.35));
 }
 .qian-tube-img {
   width: 100%; height: 100%; object-fit: contain; display: block;
   user-select: none; -webkit-user-drag: none;
 }
-/* 摇签：整筒左右摆动（签随筒而动，自然真实） */
-.qian-tong.shaking { animation: tong-rock .42s ease-in-out infinite; transform-origin: 50% 92%; }
+/* 签簇：摇签时从筒口激烈抖动，平时静置 */
+.qian-sticks {
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+  width: 110px; height: 0; z-index: 3; pointer-events: none;
+}
+.qian-stick {
+  position: absolute; bottom: -10px;
+  width: 6px; height: 92px; border-radius: 4px 4px 0 0;
+  background: linear-gradient(90deg, #9c7338, #f3e6c4 40%, #c9a866 75%, #8d6630);
+  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.38);
+  transform-origin: bottom center;
+}
+.qian-stick::before {
+  content: ""; position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 12px; border-radius: 4px 4px 1px 1px;
+  background: linear-gradient(180deg, #d64848, #a82626);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+.qian-stick:nth-child(1) { --tx: -30px; --rot: -14deg; }
+.qian-stick:nth-child(2) { --tx: -18px; --rot: -8deg; }
+.qian-stick:nth-child(3) { --tx: -6px; --rot: -2deg; }
+.qian-stick:nth-child(4) { --tx: 7px; --rot: 3deg; }
+.qian-stick:nth-child(5) { --tx: 19px; --rot: 9deg; }
+.qian-stick:nth-child(6) { --tx: 31px; --rot: 15deg; }
+.qian-stick { transform: translateX(var(--tx)) rotate(var(--rot)); }
+/* 摇签：整筒缓慢左右大摆，签簇在上端同时快速抖动 */
+.qian-tong.shaking { animation: tong-rock 1.05s ease-in-out infinite; transform-origin: 50% 92%; }
+.qian-tong.shaking .qian-stick {
+  animation: stick-jitter .16s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.qian-stick:nth-child(1) { --delay: 0ms; }
+.qian-stick:nth-child(2) { --delay: 30ms; }
+.qian-stick:nth-child(3) { --delay: 60ms; }
+.qian-stick:nth-child(4) { --delay: 15ms; }
+.qian-stick:nth-child(5) { --delay: 45ms; }
+.qian-stick:nth-child(6) { --delay: 75ms; }
 @keyframes tong-rock {
   0%, 100% { transform: rotate(0deg) translateY(0); }
-  20% { transform: rotate(-11deg) translateY(-3px); }
-  55% { transform: rotate(9deg) translateY(2px); }
-  80% { transform: rotate(-6deg) translateY(-2px); }
+  25% { transform: rotate(-16deg) translateY(-6px); }
+  55% { transform: rotate(13deg) translateY(3px); }
+  80% { transform: rotate(-9deg) translateY(-3px); }
+}
+@keyframes stick-jitter {
+  0%, 100% { transform: translateX(var(--tx)) rotate(var(--rot)); }
+  25% { transform: translateX(calc(var(--tx) - 3px)) rotate(calc(var(--rot) - 3deg)); }
+  50% { transform: translateX(calc(var(--tx) + 3px)) rotate(calc(var(--rot) + 3deg)); }
+  75% { transform: translateX(calc(var(--tx) - 1.5px)) rotate(calc(var(--rot) - 1.5deg)); }
 }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
-.sign-result { margin-top: 6px; }
+.sign-result { margin-top: 10px; }
 .sign-slip {
-  border: 1px solid var(--line-strong); border-radius: 14px; padding: 18px 18px 16px;
+  border: 1px solid var(--line-strong); border-radius: 16px; padding: 22px 22px 20px;
   background: radial-gradient(circle at 12% 0%, rgba(110, 74, 142, 0.07), transparent 40%), var(--paper);
   text-align: center;
 }
-.sign-result.show .sign-slip { animation: slip-reveal .7s cubic-bezier(.2, .9, .3, 1); }
+.sign-result.show .sign-slip { animation: slip-reveal .8s cubic-bezier(.2, .9, .3, 1); }
 @keyframes slip-reveal {
   0% { opacity: 0; transform: translateY(16px) scale(.97); }
   60% { opacity: 1; }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 .sign-guide {
-  font-family: var(--serif); font-size: 13.5px; color: var(--seal); margin: 14px auto 0;
-  max-width: 26em; line-height: 1.8; background: #f1ebf6; border-radius: 10px; padding: 10px 12px;
+  font-family: var(--serif); font-size: 14.5px; color: var(--seal); margin: 16px auto 0;
+  max-width: 26em; line-height: 1.85; background: #f1ebf6; border-radius: 10px; padding: 12px 14px;
 }
-.sign-actions { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+.sign-actions { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
 .shake-btn {
-  font-family: var(--serif); font-size: 16px; letter-spacing: 3px; padding: 11px 30px; border: none;
+  font-family: var(--serif); font-size: 17px; letter-spacing: 3px; padding: 12px 34px; border: none;
   color: #fff; cursor: pointer; background: linear-gradient(180deg, var(--seal-soft), var(--seal));
-  border-radius: 999px; box-shadow: 0 6px 16px rgba(110, 74, 142, 0.32);
+  border-radius: 999px; box-shadow: 0 6px 18px rgba(110, 74, 142, 0.32);
   transition: transform .12s ease, box-shadow .12s ease;
 }
 .shake-btn:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(110, 74, 142, 0.4); }
@@ -768,28 +809,28 @@ body {
 /* 默认藏起；摇完从筒口窜出，落在竹筒正前方覆盖筒身，显示签号，随后签文展开 */
 .qian-out {
   position: absolute; top: 50%; left: 50%;
-  width: 24px; height: 196px;
+  width: 34px; height: 340px;
   transform: translate(-50%, -50%) scaleY(0.16);
   transform-origin: bottom center; border-radius: 10px 10px 5px 5px;
   background:
     linear-gradient(90deg, #9c7338 0%, #c9a866 30%, #f3e6c4 50%, #c9a866 70%, #9c7338 100%),
     linear-gradient(180deg, #fbf4e4, #ecdcbb);
   background-blend-mode: overlay;
-  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 12px 24px rgba(110, 75, 20, 0.5);
+  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 14px 30px rgba(110, 75, 20, 0.5);
   opacity: 0; pointer-events: none; z-index: 12;
 }
 .qian-out::before {
-  content: ""; position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
-  width: 24px; height: 14px; border-radius: 7px;
+  content: ""; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  width: 34px; height: 18px; border-radius: 9px;
   background: linear-gradient(180deg, #d64848, #a82626);
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 .qian-out .qian-out-no {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-family: var(--serif); font-size: 17px; font-weight: 700; color: #b23b3b;
+  font-family: var(--serif); font-size: 22px; font-weight: 700; color: #b23b3b;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
-.qian-out.popped { animation: stick-cover .92s cubic-bezier(.18, .9, .3, 1) forwards; }
+.qian-out.popped { animation: stick-cover 1.05s cubic-bezier(.18, .9, .3, 1) forwards; }
 @keyframes stick-cover {
   0%   { opacity: 0; transform: translate(-50%, 44%) scaleY(0.14); }
   22%  { opacity: 1; transform: translate(-50%, -78%) scaleY(0.62) rotate(-7deg); }
@@ -877,17 +918,22 @@ body {
 
   /* 每日签运：手机端 */
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
-  .qian-tong { width: 104px; height: 168px; margin-top: 58px; }
-  .qian-band { height: 20px; top: 9%; }
-  .qian-patch { width: 54px; height: 54px; }
-  .qian-patch .qian-yin-yang { width: 40px; height: 40px; }
-  .qian-sticks { top: -52px; width: 86px; }
-  .qian-sticks i { width: 5px; height: 56px; }
-  .qian-sticks i::before { height: 9px; }
-  .qian-out { width: 22px; height: 180px; }
-  .qian-out .qian-out-no { font-size: 15px; }
-  .sign-poem { font-size: 17px; }
-  .sign-title { font-size: 21px; letter-spacing: 2px; }
+  .sign-stage { min-height: 420px; }
+  .qian-tong { width: 170px; height: 250px; margin-top: 50px; }
+  .qian-sticks { width: 78px; }
+  .qian-stick { width: 5px; height: 72px; bottom: -8px; }
+  .qian-stick::before { width: 5px; height: 10px; top: -9px; }
+  .qian-stick:nth-child(1) { --tx: -21px; --rot: -14deg; }
+  .qian-stick:nth-child(2) { --tx: -12px; --rot: -8deg; }
+  .qian-stick:nth-child(3) { --tx: -4px; --rot: -2deg; }
+  .qian-stick:nth-child(4) { --tx: 5px; --rot: 3deg; }
+  .qian-stick:nth-child(5) { --tx: 13px; --rot: 9deg; }
+  .qian-stick:nth-child(6) { --tx: 22px; --rot: 15deg; }
+  .qian-out { width: 26px; height: 250px; }
+  .qian-out .qian-out-no { font-size: 18px; }
+  .qian-out::before { width: 26px; height: 14px; top: -10px; }
+  .sign-poem { font-size: 18px; }
+  .sign-title { font-size: 23px; letter-spacing: 3px; }
   .sign-yj { gap: 10px; }
 
   /* 手机端全局适配 */
