@@ -288,23 +288,28 @@ function buildLunarClock(hours, curIdx) {
     shi += `<text x="${C1(p.x)}" y="${C1(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}">${BRANCHES[i]}</text>`;
   });
 
-  // 雷达覆盖扇形：当前时辰 30° 静态覆盖扇 + 旋转的雷达扫描扇
-  const radarCoverage = `<path class="clk-cover" d="${annSector(cx, cy, 20, 148, curIdx * 30 - 15, curIdx * 30 + 15)}"/>`;
-  const radarSweep = `<path class="clk-radar-beam" d="${annSector(cx, cy, 20, 148, 0, 62)}" fill="url(#radarGrad)"/>`;
+  // 雷达覆盖扇形：旋转光束 + 尾随覆盖扇 + 当前时辰扇形高亮
+  const sweepAngle = 42; // 尾随覆盖扇的张角
+  const radarTrail = `<path class="clk-radar-trail" d="${annSector(cx, cy, 0, 150, -sweepAngle, 0)}"/>`;
+  const beamTip = ringPoint(cx, cy, 150, 0);
+  const radarBeam = `<line class="clk-radar-beam" x1="${cx}" y1="${cy}" x2="${C1(beamTip.x)}" y2="${C1(beamTip.y)}"/>`;
+  const radarDot = `<circle class="clk-radar-dot" cx="${C1(beamTip.x)}" cy="${C1(beamTip.y)}" r="3.5"/>`;
+  const shiCover = `<path class="clk-cover" d="${annSector(cx, cy, 58, 66, curIdx * 30 - 15, curIdx * 30 + 15)}"/>`;
 
   const svg =
-    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，含时分秒指针">
+    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，含时分秒指针及雷达扫描">
       <circle cx="160" cy="160" r="156" class="clk-rim"/>
       <defs>
-        <linearGradient id="radarGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="var(--seal)" stop-opacity="0"/>
-          <stop offset="1" stop-color="var(--seal)" stop-opacity="0.40"/>
-        </linearGradient>
+        <radialGradient id="radarTrailGrad" cx="160" cy="160" r="150" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="var(--seal)" stop-opacity="0.26"/>
+          <stop offset="100%" stop-color="var(--seal)" stop-opacity="0.03"/>
+        </radialGradient>
       </defs>
-      ${radarCoverage}
       <g class="clk-radar-sweep">
-        ${radarSweep}
-        <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="7s" repeatCount="indefinite"/>
+        ${radarTrail}
+        ${radarBeam}
+        ${radarDot}
+        <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="8s" repeatCount="indefinite"/>
       </g>
       ${jie}
       <circle cx="160" cy="160" r="138" class="clk-ring"/>
@@ -314,6 +319,7 @@ function buildLunarClock(hours, curIdx) {
       <circle cx="160" cy="160" r="94" class="clk-ring"/>
       ${men}
       <circle cx="160" cy="160" r="72" class="clk-ring"/>
+      ${shiCover}
       ${shi}
       <g id="clkHands">
         <line id="clkHandShi" x1="160" y1="162" x2="160" y2="98" class="clk-hand-shi"/>
@@ -331,7 +337,7 @@ function buildLunarClock(hours, curIdx) {
   document.getElementById('lunarClock').innerHTML = svg;
 
   const h = hours[curIdx];
-  document.getElementById('clockCap').textContent = `${h.name}当令 · 罗盘指针平滑走字 · 雷达缓扫覆盖当前时辰`;
+  document.getElementById('clockCap').textContent = `${h.name}当令 · 雷达光束扫过盘面 · 当前时辰覆盖扇高亮`;
 }
 
 /* 真实钟表走字：时辰指针（时）+ 分针 + 秒针，平滑走动（逐帧细分角度，无跳秒） */
