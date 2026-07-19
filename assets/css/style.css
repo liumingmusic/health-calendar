@@ -706,14 +706,14 @@ body {
 }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
-.sign-result { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; z-index: 6; overflow: auto; }
+/* 签文改为全屏居中悬浮弹窗：遮罩 + 卡片居中，彻底避免被任何元素遮挡 */
+.sign-result { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(24, 14, 9, 0.5); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); overflow: auto; }
 .sign-slip {
-  width: 420px; height: 600px; max-width: 92vw; max-height: 78vh;
-  position: relative; flex: none;
+  width: 420px; max-width: 92vw; position: relative; flex: none;
   perspective: 1000px;
 }
 .sign-paper {
-  width: 100%; height: 100%;
+  width: 100%; height: 600px;
   position: relative;
   border-radius: 8px;
   background:
@@ -779,6 +779,28 @@ body {
   opacity: .45; transform: rotate(-14deg); pointer-events: none;
   box-shadow: 0 0 0 3px rgba(178, 59, 59, 0.08);
 }
+/* 弹窗关闭按钮（悬浮在红签头右上角） */
+.sign-close {
+  position: absolute; top: 10px; right: 10px; z-index: 5;
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: rgba(255, 248, 231, 0.92); color: #8a1f1f;
+  font-size: 22px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  transition: transform .12s ease, background .12s ease;
+}
+.sign-close:hover { transform: scale(1.08); background: #fff; }
+/* 弹窗内重摇按钮 */
+.sign-foot { display: flex; justify-content: center; margin-top: 18px; }
+.reroll-btn-in {
+  font-family: var(--serif); font-size: 15px; letter-spacing: 2px;
+  padding: 11px 30px; border: 1px solid var(--seal); color: var(--seal);
+  background: var(--paper); border-radius: 999px; cursor: pointer;
+  transition: all .15s ease;
+}
+.reroll-btn-in:hover { background: var(--seal); color: #fff; }
+.reroll-btn-in:active { transform: scale(.97); }
+
 .sign-result.show .sign-paper { animation: paper-reveal .85s cubic-bezier(.2, .9, .3, 1); }
 @keyframes paper-reveal {
   0% { opacity: 0; transform: translateY(-60px) rotate(-3deg) scale(.92); }
@@ -938,7 +960,8 @@ body {
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
   .sign-stage { min-height: 420px; }
   .qian-tong { width: 170px; height: 250px; margin-top: 50px; --stick-scale: 0.72; }
-  .sign-slip { width: 330px; height: 480px; }
+  .sign-slip { width: 330px; }
+  .sign-paper { height: 480px; }
   .sign-head { height: 58px; }
   .sign-ribbon { font-size: 18px; letter-spacing: 6px; }
   .sign-paper .sign-poem { font-size: 18px; }
