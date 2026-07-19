@@ -1029,3 +1029,33 @@ body {
   .lunar-clock { width: 280px; height: 280px; }
   .focus-name { font-size: 26px; }
 }
+
+/* ============ 分享海报（隐藏，生成时截图） ============ */
+.share-poster { position: fixed; left: -10000px; top: 0; width: 375px; }
+.sp-inner { width: 375px; box-sizing: border-box; background: var(--paper);
+  border: 1px solid var(--line); padding: 28px 26px 22px;
+  font-family: var(--sans); color: var(--ink); }
+.sp-brand { text-align: center; }
+.sp-logo { font-family: var(--serif); font-size: 26px; color: var(--seal);
+  letter-spacing: 4px; font-weight: 500; }
+.sp-slogan { font-size: 12px; color: var(--ink-faint); letter-spacing: 3px; margin-top: 4px; }
+.sp-rule { height: 2px; background: var(--seal); opacity: .25; margin: 16px 0;
+  border-radius: 2px; }
+.sp-body { min-height: 384px; }
+.sp-kind { font-size: 12px; color: var(--seal-soft); letter-spacing: 2px; text-align: center; }
+.sp-no { font-family: var(--serif); font-size: 20px; text-align: center; margin-top: 10px; }
+.sp-title { font-family: var(--serif); font-size: 30px; text-align: center; margin-top: 6px;
+  color: var(--seal); letter-spacing: 2px; }
+.sp-poem { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.sp-poem span { font-family: var(--serif); font-size: 16px; color: var(--ink); letter-spacing: 1px; }
+.sp-quote { margin-top: 18px; text-align: center; font-family: var(--serif);
+  font-size: 17px; color: var(--ink-soft); }
+.sp-note { margin-top: 16px; text-align: center; font-size: 11px;
+  color: var(--ink-faint); line-height: 1.6; }
+.sp-footer { margin-top: 22px; display: flex; align-items: center; gap: 14px;
+  border-top: 1px solid var(--line); padding-top: 16px; }
+.sp-qr { width: 84px; height: 84px; background: #fff; padding: 4px;
+  border: 1px solid var(--line); border-radius: 6px; }
+.sp-foottext { flex: 1; }
+.sp-scan { font-size: 13px; color: var(--ink); }
+.sp-date { font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
