@@ -1397,7 +1397,7 @@ function initTabs() {
 /* ============ 主流程 ============ */
 async function init() {
   try {
-    const [years, health, hou, hours, dao, fortune] = await Promise.all([
+    const [years, health, hou, hours, dao, fortune, constitution] = await Promise.all([
       loadJSON('data/solar-terms.json'),
       loadJSON('data/health.json'),
       loadJSON('data/hou.json'),
