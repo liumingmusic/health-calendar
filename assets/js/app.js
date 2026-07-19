@@ -1051,8 +1051,10 @@ function setupSign() {
 
   const SHOW_MS = 5000;   // 真实摇晃 5 秒
   let busy = false;
+  let currentIdx = -1;    // 当前展示的签索引（用于「再摇一签」避开重复）
 
   function reveal(idx) {
+    currentIdx = idx;
     renderSignResult(sticks[idx]);
     saveMySign(sticks[idx].no, sticks[idx].title);
     result.classList.remove('hidden'); result.classList.add('show');
@@ -1087,11 +1089,11 @@ function setupSign() {
     }, SHOW_MS);
   }
 
-  shakeBtn.addEventListener('click', () => doShake(dateHash(todayStr()) % sticks.length));
+  // 主摇签：每次点击独立真随机，与日期/人物无关
+  shakeBtn.addEventListener('click', () => doShake(Math.floor(Math.random() * sticks.length)));
   rerollBtn.addEventListener('click', () => {
-    const cur = dateHash(todayStr()) % sticks.length;
-    let r = cur;
-    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
+    let r = currentIdx;
+    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === currentIdx); }
     doShake(r);
   });
   // 悬浮弹窗：关闭按钮 / 点遮罩空白处 / ESC 均可收起
@@ -1100,11 +1102,10 @@ function setupSign() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && result.classList.contains('show')) closeModal();
   });
-  // 弹窗内「再摇一签」
+  // 弹窗内「再摇一签」：避开当前已展示的签，其余真随机
   if (rerollIn) rerollIn.addEventListener('click', () => {
-    const cur = dateHash(todayStr()) % sticks.length;
-    let r = cur;
-    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
+    let r = currentIdx;
+    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === currentIdx); }
     doShake(r);
   });
   // 「我的签历」入口
