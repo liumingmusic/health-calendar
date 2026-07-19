@@ -738,9 +738,9 @@ body {
   text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
 .sign-meta {
-  position: absolute; bottom: 6px; right: 14px;
   font-family: var(--serif); font-size: 13px; opacity: .92;
   display: flex; gap: 8px; align-items: baseline;
+  margin-top: 4px;
 }
 .sign-paper .sign-no { opacity: .85; color: #fff8e7; }
 .sign-paper .sign-title { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #fff8e7; }
@@ -791,7 +791,7 @@ body {
 }
 .sign-close:hover { transform: scale(1.08); background: #fff; }
 /* 弹窗内重摇按钮 */
-.sign-foot { display: flex; justify-content: center; margin-top: 18px; }
+.sign-foot { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
 .reroll-btn-in {
   font-family: var(--serif); font-size: 15px; letter-spacing: 2px;
   padding: 11px 30px; border: 1px solid var(--seal); color: var(--seal);
@@ -800,6 +800,15 @@ body {
 }
 .reroll-btn-in:hover { background: var(--seal); color: #fff; }
 .reroll-btn-in:active { transform: scale(.97); }
+/* 截图下载按钮（今日总览 / 签文弹窗通用） */
+.download-btn {
+  font-family: var(--serif); font-size: 14px; letter-spacing: 1px;
+  padding: 8px 20px; border: 1px solid var(--seal); color: var(--seal);
+  background: var(--paper); border-radius: 999px; cursor: pointer;
+  transition: all .15s ease;
+}
+.download-btn:hover { background: var(--seal); color: #fff; }
+.download-btn:active { transform: scale(.97); }
 
 .sign-result.show .sign-paper { animation: paper-reveal .85s cubic-bezier(.2, .9, .3, 1); }
 @keyframes paper-reveal {
