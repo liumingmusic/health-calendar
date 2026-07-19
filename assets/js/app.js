@@ -936,8 +936,6 @@ function setupSign() {
   if (!STICKS) return;
   const stage = document.getElementById('signStage');
   const tong = document.getElementById('qianTong');
-  const out = document.getElementById('qianOut');
-  const outNo = document.getElementById('qianOutNo');
   const result = document.getElementById('signResult');
   const shakeBtn = document.getElementById('shakeSign');
   const rerollBtn = document.getElementById('rerollSign');
@@ -954,8 +952,6 @@ function setupSign() {
   const SHOW_MS = 5000;   // 真实摇晃 5 秒
   let busy = false;
 
-  function resetOut() { out.classList.remove('popped'); }
-
   function reveal(idx) {
     renderSignResult(sticks[idx]);
     result.classList.remove('hidden'); result.classList.add('show');
@@ -967,10 +963,9 @@ function setupSign() {
     busy = false;
   }
 
-  // 真实摇签：筒中签支剧烈摇晃 5 秒 -> 跳出一根签 -> 展开签文
+  // 真实摇签：筒中签支剧烈摇晃 5 秒 -> 停筒 -> 展开签文
   function doShake(dailyIdx) {
     if (busy) return; busy = true;
-    resetOut();
     stage.classList.remove('revealed');
     result.classList.remove('show'); result.classList.add('hidden');
     rerollBtn.classList.add('hidden');
@@ -980,9 +975,7 @@ function setupSign() {
     tong.classList.add('shaking'); stage.classList.add('shaking');
     setTimeout(() => {
       tong.classList.remove('shaking'); stage.classList.remove('shaking');
-      outNo.textContent = sticks[dailyIdx].no;      // 签号写到跳出的签上
-      out.classList.add('popped');                  // 一根签窜出、覆盖竹筒
-      setTimeout(() => { reveal(dailyIdx); }, 900); // 等覆盖动画后再展开签文
+      setTimeout(() => { reveal(dailyIdx); }, 700); // 筒停稳后展开签文
     }, SHOW_MS);
   }
 
