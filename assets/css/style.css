@@ -123,6 +123,10 @@ body {
 .hero-term .focus-name { color: var(--seal); }
 .hero-hour .focus-name { color: var(--winter); }
 .focus-meta { font-size: 14px; color: var(--ink-soft); margin-top: 8px; line-height: 1.5; }
+.hero-hour .focus-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; margin-top: 10px; }
+.hero-hour .focus-meta .hm-mer { font-size: 12px; color: var(--ink-faint); }
+.hero-hour .focus-meta .yi { color: #2f8f78; font-size: 13.5px; }
+.hero-hour .focus-meta .ji { color: #b23b3b; font-size: 13.5px; }
 
 .hero-clock { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .lunar-clock { width: 320px; height: 320px; flex: none; }
@@ -396,7 +400,8 @@ body {
 .clk-tick.cur { stroke: var(--seal); stroke-width: 2.4; }
 .clk-spin-taiji { transform-box: fill-box; transform-origin: center; animation: clk-spin 16s linear infinite; }
 @keyframes clk-spin { to { transform: rotate(360deg); } }
-.clk-jie { font-family: var(--serif); font-size: 8.5px; fill: var(--ink-faint); }
+.clk-jie { font-family: var(--serif); font-size: 8.5px; fill: var(--ink-faint); cursor: pointer; transition: fill .15s ease; }
+.clk-jie:hover { fill: var(--seal); }
 .clk-jie.cur { fill: var(--seal); font-weight: 700; }
 .clk-bagua { font-family: var(--serif); font-size: 16px; fill: var(--ink-soft); }
 .clk-dir { font-family: var(--serif); font-size: 10px; fill: var(--ink-faint); letter-spacing: 0; }
@@ -809,6 +814,34 @@ body {
 }
 .download-btn:hover { background: var(--seal); color: #fff; }
 .download-btn:active { transform: scale(.97); }
+
+.my-signs-btn {
+  font-family: var(--serif); font-size: 14px; letter-spacing: 1px;
+  padding: 8px 20px; border: 1px solid var(--seal); color: var(--seal);
+  background: var(--paper); border-radius: 999px; cursor: pointer;
+  transition: all .15s ease;
+}
+.my-signs-btn:hover { background: var(--seal); color: #fff; }
+.my-signs-btn:active { transform: scale(.97); }
+
+.my-sign-list { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.my-sign-row {
+  display: grid; grid-template-columns: 104px 56px 1fr auto; align-items: center; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--paper);
+}
+.ms-date { font-size: 13px; color: var(--ink-soft); }
+.ms-no { font-size: 13px; color: var(--seal); font-weight: 700; }
+.ms-title { font-size: 14px; color: var(--ink); }
+.ms-view {
+  font-family: var(--serif); font-size: 13px; padding: 5px 14px;
+  border: 1px solid var(--seal); color: var(--seal); background: var(--paper);
+  border-radius: 999px; cursor: pointer; transition: all .15s ease;
+}
+.ms-view:hover { background: var(--seal); color: #fff; }
+
+@media (max-width: 720px) {
+  .my-sign-row { grid-template-columns: 1fr auto; row-gap: 4px; }
+}
 
 .sign-result.show .sign-paper { animation: paper-reveal .85s cubic-bezier(.2, .9, .3, 1); }
 @keyframes paper-reveal {
