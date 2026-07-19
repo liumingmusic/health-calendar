@@ -56,7 +56,7 @@
     <!-- 今日总览 -->
     <div class="tab-panel" id="tab-summary">
       <section class="panel overview-card" id="todayOverview">
-        <div class="panel-head"><h2>今日总览</h2><span class="season-chip" id="ovSeason">—</span><button class="download-btn" id="downloadOverview" type="button">保存截图</button></div>
+        <div class="panel-head"><h2>今日总览</h2><span class="season-chip" id="ovSeason">—</span><button class="download-btn" id="downloadOverview" type="button">保存截图</button><button class="download-btn" id="posterOverview" type="button">生成海报</button></div>
         <div class="ov-grid">
           <div class="ov-cell ov-date">
             <div class="ov-k">公历 / 农历</div>
@@ -407,11 +407,39 @@
       <div class="sign-foot">
         <button class="reroll-btn-in" id="rerollInSign" type="button">再摇一签</button>
         <button class="download-btn" id="downloadSign" type="button">保存签文</button>
+        <button class="download-btn" id="posterSign" type="button">生成海报</button>
       </div>
     </div>
   </div>
 
+  <!-- 分享海报（隐藏，生成时由 html2canvas 截图） -->
+  <div class="share-poster" id="sharePoster" aria-hidden="true">
+    <div class="sp-inner">
+      <div class="sp-brand">
+        <div class="sp-logo">养生日历</div>
+        <div class="sp-slogan">顺时而养 · 每日一签</div>
+      </div>
+      <div class="sp-rule"></div>
+      <div class="sp-body">
+        <div class="sp-kind" id="spKind"></div>
+        <div class="sp-no" id="spNo"></div>
+        <div class="sp-title" id="spTitle"></div>
+        <div class="sp-poem" id="spPoem"></div>
+        <div class="sp-quote" id="spQuote"></div>
+        <div class="sp-note" id="spNote"></div>
+      </div>
+      <div class="sp-footer">
+        <img class="sp-qr" id="spQr" alt="扫码测今日签运" />
+        <div class="sp-foottext">
+          <div class="sp-scan">扫码测你的今日签运</div>
+          <div class="sp-date" id="spDate"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/qrcode.js"></script>
   <script src="assets/js/html2canvas.min.js"></script>
-  <script src="assets/js/app.js?v=20260719g"></script>
+  <script src="assets/js/app.js?v=20260719h"></script>
 </body>
 </html>
