@@ -736,15 +736,77 @@ body {
 
 .sign-result { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; z-index: 6; overflow: auto; }
 .sign-slip {
-  border: 1px solid var(--line-strong); border-radius: 16px; padding: 22px 22px 20px;
-  background: radial-gradient(circle at 12% 0%, rgba(110, 74, 142, 0.07), transparent 40%), var(--paper);
-  text-align: center; margin: auto; max-width: 30em;
+  width: 420px; height: 600px; max-width: 92vw; max-height: 78vh;
+  position: relative; flex: none;
+  perspective: 1000px;
 }
-.sign-result.show .sign-slip { animation: slip-reveal .8s cubic-bezier(.2, .9, .3, 1); }
-@keyframes slip-reveal {
-  0% { opacity: 0; transform: translateY(-44px) scale(.94); }
-  55% { opacity: 1; transform: translateY(6px) scale(1.01); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+.sign-paper {
+  width: 100%; height: 100%;
+  position: relative;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 24px, rgba(190, 170, 130, 0.06) 24px 25px),
+    linear-gradient(180deg, #faf5e6 0%, #f3ecd4 100%);
+  border: 1px solid #d8cbb0;
+  box-shadow:
+    0 18px 44px rgba(60, 45, 25, 0.18),
+    0 8px 18px rgba(60, 45, 25, 0.12),
+    inset 0 0 80px rgba(180, 160, 100, 0.08);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.sign-head {
+  position: relative; flex: none; height: 68px;
+  background: linear-gradient(180deg, #b83c3c, #9f2b2b);
+  color: #fff8e7;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 8px 8px 0 0;
+}
+.sign-ribbon {
+  font-family: var(--serif); font-size: 20px; letter-spacing: 8px; font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.sign-meta {
+  position: absolute; bottom: 6px; right: 14px;
+  font-family: var(--serif); font-size: 13px; opacity: .92;
+  display: flex; gap: 8px; align-items: baseline;
+}
+.sign-paper .sign-no { opacity: .85; color: #fff8e7; }
+.sign-paper .sign-title { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #fff8e7; }
+.sign-body {
+  flex: 1; overflow: auto; padding: 22px 24px 70px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(255,255,255,0.4), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.15), transparent 40%);
+}
+.sign-paper .sign-section { margin: 0 0 22px; max-width: none; }
+.sign-paper .sign-section:last-child { margin-bottom: 0; }
+.sign-paper .sign-k {
+  display: block; text-align: center; font-family: var(--serif); font-size: 13px;
+  color: #8a1f1f; letter-spacing: 5px; margin-bottom: 10px; opacity: .85;
+}
+.sign-paper .sign-poem {
+  font-family: var(--serif); font-size: 20px; line-height: 2.1; color: #2a2018;
+  text-align: center; letter-spacing: 1px; margin: 0; max-width: none;
+}
+.sign-paper .sign-poem span { display: block; }
+.sign-paper .sign-jie {
+  font-size: 15.5px; line-height: 1.95; color: #4a3f36; text-align: justify;
+  font-family: var(--sans);
+}
+.sign-seal {
+  position: absolute; bottom: 18px; right: 22px;
+  width: 58px; height: 58px;
+  border: 2px solid #b23b3b; border-radius: 10px;
+  color: #b23b3b; font-family: var(--serif); font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: .45; transform: rotate(-14deg); pointer-events: none;
+  box-shadow: 0 0 0 3px rgba(178, 59, 59, 0.08);
+}
+.sign-result.show .sign-paper { animation: paper-reveal .85s cubic-bezier(.2, .9, .3, 1); }
+@keyframes paper-reveal {
+  0% { opacity: 0; transform: translateY(-60px) rotate(-3deg) scale(.92); }
+  55% { opacity: 1; transform: translateY(6px) rotate(1deg) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
 }
 .sign-stage.revealed .qian-tong { opacity: 0; transform: scale(.82); transform-origin: 50% 72%; transition: opacity .5s ease, transform .5s ease; }
 .sign-stage.revealed .qian-glow,
@@ -816,36 +878,7 @@ body {
 .lesson-note { font-size: 12.5px; color: var(--ink-soft); margin: -4px 0 12px; line-height: 1.7; }
 .lesson-note b { color: var(--seal); }
 
-/* ---------- 每日签运：跳出的签从竹筒口自然伸出，不覆盖筒身 ---------- */
-.qian-out {
-  position: absolute; top: -116px; left: 50%;
-  width: 18px; height: 118px;
-  transform: translate(-50%, 0) scaleY(0);
-  transform-origin: bottom center; border-radius: 9px 9px 4px 4px;
-  background:
-    linear-gradient(90deg, #9c7338 0%, #c9a866 30%, #f3e6c4 50%, #c9a866 70%, #9c7338 100%),
-    linear-gradient(180deg, #fbf4e4, #ecdcbb);
-  background-blend-mode: overlay;
-  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 8px 16px rgba(110, 75, 20, 0.4);
-  opacity: 0; pointer-events: none; z-index: 12;
-}
-.qian-out::before {
-  content: ""; position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
-  width: 18px; height: 14px; border-radius: 9px;
-  background: linear-gradient(180deg, #d64848, #a82626);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.25);
-}
-.qian-out .qian-out-no {
-  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
-  font-family: var(--serif); font-size: 15px; font-weight: 700; color: #b23b3b;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-.qian-out.popped { animation: stick-out 0.8s cubic-bezier(.2, .8, .3, 1) forwards; }
-@keyframes stick-out {
-  0%   { opacity: 0; transform: translate(-50%, 0) scaleY(0); }
-  35%  { opacity: 1; transform: translate(-50%, 0) scaleY(1.06); }
-  100% { opacity: 1; transform: translate(-50%, 0) scaleY(1); }
-}
+/* 摇签时跳出的单签已移除，改为摇毕直接展开仿真签卡 */
 .sign-stage.shaking .qian-glow { animation: qian-glow-spin 3.5s linear infinite, glow-pulse 1s ease-in-out infinite; }
 @keyframes glow-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 .sign-shaking {
@@ -929,11 +962,11 @@ body {
   .sign-stage { min-height: 420px; }
   .qian-tong { width: 170px; height: 250px; margin-top: 50px; --stick-scale: 0.72; }
   .qian-sticks { top: 22px; width: 68px; }
-  .qian-out { width: 20px; height: 110px; top: -110px; }
-  .qian-out .qian-out-no { font-size: 15px; top: 14px; }
-  .qian-out::before { width: 20px; height: 12px; top: -8px; }
-  .sign-poem { font-size: 18px; }
-  .sign-title { font-size: 23px; letter-spacing: 3px; }
+  .sign-slip { width: 330px; height: 480px; }
+  .sign-head { height: 58px; }
+  .sign-ribbon { font-size: 18px; letter-spacing: 6px; }
+  .sign-paper .sign-poem { font-size: 18px; }
+  .sign-paper .sign-jie { font-size: 14.5px; }
   .sign-yj { gap: 10px; }
 
   /* 手机端全局适配 */
