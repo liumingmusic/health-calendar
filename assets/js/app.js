@@ -1046,6 +1046,45 @@ function setupSign() {
   });
 }
 
+function setupDownloadButtons() {
+  const signBtn = document.getElementById('downloadSign');
+  const ovBtn = document.getElementById('downloadOverview');
+  const downloadEl = async (el, filename) => {
+    if (typeof html2canvas !== 'function') {
+      alert('截图库尚未加载，请稍后重试'); return;
+    }
+    try {
+      const canvas = await html2canvas(el, {
+        scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff'
+      });
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      window.__lastDownloadDataUrl = link.href;
+      document.body.appendChild(link); link.click(); link.remove();
+    } catch (e) {
+      console.error('screenshot fail', e);
+      alert('生成截图失败，请重试');
+    }
+  };
+  if (signBtn) {
+    signBtn.addEventListener('click', () => {
+      const slip = document.getElementById('signSlip');
+      if (!slip) return;
+      const no = (document.getElementById('signNo').textContent || '签').replace(/\s+/g, '_');
+      downloadEl(slip, `吕祖灵签-${no}.png`);
+    });
+  }
+  if (ovBtn) {
+    ovBtn.addEventListener('click', () => {
+      const ov = document.getElementById('todayOverview');
+      if (!ov) return;
+      const date = new Date().toISOString().slice(0, 10);
+      downloadEl(ov, `今日总览-${date}.png`);
+    });
+  }
+}
+
 /* 今日运程：生肖 12 运程（依当日干支）+ 本日干支综论 */
 const ZODIAC = [
   { s: '鼠', z: '子' }, { s: '牛', z: '丑' }, { s: '虎', z: '寅' }, { s: '兔', z: '卯' },
@@ -1225,6 +1264,7 @@ async function init() {
 
     // 每日签运
     setupSign();
+    setupDownloadButtons();
     renderDailyFortune(new Date(), flat);
 
     // 使用说明
