@@ -945,80 +945,180 @@ body {
 
 /* ---------- 响应式：手机端 ---------- */
 @media (max-width: 720px) {
-  .scroll-wrap { padding: 0 13px 30px; }
-  .site-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px 2px 12px; }
+  :root { font-size: 15px; }
+  .scroll-wrap { padding: 0 12px 28px; }
+  .site-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 2px 10px; margin-bottom: 10px; }
   .meta { text-align: left; width: 100%; }
-  .brand-text h1 { font-size: 24px; }
+  .brand-text h1 { font-size: 22px; letter-spacing: 3px; }
+  .subtitle { letter-spacing: 2px; }
+  .today-date { font-size: 15px; }
 
-  /* 英雄区：时钟置顶，节气/时辰分列其下 */
+  /* 英雄区：时钟置顶并显著缩小，释放首屏空间 */
   .hero {
     grid-template-columns: 1fr 1fr;
-    gap: 12px 10px;
-    padding: 18px 14px 20px;
+    gap: 10px 8px;
+    padding: 14px 12px 16px;
+    margin-bottom: 14px;
   }
   .hero-clock { grid-column: 1 / -1; order: -1; }
-  .lunar-clock { width: 300px; height: 300px; }
+  .lunar-clock { width: min(68vw, 240px); height: min(68vw, 240px); margin: 0 auto; }
+  .clk-jie { font-size: 7px; }
+  .clk-bagua { font-size: 13px; }
+  .clk-dir { font-size: 8.5px; }
+  .clk-dir.major { font-size: 12px; }
+  .clk-men { font-size: 11px; }
+  .clk-shichen { font-size: 13px; }
+  .clk-shichen.cur { font-size: 17px; }
+  .clock-cap { margin-top: 6px; font-size: 10.5px; letter-spacing: 0.5px; }
 
-  /* 今日总览：手机端两列 */
-  .ov-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .ov-v { font-size: 17px; }
-  .ov-bazi { font-size: 15px; letter-spacing: 1px; }
-  .clock-cap { margin-top: 8px; font-size: 11px; }
   .hero-term { text-align: right; }
   .hero-hour { text-align: left; }
-  .focus-name { font-size: 34px; }
-  .focus-label { font-size: 11px; letter-spacing: 2px; }
+  .focus-name { font-size: 28px; letter-spacing: 1px; }
+  .focus-label { font-size: 10.5px; letter-spacing: 2px; padding: 1px 9px; margin-bottom: 6px; }
+  .focus-meta { font-size: 12.5px; margin-top: 5px; }
+  .hero-hour .focus-meta { gap: 2px; margin-top: 6px; }
+  .hero-hour .focus-meta .yi, .hero-hour .focus-meta .ji { font-size: 12px; }
 
-  .tab-panel { }
-  .term-grid { grid-template-columns: repeat(4, 1fr); }
+  /* panel / tab 更紧凑 */
+  .panel { padding: 13px 12px 15px; margin-bottom: 14px; }
+  .panel-head { margin-bottom: 10px; }
+  .panel-head h2 { font-size: 18px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; gap: 4px; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: none; font-size: 14px; letter-spacing: 1px; padding: 8px 11px 10px; }
+
+  /* 今日总览：两列 */
+  .ov-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .ov-cell { padding: 9px 10px; min-height: 68px; gap: 3px; }
+  .ov-v { font-size: 16px; }
+  .ov-bazi { font-size: 14px; letter-spacing: 1px; }
+  .ov-k { font-size: 10.5px; }
+
+  /* 节气网格 3 列更适合手机 */
+  .term-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .term-cell { padding: 8px 4px; }
+  .term-cell .t-name { font-size: 14px; }
+  .term-cell .t-solar { font-size: 10px; }
+
   .hou-current { grid-template-columns: 1fr; }
   .habits { grid-template-columns: 1fr; }
-  .hour-bar { grid-template-columns: repeat(6, 1fr); row-gap: 6px; }
+  .hour-bar { grid-template-columns: repeat(6, 1fr); row-gap: 5px; gap: 4px; }
+  .hour-seg { padding: 6px 1px 5px; font-size: 10px; }
+  .hour-seg .hs-name { font-size: 12px; }
+  .hour-seg .hs-range { font-size: 8px; }
+  .hour-detail { padding: 10px 12px; font-size: 13px; }
 
   /* 道家养生：单列 */
-  .dao-methods { grid-template-columns: 1fr; }
-  .dao-quotes { grid-template-columns: 1fr; }
-  .dao-daily-text { font-size: 19px; }
-  .dao-daily::after { font-size: 72px; }
+  .dao-methods { grid-template-columns: 1fr; gap: 12px; }
+  .dao-quotes { grid-template-columns: 1fr; gap: 10px; }
+  .dao-daily { padding: 14px 14px 16px; }
+  .dao-daily-text { font-size: 17px; line-height: 1.65; }
+  .dao-daily::after { font-size: 56px; right: 10px; bottom: -10px; }
+  .dao-method, .dao-quote { padding: 12px 13px 13px; }
+  .dm-name { font-size: 16px; }
+  .dm-quote { font-size: 14px; padding: 6px 10px; }
+  .dm-steps { padding-left: 18px; }
+  .dm-steps li { font-size: 13px; }
+  .dq-text { font-size: 15px; }
 
   /* 黄历八字：单列 */
-  .alm-grid { grid-template-columns: 1fr; }
-  .bazi-pillars { grid-template-columns: repeat(4, 1fr); }
-  .bz-gz { font-size: 20px; }
-  .qimen-board { max-width: 320px; }
-  .gz-jiazi { grid-template-columns: repeat(6, 1fr); }
-  .gz-table { font-size: 12px; }
-
-  /* 每日签运：手机端 */
-  .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
-  .sign-stage { min-height: 420px; }
-  .qian-tong { width: 170px; height: 250px; margin-top: 50px; --stick-scale: 0.72; }
-  .sign-slip { width: 330px; }
-  .sign-paper { height: 480px; }
-  .sign-head { height: 58px; }
-  .sign-ribbon { font-size: 18px; letter-spacing: 6px; }
-  .sign-paper .sign-poem { font-size: 18px; }
-  .sign-paper .sign-jie { font-size: 14.5px; }
-  .sign-paper .sign-explain { font-size: 14px; }
-  .sign-yj { gap: 10px; }
-
-  /* 手机端全局适配 */
-  .tabs { flex-wrap: nowrap; overflow-x: auto; gap: 4px 6px; -webkit-overflow-scrolling: touch; padding-bottom: 3px; }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab { flex: none; font-size: 15px; padding: 9px 13px 11px; }
+  .alm-grid { grid-template-columns: 1fr; gap: 10px; }
+  .alm-card { padding: 11px 12px; }
+  .alm-h { font-size: 14px; }
+  .alm-row { font-size: 13px; }
+  .bazi-pillars { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .bz-pillar { padding: 8px 3px; min-height: 68px; gap: 2px; }
+  .bz-gz { font-size: 18px; letter-spacing: 1px; }
+  .bz-label { font-size: 10px; }
+  .bz-wx { font-size: 11px; }
+  .bz-nayin { font-size: 10px; }
+  .bazi-summary-card { font-size: 13px; padding: 11px 12px; }
+  .qimen-board { max-width: min(90vw, 300px); gap: 4px; }
+  .qm-star { font-size: 15px; margin-top: 18px; }
+  .qm-gua { font-size: 13px; }
+  .qm-men { font-size: 11px; }
+  .qm-yi { font-size: 13px; }
+  .qm-luoshu, .qm-shen, .qm-zhi, .qm-dir { font-size: 9px; }
   .gz-section { overflow-x: auto; }
-  .gz-table { font-size: 11.5px; }
-  .qimen-board { max-width: 300px; }
-  .qm-star { font-size: 16px; }
-  .qm-dir { display: none; }
-  .help-today { grid-template-columns: 1fr; }
-  .bazi-summary-card { font-size: 13.5px; }
+  .gz-table { font-size: 11px; }
+  .gz-table th, .gz-table td { padding: 5px 4px; }
+  .gz-jiazi { grid-template-columns: repeat(6, 1fr); gap: 3px; }
+  .gz-jz { font-size: 11px; padding: 3px 0; }
+
+  /* 每日签运 */
+  .zodiac-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .zodiac { padding: 10px 8px; gap: 4px; }
+  .zx-name { font-size: 17px; }
+  .zx-comment { font-size: 11.5px; min-height: 2.8em; }
+  .zx-badge { font-size: 12px; padding: 1px 9px; }
+  .sign-stage { min-height: 360px; padding: 14px 0 6px; }
+  .qian-tong { width: 150px; height: 220px; margin-top: 36px; --stick-scale: 0.62; }
+  .qian-glow { width: 260px; height: 260px; }
+  .sign-prompt { font-size: 12px; margin-top: 18px; }
+  .sign-guide { font-size: 13px; padding: 10px 12px; margin-top: 14px; }
+  .sign-actions { margin-top: 16px; }
+  .shake-btn { font-size: 16px; padding: 11px 28px; letter-spacing: 2px; }
+  .sign-slip { width: min(92vw, 330px); }
+  .sign-paper { height: min(72vh, 520px); }
+  .sign-head { height: 54px; }
+  .sign-ribbon { font-size: 17px; letter-spacing: 5px; }
+  .sign-paper .sign-poem { font-size: 17px; line-height: 1.9; }
+  .sign-paper .sign-jie { font-size: 14px; }
+  .sign-paper .sign-explain { font-size: 13.5px; }
+  .sign-body { padding: 16px 16px 60px; }
+  .sign-foot { margin-top: 14px; }
+  .reroll-btn-in { font-size: 14px; padding: 10px 24px; }
+  .sign-seal { width: 50px; height: 50px; font-size: 15px; }
+  .my-signs-btn { font-size: 13px; padding: 7px 14px; }
+  .my-sign-row { padding: 8px 10px; gap: 6px; }
+
+  /* 使用说明 */
+  .help-today { grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; }
+  .help-item > summary { padding: 11px 12px; font-size: 15px; }
+  .help-body { padding: 2px 12px 12px; }
+  .help-body p, .help-body li { font-size: 13px; }
+  .help-lead { font-size: 13px; }
+
+  .fortune-lead { font-size: 13.5px; }
+  .day-zong { padding: 12px 13px; font-size: 13px; }
+
+  /* 打卡 */
+  .habit { min-height: 40px; padding: 7px 10px; font-size: 14px; }
+  .habit .box { width: 20px; height: 20px; font-size: 12px; }
+  .streak { font-size: 14px; }
+
+  /* footer */
+  .site-footer { margin-top: 22px; padding-top: 16px; }
+  .maxim { font-size: 15px; letter-spacing: 1px; }
+  .foot-note { font-size: 11px; }
+
+  /* modal */
+  .modal-card { padding: 18px 16px 20px; max-width: calc(100vw - 28px); }
+  .modal-body h3 { font-size: 20px; }
+  .modal-close { top: 8px; right: 10px; }
 }
 @media (max-width: 380px) {
+  .scroll-wrap { padding: 0 10px 24px; }
+  .brand-text h1 { font-size: 20px; }
+  .today-date { font-size: 14px; }
+  .lunar-clock { width: min(66vw, 220px); height: min(66vw, 220px); }
+  .focus-name { font-size: 24px; }
+  .focus-label { font-size: 10px; letter-spacing: 1px; }
+  .focus-meta { font-size: 12px; }
+  .hero-hour .focus-meta .yi, .hero-hour .focus-meta .ji { font-size: 11px; }
+  .tab { font-size: 13.5px; padding: 7px 9px 9px; }
   .term-grid { grid-template-columns: repeat(3, 1fr); }
   .hour-bar { grid-template-columns: repeat(4, 1fr); }
-  .lunar-clock { width: 280px; height: 280px; }
-  .focus-name { font-size: 26px; }
+  .bazi-pillars { grid-template-columns: repeat(4, 1fr); }
+  .bz-gz { font-size: 16px; }
+  .ov-grid { gap: 6px; }
+  .ov-v { font-size: 15px; }
+  .ov-bazi { font-size: 13px; }
+  .sign-stage { min-height: 340px; }
+  .qian-tong { width: 136px; height: 200px; }
+  .zodiac { padding: 9px 6px; }
+  .zx-name { font-size: 16px; }
+  .zx-comment { font-size: 11px; }
 }
 
 /* ============ P1-1 生辰体质 ============ */
@@ -1061,7 +1161,23 @@ body {
 .pv-ac-list { margin: 0; padding-left: 16px; font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
 
 @media (max-width: 560px) {
-  .pv-advice { grid-template-columns: 1fr; }
-  .pf-field { flex: 1 1 40%; }
+  .profile-panel { padding: 12px 12px 14px; }
+  .profile-head { margin-bottom: 10px; }
+  .profile-title { font-size: 16px; }
+  .profile-hint { font-size: 10px; }
+  .pf-row { gap: 8px; }
+  .pf-field { flex: 1 1 45%; min-width: 68px; gap: 3px; font-size: 11px; }
+  .pf-field input, .pf-field select { font-size: 13.5px; padding: 6px 8px; min-width: 0; width: 100%; }
+  .pf-field input { width: 100%; }
+  .pf-actions { margin-top: 10px; gap: 8px; }
+  .pf-save-btn { font-size: 13px; padding: 7px 16px; }
+  .pf-ghost-btn { font-size: 12.5px; padding: 6px 13px; }
+  .pv-advice { grid-template-columns: 1fr; gap: 8px; }
+  .pv-pillars { gap: 6px; }
+  .pv-pillars .bz-pillar { padding: 7px 3px; }
+  .pv-tendency { font-size: 12.5px; }
+  .pv-advice-card { padding: 9px 11px; }
+  .pv-ac-head { font-size: 13px; }
+  .pv-ac-list { font-size: 11.5px; padding-left: 14px; }
 }
 
