@@ -977,6 +977,8 @@ function setupSign() {
   const rerollBtn = document.getElementById('rerollSign');
   const promptEl = document.getElementById('signPrompt');
   const shakingEl = document.getElementById('signShaking');
+  const closeBtn = document.getElementById('signClose');
+  const rerollIn = document.getElementById('rerollInSign');
   const sticks = STICKS.sticks;
   if (!sticks.length) return;
   document.getElementById('signIntro').textContent = SIGN_INTRO;
@@ -992,10 +994,17 @@ function setupSign() {
     renderSignResult(sticks[idx]);
     result.classList.remove('hidden'); result.classList.add('show');
     stage.classList.add('revealed');
-    shakeBtn.classList.add('hidden'); rerollBtn.classList.remove('hidden');
+    shakeBtn.classList.add('hidden'); rerollBtn.classList.add('hidden');
     shakingEl.classList.add('hidden');
-    promptEl.classList.remove('hidden');
-    promptEl.textContent = PIOUS;
+    promptEl.classList.add('hidden');
+    busy = false;
+  }
+
+  // 收起弹窗：恢复竹筒与「摇签求签」按钮，回到可重新求签的初始状态
+  function closeModal() {
+    result.classList.remove('show'); result.classList.add('hidden');
+    stage.classList.remove('revealed');
+    shakeBtn.classList.remove('hidden'); rerollBtn.classList.add('hidden');
     busy = false;
   }
 
@@ -1017,6 +1026,19 @@ function setupSign() {
 
   shakeBtn.addEventListener('click', () => doShake(dateHash(todayStr()) % sticks.length));
   rerollBtn.addEventListener('click', () => {
+    const cur = dateHash(todayStr()) % sticks.length;
+    let r = cur;
+    if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
+    doShake(r);
+  });
+  // 悬浮弹窗：关闭按钮 / 点遮罩空白处 / ESC 均可收起
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  result.addEventListener('click', (e) => { if (e.target === result) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && result.classList.contains('show')) closeModal();
+  });
+  // 弹窗内「再摇一签」
+  if (rerollIn) rerollIn.addEventListener('click', () => {
     const cur = dateHash(todayStr()) % sticks.length;
     let r = cur;
     if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
