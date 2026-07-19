@@ -288,29 +288,23 @@ function buildLunarClock(hours, curIdx) {
     shi += `<text x="${C1(p.x)}" y="${C1(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}">${BRANCHES[i]}</text>`;
   });
 
-  // 雷达覆盖扇形：旋转光束 + 尾随覆盖扇 + 当前时辰扇形高亮
-  const sweepAngle = 42; // 尾随覆盖扇的张角
+  // 雷达扫描 = 秒针本身：朝上的光束 + 尾随覆盖扇（50°）+ 尖端亮点；由 startClock 按 s*6 逐帧旋转（60s/圈）
+  const sweepAngle = 50; // 尾随覆盖扇的张角
   const radarTrail = `<path class="clk-radar-trail" d="${annSector(cx, cy, 0, 150, -sweepAngle, 0)}"/>`;
   const beamTip = ringPoint(cx, cy, 150, 0);
   const radarBeam = `<line class="clk-radar-beam" x1="${cx}" y1="${cy}" x2="${C1(beamTip.x)}" y2="${C1(beamTip.y)}"/>`;
-  const radarDot = `<circle class="clk-radar-dot" cx="${C1(beamTip.x)}" cy="${C1(beamTip.y)}" r="3.5"/>`;
+  const radarDot = `<circle class="clk-radar-dot" cx="${C1(beamTip.x)}" cy="${C1(beamTip.y)}" r="4"/>`;
   const shiCover = `<path class="clk-cover" d="${annSector(cx, cy, 58, 66, curIdx * 30 - 15, curIdx * 30 + 15)}"/>`;
 
   const svg =
-    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，含时分秒指针及雷达扫描">
+    `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，时分秒指针中秒针即雷达扫描光束">
       <circle cx="160" cy="160" r="156" class="clk-rim"/>
       <defs>
         <radialGradient id="radarTrailGrad" cx="160" cy="160" r="150" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="var(--seal)" stop-opacity="0.26"/>
+          <stop offset="0%" stop-color="var(--seal)" stop-opacity="0.30"/>
           <stop offset="100%" stop-color="var(--seal)" stop-opacity="0.03"/>
         </radialGradient>
       </defs>
-      <g class="clk-radar-sweep">
-        ${radarTrail}
-        ${radarBeam}
-        ${radarDot}
-        <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="8s" repeatCount="indefinite"/>
-      </g>
       ${jie}
       <circle cx="160" cy="160" r="138" class="clk-ring"/>
       ${bagua}
@@ -324,7 +318,11 @@ function buildLunarClock(hours, curIdx) {
       <g id="clkHands">
         <line id="clkHandShi" x1="160" y1="162" x2="160" y2="98" class="clk-hand-shi"/>
         <line id="clkHandMin" x1="160" y1="162" x2="160" y2="56" class="clk-hand-min"/>
-        <line id="clkHandSec" x1="160" y1="170" x2="160" y2="44" class="clk-hand-sec"/>
+        <g id="clkRadar">
+          ${radarTrail}
+          ${radarBeam}
+          ${radarDot}
+        </g>
         <circle cx="160" cy="160" r="5.5" class="clk-hub"/>
       </g>
       <g class="clk-spin-taiji">
@@ -352,7 +350,7 @@ function startClock() {
     const s = now.getSeconds() + ms / 1000;
     const m = now.getMinutes() + s / 60;
     const hh = (now.getHours() % 12) + m / 60;
-    setRot('clkHandSec', s * 6);
+    setRot('clkRadar', s * 6);
     setRot('clkHandMin', m * 6);
     setRot('clkHandShi', hh * 30);
     requestAnimationFrame(loop);
@@ -961,6 +959,7 @@ function setupSign() {
   function reveal(idx) {
     renderSignResult(sticks[idx]);
     result.classList.remove('hidden'); result.classList.add('show');
+    stage.classList.add('revealed');
     shakeBtn.classList.add('hidden'); rerollBtn.classList.remove('hidden');
     shakingEl.classList.add('hidden');
     promptEl.classList.remove('hidden');
@@ -972,6 +971,7 @@ function setupSign() {
   function doShake(dailyIdx) {
     if (busy) return; busy = true;
     resetOut();
+    stage.classList.remove('revealed');
     result.classList.remove('show'); result.classList.add('hidden');
     rerollBtn.classList.add('hidden');
     shakeBtn.classList.add('hidden');
