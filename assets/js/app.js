@@ -907,6 +907,42 @@ function renderSignResult(s) {
   document.getElementById('signTitle').textContent = s.title;
   document.getElementById('signPoem').innerHTML = s.poem.map(p => `<span>${p}</span>`).join('');
   document.getElementById('signJie').textContent = s.jie;
+  document.getElementById('signExplain').innerHTML = explainSign(s);
+}
+function explainSign(s) {
+  const txt = (s.title + (s.jie || '') + (s.poem || []).join('')).replace(/\s/g, '');
+  const score = { 吉: 0, 凶: 0, 待: 0 };
+  const jix = ['大吉', '吉', '庆', '喜', '喜喜', '利', '顺', '遂', '成', '圆', '祐', '好', '亨', '昌'];
+  const xiongx = ['凶', '险', '惊', '忧', '苦', '阻', '滞', '悔', '危', '祸', '败', '惊'];
+  const daix = ['待', '守', '耐', '迟', '未', '藏', '潜', '候'];
+  jix.forEach(k => { if (txt.includes(k)) score.吉++; });
+  xiongx.forEach(k => { if (txt.includes(k)) score.凶++; });
+  daix.forEach(k => { if (txt.includes(k)) score.待++; });
+  const sorted = Object.entries(score).sort((a, b) => b[1] - a[1]);
+  const tone = sorted[0][1] === 0 ? '平' : sorted[0][0];
+
+  const toneMap = {
+    吉: '气象明朗，如云开见日',
+    凶: '先见波折，但并非绝境',
+    待: '重在藏守，时机尚未成熟',
+    平: '平正中和，得失参半'
+  };
+
+  const adviceMap = {
+    吉: '此签所示多呈顺遂，眼前之事可望有成。然顺境之中更须守正谦和，不可因一时得意而忘形；凡事以诚敬处之，人和自至。',
+    凶: '此签当下或有阻滞，警示行事不可冒进。最宜稳守本分、反省己过、积德行善；待时机回转，自能转危为安。',
+    待: '此签主“待时”。时机未到，强求无益；此时宜藏锋守拙、蓄积力量、修德养身，春风一至，水到渠成。',
+    平: '此签不温不火，主平常之象。提示你凡事尽心尽力即可，不必过于执着结果；守分、谦和、持续用功，便是最好的回应。'
+  };
+
+  const firstLine = s.poem && s.poem[0] ? s.poem[0] : '签诗';
+  const parts = [
+    `此签题曰「${s.title}」，以「${firstLine}」起笔，整体意涵${toneMap[tone]}。`,
+    `通行本解曰：“${s.jie}”`,
+    adviceMap[tone],
+    '签文古奥，重在反观自身。无论际遇如何，诚心正意、谨言慎行、积德修善，皆是趋吉避凶之本。本站不作吉凶断言，仅供修身自省之镜。'
+  ];
+  return parts.join('<br><br>');
 }
 function buildSticks() {
   const holder = document.getElementById('qianSticks');
