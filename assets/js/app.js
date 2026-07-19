@@ -27,12 +27,12 @@ const TRIGRAMS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷'];
 const EIGHT_MEN = ['休', '生', '伤', '杜', '景', '死', '惊', '开'];
 // 二十四节气顺序（外圈历盘用）
 const TERM_ORDER = ['立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至', '小寒', '大寒'];
-// 方位：北(上) 东(右) 南(下) 西(左) + 四维
+// 方位（罗盘观：上南下北，与子午时辰一致）：南(上) 东(右) 北(下) 西(左) + 四维
 const DIRS = [
-  { name: '北', deg: 0, major: true }, { name: '东北', deg: 45, major: false },
-  { name: '东', deg: 90, major: true }, { name: '东南', deg: 135, major: false },
-  { name: '南', deg: 180, major: true }, { name: '西南', deg: 225, major: false },
-  { name: '西', deg: 270, major: true }, { name: '西北', deg: 315, major: false },
+  { name: '北', deg: 180, major: true }, { name: '东北', deg: 225, major: false },
+  { name: '东', deg: 270, major: true }, { name: '东南', deg: 315, major: false },
+  { name: '南', deg: 0, major: true }, { name: '西南', deg: 45, major: false },
+  { name: '西', deg: 90, major: true }, { name: '西北', deg: 135, major: false },
 ];
 
 /* ============ 工具 ============ */
@@ -287,10 +287,10 @@ function buildLunarClock(hours, curIdx) {
     men += `<text x="${C1(p.x)}" y="${C1(p.y + 5)}" text-anchor="middle" class="clk-men">${m}</text>`;
   });
 
-  // 十二时辰环（静止；当前时辰高亮）
+  // 十二时辰环（静止；当前时辰高亮）。方位罗盘观：午在正上(deg=0)、子在正下(deg=180)，故整体 +180°
   let shi = '';
   hours.forEach((h, i) => {
-    const p = ringPoint(cx, cy, R_SHI, i * 30);
+    const p = ringPoint(cx, cy, R_SHI, i * 30 + 180);
     const cur = i === curIdx ? ' cur' : '';
     shi += `<text x="${C1(p.x)}" y="${C1(p.y + 6)}" text-anchor="middle" class="clk-shichen${cur}">${BRANCHES[i]}</text>`;
   });
@@ -301,7 +301,7 @@ function buildLunarClock(hours, curIdx) {
   const beamTip = ringPoint(cx, cy, 150, 0);
   const radarBeam = `<line class="clk-radar-beam" x1="${cx}" y1="${cy}" x2="${C1(beamTip.x)}" y2="${C1(beamTip.y)}"/>`;
   const radarDot = `<circle class="clk-radar-dot" cx="${C1(beamTip.x)}" cy="${C1(beamTip.y)}" r="4"/>`;
-  const shiCover = `<path class="clk-cover" d="${annSector(cx, cy, 58, 66, curIdx * 30 - 15, curIdx * 30 + 15)}"/>`;
+  const shiCover = `<path class="clk-cover" d="${annSector(cx, cy, 58, 66, curIdx * 30 + 180 - 15, curIdx * 30 + 180 + 15)}"/>`;
 
   const svg =
     `<svg viewBox="0 0 320 320" class="clk-svg" role="img" aria-label="古历罗盘时钟：太极、八卦、八门、十二时辰、方位与二十四节气，时分秒指针中秒针即雷达扫描光束">
@@ -364,10 +364,13 @@ function startClock() {
     const ms = now.getMilliseconds();
     const s = now.getSeconds() + ms / 1000;
     const m = now.getMinutes() + s / 60;
-    const hh = (now.getHours() % 12) + m / 60;
     setRot('clkRadar', s * 6);
     setRot('clkHandMin', m * 6);
-    setRot('clkHandShi', hh * 30);
+    // 时辰指针：指向当前时辰方位（午在顶 deg=0、子在底 deg=180），并在时辰内平滑推进
+    const ci = Math.floor((now.getHours() + 1) / 2) % 12;
+    const startH = (((ci * 2 - 1) % 24) + 24) % 24;
+    const elapsed = (((now.getHours() * 60 + m) - startH * 60) % 1440 + 1440) % 1440;
+    setRot('clkHandShi', ci * 30 + 180 + (elapsed / 120) * 30);
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
