@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="description" content="养生日历 · 以二十四节气、七十二候、十二时辰为纲的传统时令养生小站" />
   <title>养生日历 · 天人合一 顺应四时</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260719j" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260719k" />
 </head>
 <body>
   <div class="scroll-wrap">
@@ -136,6 +136,34 @@
     <div class="tab-panel hidden" id="tab-bazi">
       <section class="panel bazi-panel">
         <div class="panel-head"><h2>八字 · 黄历 · 今日一览</h2></div>
+        <section class="profile-panel" id="profilePanel">
+          <div class="profile-head">
+            <span class="profile-title">我的生辰体质</span>
+            <span class="profile-hint">生辰仅存本地 · 仅供参考，不作吉凶断言</span>
+          </div>
+          <div class="profile-form" id="profileForm">
+            <div class="pf-row">
+              <label class="pf-field">出生年<input type="number" id="pfYear" min="1900" max="2100" placeholder="如 1990"></label>
+              <label class="pf-field">月<select id="pfMonth"></select></label>
+              <label class="pf-field">日<select id="pfDay"></select></label>
+              <label class="pf-field">时辰<select id="pfHour"></select></label>
+            </div>
+            <div class="pf-actions">
+              <button type="button" id="pfSave" class="pf-save-btn">保存生辰</button>
+              <span class="pf-tip">用于推算你的专属四柱与五行体质倾向</span>
+            </div>
+          </div>
+          <div class="profile-view hidden" id="profileView">
+            <div class="pv-pillars" id="pvPillars"></div>
+            <div class="pv-wuxing" id="pvWuxing"></div>
+            <p class="pv-tendency" id="pvTendency"></p>
+            <div class="pv-advice" id="pvAdvice"></div>
+            <div class="pf-actions">
+              <button type="button" id="pfEdit" class="pf-ghost-btn">重新录入</button>
+              <button type="button" id="pfClear" class="pf-ghost-btn">清除</button>
+            </div>
+          </div>
+        </section>
         <p class="bazi-summary-card" id="baziSummaryCard"></p>
 
         <details class="coll" open>
@@ -410,6 +438,6 @@
     </div>
   </div>
 
-  <script src="assets/js/app.js?v=20260719j"></script>
+  <script src="assets/js/app.js?v=20260719k"></script>
 </body>
 </html>
