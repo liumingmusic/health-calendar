@@ -406,12 +406,11 @@ body {
 .clk-shichen.cur { fill: var(--seal); font-weight: 700; font-size: 21px; }
 .clk-hand-shi { stroke: var(--seal); stroke-width: 5; stroke-linecap: round; will-change: transform; }
 .clk-hand-min { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; will-change: transform; }
-.clk-hand-sec { stroke: #c0392b; stroke-width: 1.4; stroke-linecap: round; will-change: transform; }
 .clk-hub { fill: var(--seal); stroke: var(--paper); stroke-width: 2; }
 
-/* 雷达覆盖扇形 */
+/* 雷达覆盖扇形（秒针即扫描光束） */
 .clk-cover { fill: var(--seal); opacity: .12; pointer-events: none; }
-.clk-radar-sweep, .clk-radar-trail, .clk-radar-beam, .clk-radar-dot { pointer-events: none; }
+.clk-radar-trail, .clk-radar-beam, .clk-radar-dot { pointer-events: none; }
 .clk-radar-trail { fill: url(#radarTrailGrad); }
 .clk-radar-beam { stroke: var(--seal); stroke-width: 1.6; stroke-linecap: round; opacity: .92; }
 .clk-radar-dot { fill: var(--seal); opacity: .92; }
@@ -735,18 +734,22 @@ body {
 }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
-.sign-result { margin-top: 10px; }
+.sign-result { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; z-index: 6; overflow: auto; }
 .sign-slip {
   border: 1px solid var(--line-strong); border-radius: 16px; padding: 22px 22px 20px;
   background: radial-gradient(circle at 12% 0%, rgba(110, 74, 142, 0.07), transparent 40%), var(--paper);
-  text-align: center;
+  text-align: center; margin: auto; max-width: 30em;
 }
 .sign-result.show .sign-slip { animation: slip-reveal .8s cubic-bezier(.2, .9, .3, 1); }
 @keyframes slip-reveal {
-  0% { opacity: 0; transform: translateY(16px) scale(.97); }
-  60% { opacity: 1; }
+  0% { opacity: 0; transform: translateY(-44px) scale(.94); }
+  55% { opacity: 1; transform: translateY(6px) scale(1.01); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+.sign-stage.revealed .qian-tong { opacity: 0; transform: scale(.82); transform-origin: 50% 72%; transition: opacity .5s ease, transform .5s ease; }
+.sign-stage.revealed .qian-glow,
+.sign-stage.revealed .sign-prompt,
+.sign-stage.revealed .sign-shaking { opacity: 0; transition: opacity .4s ease; }
 .sign-guide {
   font-family: var(--serif); font-size: 14.5px; color: var(--seal); margin: 16px auto 0;
   max-width: 26em; line-height: 1.85; background: #f1ebf6; border-radius: 10px; padding: 12px 14px;
@@ -815,34 +818,33 @@ body {
 
 /* ---------- 每日签运：跳出的签从竹筒口自然伸出，不覆盖筒身 ---------- */
 .qian-out {
-  position: absolute; top: -150px; left: 50%;
-  width: 24px; height: 150px;
-  transform: translate(-50%, 60%) scaleY(0);
-  transform-origin: bottom center; border-radius: 10px 10px 4px 4px;
+  position: absolute; top: -116px; left: 50%;
+  width: 18px; height: 118px;
+  transform: translate(-50%, 0) scaleY(0);
+  transform-origin: bottom center; border-radius: 9px 9px 4px 4px;
   background:
     linear-gradient(90deg, #9c7338 0%, #c9a866 30%, #f3e6c4 50%, #c9a866 70%, #9c7338 100%),
     linear-gradient(180deg, #fbf4e4, #ecdcbb);
   background-blend-mode: overlay;
-  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 10px 22px rgba(110, 75, 20, 0.45);
+  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.42), 0 8px 16px rgba(110, 75, 20, 0.4);
   opacity: 0; pointer-events: none; z-index: 12;
 }
 .qian-out::before {
-  content: ""; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-  width: 24px; height: 16px; border-radius: 10px;
+  content: ""; position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 14px; border-radius: 9px;
   background: linear-gradient(180deg, #d64848, #a82626);
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 .qian-out .qian-out-no {
-  position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-  font-family: var(--serif); font-size: 19px; font-weight: 700; color: #b23b3b;
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  font-family: var(--serif); font-size: 15px; font-weight: 700; color: #b23b3b;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
-.qian-out.popped { animation: stick-out 0.85s cubic-bezier(.2, .8, .3, 1) forwards; }
+.qian-out.popped { animation: stick-out 0.8s cubic-bezier(.2, .8, .3, 1) forwards; }
 @keyframes stick-out {
-  0%   { opacity: 0; transform: translate(-50%, 60%) scaleY(0) rotate(-3deg); }
-  28%  { opacity: 1; transform: translate(-50%, 0) scaleY(0.55) rotate(-4deg); }
-  62%  { transform: translate(-50%, -16%) scaleY(1) rotate(2deg); }
-  100% { opacity: 1; transform: translate(-50%, -6%) scaleY(1) rotate(0deg); }
+  0%   { opacity: 0; transform: translate(-50%, 0) scaleY(0); }
+  35%  { opacity: 1; transform: translate(-50%, 0) scaleY(1.06); }
+  100% { opacity: 1; transform: translate(-50%, 0) scaleY(1); }
 }
 .sign-stage.shaking .qian-glow { animation: qian-glow-spin 3.5s linear infinite, glow-pulse 1s ease-in-out infinite; }
 @keyframes glow-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
