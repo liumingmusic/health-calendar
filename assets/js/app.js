@@ -532,6 +532,7 @@ function renderCheckin() {
 /* ============ 道家养生 ============ */
 let DAO = null;
 let STICKS = null;
+let CONSTITUTION = null;          // 五行体质养生映射（P1-1）
 let activeSignKind = '吕祖灵签';   // 当前签种名称（P1-2 多签会切换）
 
 function dayOfYear(d) {
@@ -958,6 +959,156 @@ function dominant(cnt) {
   for (const k in cnt) if (cnt[k] > v) { v = cnt[k]; max = k; }
   return max;
 }
+
+/* ============ P1-1 生辰八字个性化 ============ */
+const PROFILE_KEY = 'healthcal_profile_v1';
+const HOUR_OPTS = [
+  { i: 0, name: '子时', range: '23:00–01:00' },
+  { i: 1, name: '丑时', range: '01:00–03:00' },
+  { i: 2, name: '寅时', range: '03:00–05:00' },
+  { i: 3, name: '卯时', range: '05:00–07:00' },
+  { i: 4, name: '辰时', range: '07:00–09:00' },
+  { i: 5, name: '巳时', range: '09:00–11:00' },
+  { i: 6, name: '午时', range: '11:00–13:00' },
+  { i: 7, name: '未时', range: '13:00–15:00' },
+  { i: 8, name: '申时', range: '15:00–17:00' },
+  { i: 9, name: '酉时', range: '17:00–19:00' },
+  { i: 10, name: '戌时', range: '19:00–21:00' },
+  { i: 11, name: '亥时', range: '21:00–23:00' },
+];
+
+function loadProfile() {
+  try { const raw = localStorage.getItem(PROFILE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch (e) { return null; }
+}
+function saveProfile(p) {
+  try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (e) {}
+}
+function clearProfile() {
+  try { localStorage.removeItem(PROFILE_KEY); } catch (e) {}
+}
+
+// 五行体质倾向 + 个性化养生建议（仅文化养生，不作吉凶断言）
+function constitutionAdvice(bz) {
+  const wx = bz.wuxing;
+  const rgWX = GAN_WX[GAN[bz.riGan]];
+  let weak = '木', strong = '木', wv = 99, sv = -1;
+  for (const k in wx) {
+    if (wx[k] < wv) { wv = wx[k]; weak = k; }
+    if (wx[k] > sv) { sv = wx[k]; strong = k; }
+  }
+  const C = CONSTITUTION || {};
+  let tendency;
+  if (weak === strong) {
+    tendency = `日主属「${rgWX}」，五行分布均衡，体质平和，宜顺时养正、劳逸结合。`;
+  } else {
+    tendency = `日主属「${rgWX}」；五行中「${weak}」偏弱、「${strong}」偏旺，整体偏${strong}气较盛，宜适当涵养${weak}气、平衡${strong}气。`;
+  }
+  const keys = Array.from(new Set([weak, rgWX]));
+  const advice = keys.map(k => {
+    const c = C[k] || {};
+    return {
+      element: k,
+      organ: c.organ || k,
+      season: c.season || '',
+      points: [
+        `宜食：${(c.foods || []).join('、')}`,
+        `少沾：${(c.foods_avoid || []).join('、')}`,
+        `起居：${c.exercise || ''}`,
+        `经络：${c.meridian || ''}`,
+        `情志：${c.mindset || ''}`,
+      ],
+    };
+  });
+  return { tendency, advice };
+}
+
+function wxBarsHTML(wx) {
+  const max = Math.max(1, ...Object.values(wx));
+  return ['木', '火', '土', '金', '水'].map(w => {
+    const v = wx[w] || 0;
+    const pct = Math.round(v / max * 100);
+    return `<div class="wx-bar-row">
+      <span class="wx-bar-name wx-${w}">${w}</span>
+      <span class="wx-bar-track"><span class="wx-bar-fill wx-${w}" style="width:${pct}%"></span></span>
+      <span class="wx-bar-val">${v}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderProfile(flat) {
+  const form = document.getElementById('profileForm');
+  const view = document.getElementById('profileView');
+  if (!form || !view) return;
+  const p = loadProfile();
+  if (!p) {
+    form.classList.remove('hidden');
+    view.classList.add('hidden');
+    return;
+  }
+  form.classList.add('hidden');
+  view.classList.remove('hidden');
+  const birth = new Date(p.y, p.m - 1, p.d);
+  const bz = computeBazi(birth, p.h, flat);
+  const pillarHTML = ['年', '月', '日', '时'].map(k => {
+    const pl = bz.pillars[k];
+    return `<div class="bz-pillar">
+      <span class="bz-label">${k === '日' ? '日主' : k + '柱'}</span>
+      <span class="bz-gz">${pl.gz}</span>
+      <span class="bz-wx">${pl.wx}</span>
+      <span class="bz-nayin">${pl.nayin}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('pvPillars').innerHTML = pillarHTML;
+  document.getElementById('pvWuxing').innerHTML = wxBarsHTML(bz.wuxing);
+  const adv = constitutionAdvice(bz);
+  document.getElementById('pvTendency').textContent = adv.tendency;
+  document.getElementById('pvAdvice').innerHTML = adv.advice.map(a => `
+    <div class="pv-advice-card">
+      <div class="pv-ac-head"><span class="wx-dot wx-${a.element}"></span>涵养「${a.element}」· 养${a.organ}${a.season ? '（当令 ' + a.season + '）' : ''}</div>
+      <ul class="pv-ac-list">${a.points.map(t => `<li>${t}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+function wireProfile() {
+  const fillOpts = (sel, items, withRange) => {
+    if (!sel || sel.options.length) return;
+    items.forEach(it => {
+      const o = document.createElement('option');
+      o.value = it.i;
+      o.textContent = withRange ? `${it.name}（${it.range}）` : it.name;
+      sel.appendChild(o);
+    });
+  };
+  const monthSel = document.getElementById('pfMonth');
+  const daySel = document.getElementById('pfDay');
+  const hourSel = document.getElementById('pfHour');
+  fillOpts(monthSel, Array.from({ length: 12 }, (_, i) => ({ i: i + 1, name: (i + 1) + '月' })), false);
+  fillOpts(daySel, Array.from({ length: 31 }, (_, i) => ({ i: i + 1, name: (i + 1) + '日' })), false);
+  fillOpts(hourSel, HOUR_OPTS, true);
+
+  const save = document.getElementById('pfSave');
+  const edit = document.getElementById('pfEdit');
+  const clear = document.getElementById('pfClear');
+  if (save) save.addEventListener('click', () => {
+    const y = parseInt(document.getElementById('pfYear').value, 10);
+    const m = parseInt(monthSel.value, 10);
+    const d = parseInt(daySel.value, 10);
+    const h = parseInt(hourSel.value, 10);
+    if (!y || !m || !d) { alert('请填写完整的出生年月日'); return; }
+    if (m < 1 || m > 12 || d < 1 || d > 31) { alert('请检查月/日是否合法'); return; }
+    saveProfile({ y, m, d, h });
+    renderProfile(ALL_TERMS_FLAT);
+  });
+  if (edit) edit.addEventListener('click', () => {
+    document.getElementById('profileForm').classList.remove('hidden');
+    document.getElementById('profileView').classList.add('hidden');
+  });
+  if (clear) clear.addEventListener('click', () => {
+    clearProfile();
+    renderProfile(ALL_TERMS_FLAT);
+  });
+}
 function lunarLabel(date, bz) {
   // 简化农历标注：年干支 + 月 + 日。具体农历月日需农历库，此处给干支月日。
   return `${bz.pillars.年.gz}年 ${bz.pillars.月.gz}月 ${bz.pillars.日.gz}日`;
@@ -1253,12 +1404,14 @@ async function init() {
       loadJSON('data/hours.json'),
       loadJSON('data/daoism.json'),
       loadJSON('data/fortune-sticks.json'),
+      loadJSON('data/constitution.json'),
     ]);
 
     health.forEach(t => { HEALTH_MAP[t.term] = t; });
     hou.forEach(h => { HOU_MAP[h.term] = h.hou; });
     DAO = dao;
     STICKS = fortune;
+    CONSTITUTION = constitution;
 
     const flat = flattenTerms(years);
     ALL_TERMS_FLAT = flat;
@@ -1287,6 +1440,10 @@ async function init() {
     renderAlmanac(new Date(), curIdx, flat);
     renderQimen(new Date());
     renderGanzhi(new Date());
+
+    // P1-1 生辰八字个性化
+    wireProfile();
+    renderProfile(flat);
 
     // 道家养生
     const curSeason = (HEALTH_MAP[cur.name] && HEALTH_MAP[cur.name].season) || '春';
