@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="description" content="养生日历 · 以二十四节气、七十二候、十二时辰为纲的传统时令养生小站" />
   <title>养生日历 · 天人合一 顺应四时</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260719d" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260719e" />
 </head>
 <body>
   <div class="scroll-wrap">
@@ -56,7 +56,7 @@
     <!-- 今日总览 -->
     <div class="tab-panel" id="tab-summary">
       <section class="panel overview-card" id="todayOverview">
-        <div class="panel-head"><h2>今日总览</h2><span class="season-chip" id="ovSeason">—</span></div>
+        <div class="panel-head"><h2>今日总览</h2><span class="season-chip" id="ovSeason">—</span><button class="download-btn" id="downloadOverview" type="button">保存截图</button></div>
         <div class="ov-grid">
           <div class="ov-cell ov-date">
             <div class="ov-k">公历 / 农历</div>
@@ -406,10 +406,12 @@
       </div>
       <div class="sign-foot">
         <button class="reroll-btn-in" id="rerollInSign" type="button">再摇一签</button>
+        <button class="download-btn" id="downloadSign" type="button">保存签文</button>
       </div>
     </div>
   </div>
 
-  <script src="assets/js/app.js?v=20260719d"></script>
+  <script src="assets/js/html2canvas.min.js"></script>
+  <script src="assets/js/app.js?v=20260719e"></script>
 </body>
 </html>
