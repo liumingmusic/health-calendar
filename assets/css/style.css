@@ -1021,3 +1021,47 @@ body {
   .focus-name { font-size: 26px; }
 }
 
+/* ============ P1-1 生辰体质 ============ */
+.profile-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+.profile-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.profile-title { font-family: var(--serif); font-size: 17px; color: var(--seal); font-weight: 700; }
+.profile-hint { font-size: 11px; color: var(--ink-faint); }
+.pf-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.pf-field { display: flex; flex-direction: column; font-size: 12px; color: var(--ink-soft); gap: 4px; }
+.pf-field input, .pf-field select { font-family: var(--sans); font-size: 14px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); min-width: 76px; }
+.pf-field input { width: 96px; }
+.pf-actions { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.pf-save-btn { font-family: var(--serif); font-size: 14px; letter-spacing: 1px; padding: 8px 20px; border: 1px solid var(--seal); background: var(--seal); color: #fff; border-radius: 999px; cursor: pointer; transition: all .15s ease; }
+.pf-save-btn:hover { opacity: .9; }
+.pf-save-btn:active { transform: scale(.97); }
+.pf-ghost-btn { font-family: var(--serif); font-size: 13px; padding: 7px 16px; border: 1px solid var(--line); background: transparent; color: var(--ink-soft); border-radius: 999px; cursor: pointer; }
+.pf-ghost-btn:hover { border-color: var(--seal); color: var(--seal); }
+.pf-tip { font-size: 11px; color: var(--ink-faint); }
+
+.pv-wuxing { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; }
+.wx-bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.wx-bar-name { font-family: var(--serif); width: 18px; text-align: center; font-weight: 700; }
+.wx-bar-track { flex: 1; height: 10px; background: #eee; border-radius: 6px; overflow: hidden; }
+.wx-bar-fill { display: block; height: 100%; border-radius: 6px; transition: width .4s ease; }
+.wx-bar-val { width: 14px; text-align: right; color: var(--ink-soft); }
+.wx-木 { color: #2f8f78; } .wx-bar-fill.wx-木 { background: #2f8f78; }
+.wx-火 { color: #c0504d; } .wx-bar-fill.wx-火 { background: #c0504d; }
+.wx-土 { color: #c9a227; } .wx-bar-fill.wx-土 { background: #c9a227; }
+.wx-金 { color: #b08a3e; } .wx-bar-fill.wx-金 { background: #b08a3e; }
+.wx-水 { color: #3a6ea5; } .wx-bar-fill.wx-水 { background: #3a6ea5; }
+.wx-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.wx-dot.wx-木 { background: #2f8f78; } .wx-dot.wx-火 { background: #c0504d; } .wx-dot.wx-土 { background: #c9a227; } .wx-dot.wx-金 { background: #b08a3e; } .wx-dot.wx-水 { background: #3a6ea5; }
+
+.pv-pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 6px; }
+.pv-pillars .bz-pillar { background: #faf7f0; border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; text-align: center; }
+.pv-tendency { font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin: 4px 0 10px; }
+.pv-advice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pv-advice-card { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; }
+.pv-ac-head { font-family: var(--serif); font-size: 14px; color: var(--seal); margin-bottom: 6px; }
+.pv-ac-list { margin: 0; padding-left: 16px; font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
+
+@media (max-width: 560px) {
+  .pv-advice { grid-template-columns: 1fr; }
+  .pf-field { flex: 1 1 40%; }
+}
+
