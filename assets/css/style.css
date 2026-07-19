@@ -162,7 +162,7 @@ body {
   box-shadow: var(--shadow);
   margin-bottom: 18px;
 }
-.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.panel-head { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .panel-head h2 {
   font-family: var(--serif);
   font-size: 20px;
@@ -674,7 +674,8 @@ body {
 .gz-jz.now { background: var(--seal); color: #fff; border-color: var(--seal); font-weight: 700; }
 
 /* ---------- 每日签运：摇签动画 ---------- */
-.sign-stage { position: relative; display: flex; flex-direction: column; align-items: center; padding: 18px 0 8px; min-height: 500px; }
+.sign-stage { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 18px 0 8px; min-height: 500px; }
+.sign-stage.revealed { z-index: 5; }
 .qian-glow {
   position: absolute; top: 0; width: 320px; height: 320px; border-radius: 50%;
   background: radial-gradient(circle, rgba(216, 168, 52, 0.22), transparent 65%);
@@ -692,45 +693,16 @@ body {
   width: 100%; height: 100%; object-fit: contain; display: block;
   user-select: none; -webkit-user-drag: none;
 }
-/* 筒口抖签：仅在摇签时显现并剧烈抖动；平时隐藏避免穿帮 */
-.qian-sticks {
-  position: absolute; left: 50%; top: 30px; transform: translateX(-50%);
-  width: 96px; height: 0; z-index: 3; pointer-events: none; opacity: 0;
-  transition: opacity .2s ease;
-}
-.qian-stick {
-  position: absolute; bottom: 0;
-  width: 5px; height: calc(var(--h, 40px) * var(--stick-scale));
-  border-radius: 3px 3px 0 0;
-  background: linear-gradient(90deg, #9c7338, #f3e6c4 40%, #c9a866 75%, #8d6630);
-  box-shadow: 0 0 0 1px rgba(120, 88, 40, 0.38);
-  transform-origin: bottom center;
-  transform: translateX(calc(var(--tx, 0px) * var(--stick-scale))) rotate(var(--rot, 0deg));
-}
-.qian-stick::before {
-  content: ""; position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
-  width: 5px; height: 9px; border-radius: 3px 3px 1px 1px;
-  background: linear-gradient(180deg, #d64848, #a82626);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
-}
+/* 筒口签条已隐藏：摇签时仅保留竹筒晃动，不再显示签条窜出/抖动，避免穿帮 */
+.qian-sticks { display: none; }
+.qian-stick { display: none; }
 /* 摇签：整筒缓慢左右大摆（放慢、沉稳） */
 .qian-tong.shaking { animation: tong-rock 1.8s ease-in-out infinite; transform-origin: 50% 92%; }
-.qian-tong.shaking .qian-sticks { opacity: 1; }
-.qian-tong.shaking .qian-stick {
-  animation: stick-jitter .15s ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-}
 @keyframes tong-rock {
   0%, 100% { transform: rotate(0deg) translateY(0); }
   25% { transform: rotate(-14deg) translateY(-8px); }
   55% { transform: rotate(11deg) translateY(4px); }
   80% { transform: rotate(-7deg) translateY(-4px); }
-}
-@keyframes stick-jitter {
-  0%, 100% { transform: translateX(calc(var(--tx, 0px) * var(--stick-scale))) rotate(var(--rot, 0deg)); }
-  25% { transform: translateX(calc((var(--tx, 0px) - 2.5px) * var(--stick-scale))) rotate(calc(var(--rot, 0deg) - 4deg)); }
-  50% { transform: translateX(calc((var(--tx, 0px) + 2.5px) * var(--stick-scale))) rotate(calc(var(--rot, 0deg) + 4deg)); }
-  75% { transform: translateX(calc((var(--tx, 0px) - 1.5px) * var(--stick-scale))) rotate(calc(var(--rot, 0deg) - 2deg)); }
 }
 .sign-prompt { font-size: 13px; color: var(--ink-soft); text-align: center; max-width: 22em; margin: 22px auto 0; line-height: 1.8; min-height: 2.4em; }
 
@@ -793,6 +765,11 @@ body {
   font-size: 15.5px; line-height: 1.95; color: #4a3f36; text-align: justify;
   font-family: var(--sans);
 }
+.sign-paper .sign-explain {
+  font-size: 15px; line-height: 1.95; color: #4a3f36; text-align: justify;
+  font-family: var(--sans);
+}
+.sign-paper .sign-explain b { color: #7a2e2e; font-weight: 700; }
 .sign-seal {
   position: absolute; bottom: 18px; right: 22px;
   width: 58px; height: 58px;
@@ -961,12 +938,12 @@ body {
   .zodiac-grid { grid-template-columns: repeat(2, 1fr); }
   .sign-stage { min-height: 420px; }
   .qian-tong { width: 170px; height: 250px; margin-top: 50px; --stick-scale: 0.72; }
-  .qian-sticks { top: 22px; width: 68px; }
   .sign-slip { width: 330px; height: 480px; }
   .sign-head { height: 58px; }
   .sign-ribbon { font-size: 18px; letter-spacing: 6px; }
   .sign-paper .sign-poem { font-size: 18px; }
   .sign-paper .sign-jie { font-size: 14.5px; }
+  .sign-paper .sign-explain { font-size: 14px; }
   .sign-yj { gap: 10px; }
 
   /* 手机端全局适配 */
