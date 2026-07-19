@@ -94,11 +94,18 @@ function renderHeaderDate() {
 
 function renderHero(term, daysToNext, hour, nextName) {
   const season = (HEALTH_MAP[term.name] && HEALTH_MAP[term.name].season) || term.season || '春';
-  document.getElementById('heroTermName').textContent = term.name;
+  const heroTerm = document.getElementById('heroTermName');
+  heroTerm.textContent = term.name;
+  heroTerm.style.cursor = 'pointer';
+  heroTerm.title = '点击查看当令养生';
+  heroTerm.onclick = () => openTermModal(term.name);
   document.getElementById('heroTermMeta').textContent =
     daysToNext > 0 ? `${season}季 · 距${nextName} ${daysToNext}天` : `${season}季 · 今日交节`;
   document.getElementById('heroHourName').textContent = hour.name;
-  document.getElementById('heroHourMeta').textContent = `${hour.meridian} · ${hour.range}`;
+  const yi = hour.advice.split('；')[0].replace(/^宜/, '').trim();
+  document.getElementById('heroHourMeta').innerHTML =
+    `<span class="hm-mer">${hour.meridian}</span>` +
+    `<span class="yi">宜 ${yi}</span><span class="ji">忌 ${hour.avoid}</span>`;
 }
 
 /* ============ 今日总览：首页汇总卡 ============ */
@@ -256,7 +263,7 @@ function buildLunarClock(hours, curIdx) {
     const isCur = name === curTerm;
     jie += `<line x1="${C1(p1.x)}" y1="${C1(p1.y)}" x2="${C1(p2.x)}" y2="${C1(p2.y)}" class="clk-tick${isCur ? ' cur' : ''}"/>`;
     const pn = ringPoint(cx, cy, R_JIE, deg);
-    jie += `<text x="${C1(pn.x)}" y="${C1(pn.y + 3)}" text-anchor="middle" class="clk-jie${isCur ? ' cur' : ''}">${name}</text>`;
+    jie += `<text x="${C1(pn.x)}" y="${C1(pn.y + 3)}" text-anchor="middle" class="clk-jie${isCur ? ' cur' : ''}" data-term="${name}" role="button" tabindex="0">${name}</text>`;
   });
 
   // 八卦环
@@ -334,8 +341,16 @@ function buildLunarClock(hours, curIdx) {
     </svg>`;
   document.getElementById('lunarClock').innerHTML = svg;
 
+  // 节气环可点击：点节气名直接打开当令养生卡（复用现有 modal 与 health.json 数据）
+  const clk = document.getElementById('lunarClock');
+  clk.querySelectorAll('.clk-jie').forEach(el => {
+    const open = () => openTermModal(el.dataset.term);
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  });
+
   const h = hours[curIdx];
-  document.getElementById('clockCap').textContent = `${h.name}当令 · 雷达光束扫过盘面 · 当前时辰覆盖扇高亮`;
+  document.getElementById('clockCap').textContent = `${h.name}当令 · 雷达光束扫过盘面 · 当前时辰覆盖扇高亮 · 点击节气看养生`;
 }
 
 /* 真实钟表走字：时辰指针（时）+ 分针 + 秒针，平滑走动（逐帧细分角度，无跳秒） */
@@ -420,6 +435,53 @@ function openTermModal(termName) {
   document.getElementById('modal').classList.remove('hidden');
 }
 function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+/* ============ 我的签历（localStorage 收藏/历史） ============ */
+const MY_SIGNS_KEY = 'healthcal_my_signs_v1';
+function loadMySigns() {
+  try { return JSON.parse(localStorage.getItem(MY_SIGNS_KEY)) || []; }
+  catch (e) { return []; }
+}
+function saveMySign(no, title) {
+  const list = loadMySigns();
+  const today = todayStr();
+  const ex = list.find(x => x.date === today);
+  if (ex) { ex.no = no; ex.title = title; }
+  else list.push({ date: today, no, title });
+  try { localStorage.setItem(MY_SIGNS_KEY, JSON.stringify(list)); } catch (e) {}
+}
+function openMySigns() {
+  const list = loadMySigns().slice().sort((a, b) => b.date.localeCompare(a.date));
+  const body = document.getElementById('modalBody');
+  if (!list.length) {
+    body.innerHTML = `<h3>我的签历</h3><p class="m-sub">还没有收藏的签。去「每日签运」摇一签，会自动收进这里，日后随时回看。</p>`;
+  } else {
+    body.innerHTML = `<h3>我的签历</h3>` +
+      `<p class="m-sub">已收藏 ${list.length} 天 · 仅保存在本机浏览器</p>` +
+      `<div class="my-sign-list">` + list.map(s => `
+        <div class="my-sign-row">
+          <span class="ms-date">${s.date}</span>
+          <span class="ms-no">第${s.no}签</span>
+          <span class="ms-title">${s.title}</span>
+          <button class="ms-view" data-no="${s.no}" type="button">查看</button>
+        </div>`).join('') + `</div>`;
+  }
+  document.getElementById('modal').classList.remove('hidden');
+  body.querySelectorAll('.ms-view').forEach(btn => btn.addEventListener('click', () => {
+    const s = STICKS && STICKS.sticks.find(x => x.no == btn.dataset.no);
+    if (s) openSavedSign(s);
+  }));
+}
+function openSavedSign(s) {
+  const body = document.getElementById('modalBody');
+  body.innerHTML = `
+    <h3>第${s.no}签 · ${s.title}</h3>
+    <div class="block"><div class="block-title"><span class="dot"></span>签诗</div>
+      <div class="chips">${s.poem.map(p => `<span class="chip">${p}</span>`).join('')}</div></div>
+    <div class="block"><div class="block-title"><span class="dot"></span>解曰</div><p>${s.jie}</p></div>
+    <div class="block"><div class="block-title"><span class="dot"></span>编者白话疏解</div><p>${explainSign(s)}</p></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
 
 /* ============ 打卡 ============ */
 function loadCheckins() {
@@ -992,6 +1054,7 @@ function setupSign() {
 
   function reveal(idx) {
     renderSignResult(sticks[idx]);
+    saveMySign(sticks[idx].no, sticks[idx].title);
     result.classList.remove('hidden'); result.classList.add('show');
     stage.classList.add('revealed');
     shakeBtn.classList.add('hidden'); rerollBtn.classList.add('hidden');
@@ -1044,6 +1107,9 @@ function setupSign() {
     if (sticks.length > 1) { do { r = Math.floor(Math.random() * sticks.length); } while (r === cur); }
     doShake(r);
   });
+  // 「我的签历」入口
+  const myBtn = document.getElementById('mySignsBtn');
+  if (myBtn) myBtn.addEventListener('click', openMySigns);
 }
 
 function setupDownloadButtons() {
