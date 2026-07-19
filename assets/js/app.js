@@ -532,7 +532,6 @@ function renderCheckin() {
 /* ============ 道家养生 ============ */
 let DAO = null;
 let STICKS = null;
-let lastRevealed = null;            // 最近一次摇出的签（供生成海报）
 let activeSignKind = '吕祖灵签';   // 当前签种名称（P1-2 多签会切换）
 
 function dayOfYear(d) {
@@ -1061,7 +1060,6 @@ function setupSign() {
   function reveal(idx) {
     currentIdx = idx;
     const s = sticks[idx];
-    lastRevealed = { no: s.no, title: s.title, poem: s.poem, jie: s.jie, kind: activeSignKind };
     renderSignResult(s);
     saveMySign(sticks[idx].no, sticks[idx].title);
     result.classList.remove('hidden'); result.classList.add('show');
@@ -1120,98 +1118,6 @@ function setupSign() {
   if (myBtn) myBtn.addEventListener('click', openMySigns);
 }
 
-function setupDownloadButtons() {
-  const signBtn = document.getElementById('downloadSign');
-  const ovBtn = document.getElementById('downloadOverview');
-  const downloadEl = async (el, filename) => {
-    if (typeof html2canvas !== 'function') {
-      alert('截图库尚未加载，请稍后重试'); return;
-    }
-    try {
-      const canvas = await html2canvas(el, {
-        scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff'
-      });
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = canvas.toDataURL('image/png');
-      window.__lastDownloadDataUrl = link.href;
-      document.body.appendChild(link); link.click(); link.remove();
-    } catch (e) {
-      console.error('screenshot fail', e);
-      alert('生成截图失败，请重试');
-    }
-  };
-  if (signBtn) {
-    signBtn.addEventListener('click', () => {
-      const slip = document.getElementById('signSlip');
-      if (!slip) return;
-      const no = (document.getElementById('signNo').textContent || '签').replace(/\s+/g, '_');
-      downloadEl(slip, `吕祖灵签-${no}.png`);
-    });
-  }
-  if (ovBtn) {
-    ovBtn.addEventListener('click', () => {
-      const ov = document.getElementById('todayOverview');
-      if (!ov) return;
-      const date = new Date().toISOString().slice(0, 10);
-      downloadEl(ov, `今日总览-${date}.png`);
-    });
-  }
-}
-
-/* ============ 分享海报品牌化（P1-3） ============ */
-const SITE_URL = 'https://liumingmusic.github.io/health-calendar/';
-function genQRDataURL(text) {
-  try {
-    const qr = qrcode(0, 'M');
-    qr.addData(text); qr.make();
-    return qr.createDataURL(8, 4);
-  } catch (e) { console.error('qr fail', e); return ''; }
-}
-function buildSignPoster() {
-  const s = lastRevealed;
-  if (!s) { alert('请先摇出一签，再生成海报'); return false; }
-  document.getElementById('spKind').textContent = s.kind + ' · 每日一签';
-  document.getElementById('spNo').textContent = '第 ' + s.no + ' 签';
-  document.getElementById('spTitle').textContent = s.title;
-  document.getElementById('spPoem').innerHTML = (s.poem || []).map(p => `<span>${p}</span>`).join('');
-  document.getElementById('spQuote').textContent = '“' + ((s.poem && s.poem[0]) || '') + '”';
-  document.getElementById('spNote').textContent = '签文录自《吕祖灵签》通行本 · 修身自省，不作吉凶断言';
-  return true;
-}
-function buildOverviewPoster() {
-  const g = id => { const el = document.getElementById(id); return el ? el.textContent : ''; };
-  document.getElementById('spKind').textContent = '今日总览 · 养生日历';
-  document.getElementById('spNo').textContent = '';
-  document.getElementById('spTitle').textContent = (g('ovTerm') || '今日') + ' · ' + (g('ovHour') || '');
-  const lines = [g('ovOrgan'), g('ovYi'), g('ovJi')].filter(Boolean);
-  document.getElementById('spPoem').innerHTML = lines.map(t => `<span>${t}</span>`).join('');
-  document.getElementById('spQuote').textContent = '顺时养生，身心安顿';
-  document.getElementById('spNote').textContent = '二十四节气 · 十二时辰 · 干支八字';
-  return true;
-}
-async function downloadPoster(buildFn, filename) {
-  if (typeof html2canvas !== 'function') { alert('截图库未加载，请稍后重试'); return; }
-  if (!buildFn()) return;
-  document.getElementById('spDate').textContent = new Date().toISOString().slice(0, 10);
-  try {
-    const canvas = await html2canvas(document.getElementById('sharePoster'), {
-      scale: 2, useCORS: true, logging: false, backgroundColor: null
-    });
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = canvas.toDataURL('image/png');
-    document.body.appendChild(link); link.click(); link.remove();
-  } catch (e) { console.error('poster fail', e); alert('生成海报失败，请重试'); }
-}
-function setupPosterButtons() {
-  const qrImg = document.getElementById('spQr');
-  if (qrImg) qrImg.src = genQRDataURL(SITE_URL);
-  const ps = document.getElementById('posterSign');
-  if (ps) ps.addEventListener('click', () => downloadPoster(buildSignPoster, `养生日历-签运-${new Date().toISOString().slice(0, 10)}.png`));
-  const po = document.getElementById('posterOverview');
-  if (po) po.addEventListener('click', () => downloadPoster(buildOverviewPoster, `养生日历-今日总览-${new Date().toISOString().slice(0, 10)}.png`));
-}
 
 /* 今日运程：生肖 12 运程（依当日干支）+ 本日干支综论 */
 const ZODIAC = [
@@ -1392,8 +1298,6 @@ async function init() {
 
     // 每日签运
     setupSign();
-    setupDownloadButtons();
-    setupPosterButtons();
     renderDailyFortune(new Date(), flat);
 
     // 使用说明
