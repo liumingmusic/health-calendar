@@ -1,6 +1,65 @@
-<view class="page">
+<view class="disclaimer-bar">{{disclaimerText}}</view>
+<view class="page more">
+
+  <!-- 设置 -->
   <view class="card">
-    <view class="ph-title">{{title}}</view>
-    <view class="muted">建设中（M5/M6）：全年节气总览、使用说明、双模式切换、免责声明将在此呈现。</view>
+    <view class="card-head"><text class="ch-title">设置</text></view>
+    <view class="card-body">
+      <view class="set-row">
+        <text class="set-k">显示模式</text>
+        <view class="mode-switch">
+          <view class="mode-btn {{mode === 'novice' ? 'active' : ''}}" data-mode="novice" bindtap="setMode">简明</view>
+          <view class="mode-btn {{mode === 'pro' ? 'active' : ''}}" data-mode="pro" bindtap="setMode">进阶</view>
+        </view>
+      </view>
+      <view class="set-tip">简明：仅养生与八字摘要；进阶：额外显示奇门遁甲、六十甲子、生肖运程。</view>
+      <view class="set-row" bindtap="goProfile">
+        <text class="set-k">生辰录入</text>
+        <text class="set-v {{hasProfile ? 'on' : ''}}">{{hasProfile ? '已录入 · 点击修改' : '未录入 · 点击录入'}} ›</text>
+      </view>
+    </view>
   </view>
+
+  <!-- 全年总览 -->
+  <view class="card">
+    <view class="card-head"><text class="ch-title">全年节气总览</text></view>
+    <view class="card-body">
+      <view class="season-tabs">
+        <view wx:for="{{seasonTabs}}" wx:key="key" class="season-tab {{activeSeason === item.key ? 'active' : ''}}"
+              data-key="{{item.key}}" bindtap="setSeason">{{item.label}}</view>
+      </view>
+      <view class="term-grid">
+        <view wx:for="{{terms}}" wx:key="term"
+              wx:if="{{activeSeason === 'all' || item.season === activeSeason}}"
+              class="term-cell {{item.isCur ? 'current' : ''}}"
+              style="border-color:{{item.color}}">
+          <text class="t-name">{{item.term}}</text>
+          <text class="t-solar">{{item.mmdd}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="card">
+    <view class="card-head plain"><text class="ch-title">使用说明</text></view>
+    <view class="card-body">
+      <view class="help-row"><text class="h-k">定位</text><text class="h-v">本小程序以二十四节气为轴，呈现对应时令的养生要点、黄历宜忌与民俗文化。</text></view>
+      <view class="help-row"><text class="h-k">打卡</text><text class="h-v">每日四事（喝够水 / 早睡 / 八段锦 / 食养）打卡，记录仅存本机，连续天数达里程碑有称号。</text></view>
+      <view class="help-row"><text class="h-k">生辰</text><text class="h-v">录入生辰可推演五行体质，用于「为你定制」与体质倾向参考（不作医疗断言）。</text></view>
+      <view class="help-row"><text class="h-k">模式</text><text class="h-v">简明模式聚焦养生；进阶模式含奇门遁甲、六十甲子、生肖运程等传统文化示意。</text></view>
+      <view class="help-row"><text class="h-k">分享</text><text class="h-v">在「今日」页可将今日节气摘要分享给好友或朋友圈。</text></view>
+    </view>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="card">
+    <view class="card-head plain"><text class="ch-title">免责声明</text></view>
+    <view class="card-body">
+      <view class="disclaimer-full">{{disclaimerText}}</view>
+      <view class="disclaimer-full">八字、签运、生肖运程等内容均为中国传统民俗文化，仅供修身自省与文化交流，不构成医疗诊断、治疗建议或吉凶占断。如有健康问题，请及时就医并遵医嘱。</view>
+    </view>
+  </view>
+
+  <view class="footer-note">养生日历 · 小程序版 · 纯本地数据，离线可用</view>
 </view>

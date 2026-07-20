@@ -1,0 +1,37 @@
+<view class="disclaimer-bar">{{disclaimerText}}</view>
+<view class="page profile">
+  <view class="card">
+    <view class="card-head"><text class="ch-title">{{hasProfile ? '修改生辰' : '录入生辰'}}</text></view>
+    <view class="card-body">
+      <view class="form-tip">用于推演你的五行体质，给出「为你定制」养生与体质倾向参考。仅作文化养生，不作医疗或吉凶断言。</view>
+      <view class="form-row">
+        <text class="fr-k">出生年</text>
+        <picker class="fr-picker" mode="selector" range="{{years}}" value="{{sel.yi}}" bindchange="onYear">
+          <view class="fr-val">{{years[sel.yi]}} 年</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="fr-k">出生月</text>
+        <picker class="fr-picker" mode="selector" range="{{months}}" value="{{sel.mi}}" bindchange="onMonth">
+          <view class="fr-val">{{months[sel.mi]}} 月</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="fr-k">出生日</text>
+        <picker class="fr-picker" mode="selector" range="{{days}}" value="{{sel.di}}" bindchange="onDay">
+          <view class="fr-val">{{days[sel.di]}} 日</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="fr-k">出生时辰</text>
+        <picker class="fr-picker" mode="selector" range="{{hours}}" range-key="name" value="{{sel.hi}}" bindchange="onHour">
+          <view class="fr-val">{{hours[sel.hi].name}}（{{hours[sel.hi].range}}）</view>
+        </picker>
+      </view>
+      <button class="big-btn" bindtap="save">保存</button>
+      <button wx:if="{{hasProfile}}" class="big-btn ghost" bindtap="clear">清除生辰</button>
+      <view class="form-note">时辰按出生当地真太阳时粗略对应；若仅知小时，可就近归入相邻时辰。</view>
+    </view>
+  </view>
+  <view class="footer-note">{{disclaimerText}}</view>
+</view>

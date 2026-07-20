@@ -1,6 +1,121 @@
-<view class="page">
+<view class="disclaimer-bar">{{disclaimerText}}</view>
+<view class="page almanac">
+
+  <!-- 八字四柱 -->
   <view class="card">
-    <view class="ph-title">{{title}}</view>
-    <view class="muted">建设中（M5）：八字四柱、五行分布、黄历宜忌、奇门遁甲、六十甲子等将在此呈现。</view>
+    <view class="card-head"><text class="ch-title">八字四柱</text><text class="ch-sub">{{almanac.summary}}</text></view>
+    <view class="card-body">
+      <view class="pillars">
+        <view wx:for="{{almanac.pillars}}" wx:key="label" class="pillar {{item.label === '日主' ? 'rz' : ''}}">
+          <text class="p-label">{{item.label}}</text>
+          <text class="p-gz">{{item.gz}}</text>
+          <text class="p-wx">{{item.wx}}</text>
+          <text class="p-nayin">{{item.nayin}}</text>
+        </view>
+      </view>
+      <view class="wx-bars">
+        <view wx:for="{{almanac.wuxing}}" wx:key="name" class="wx-row">
+          <text class="wx-name wx-{{item.name}}">{{item.name}}</text>
+          <view class="wx-track"><view class="wx-fill wx-{{item.name}}" style="width:{{item.pct}}%"></view></view>
+          <text class="wx-val">{{item.value}}</text>
+        </view>
+      </view>
+
+      <!-- 生辰板块 -->
+      <view wx:if="{{hasProfile}}" class="profile-box">
+        <view class="block-title"><text class="dot"></text>我的体质（生辰推演）</view>
+        <view class="pz-rel">{{profile.tendency}}</view>
+        <view wx:for="{{profile.advice}}" wx:key="element" class="pv-advice">
+          <view class="pv-head"><text class="wx-dot wx-{{item.element}}"></text>涵养「{{item.element}}」· 养{{item.organ}}{{item.season ? '（当令 ' + item.season + '）' : ''}}</view>
+          <view wx:for="{{item.points}}" wx:for-item="pt" wx:key="*this" class="pv-li">{{pt}}</view>
+        </view>
+        <view class="mini-btn" bindtap="goProfile">查看 / 修改生辰 ›</view>
+      </view>
+      <view wx:else class="profile-empty">
+        <view class="tip-row">录入生辰，可推演你的五行体质与个性化养生倾向。</view>
+        <view class="mini-btn" bindtap="goProfile">去录入生辰 ›</view>
+      </view>
+    </view>
   </view>
+
+  <!-- 黄历宜忌 -->
+  <view class="card">
+    <view class="card-head"><text class="ch-title">黄历宜忌</text></view>
+    <view class="card-body">
+      <view class="alm-row"><text class="alm-k">建除</text><text>{{almanac.jc}}日</text></view>
+      <view class="alm-yi">宜：{{almanac.jcYi}}</view>
+      <view class="alm-ji">忌：{{almanac.jcJi}}</view>
+      <view class="alm-row"><text class="alm-k">值神</text><text class="{{almanac.zhiShenType === '黄' ? 'huang' : 'hei'}}">{{almanac.zhiShen}}（{{almanac.zhiShenType}}道）</text></view>
+      <view class="alm-row"><text class="alm-k">冲煞</text><text>冲{{almanac.chong}}煞{{almanac.sha}}</text></view>
+      <view class="alm-row"><text class="alm-k">彭祖</text><text class="small">{{almanac.peng}}</text></view>
+      <view class="alm-grid">
+        <view class="alm-row"><text class="alm-k">喜神</text><text>{{almanac.xi}}</text></view>
+        <view class="alm-row"><text class="alm-k">财神</text><text>{{almanac.cai}}</text></view>
+        <view class="alm-row"><text class="alm-k">福神</text><text>{{almanac.fu}}</text></view>
+        <view class="alm-row"><text class="alm-k">太岁</text><text>{{almanac.taiDir}}</text></view>
+        <view class="alm-row"><text class="alm-k">岁破</text><text>{{almanac.suiPo}}</text></view>
+        <view class="alm-row"><text class="alm-k">三煞</text><text>{{almanac.sanSha}}方</text></view>
+      </view>
+      <view class="alm-mer">
+        <view class="block-title"><text class="dot"></text>经络 · 取穴（{{almanac.meridianName}}）</view>
+        <view class="organ-line">{{almanac.meridianText}}（{{almanac.meridianOrgan}}）</view>
+        <view class="alm-row"><text class="alm-k">原穴</text><text>{{almanac.yuan}}</text></view>
+        <view class="alm-row"><text class="alm-k">络穴</text><text>{{almanac.luo}}</text></view>
+        <view class="alm-row"><text class="alm-k">募穴</text><text>{{almanac.mu}}</text></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 进阶：奇门遁甲 -->
+  <view wx:if="{{showPro && qimen}}" class="card">
+    <view class="card-head"><text class="ch-title">奇门遁甲 · 九宫局盘</text></view>
+    <view class="card-body">
+      <view class="qm-cap">{{qimen.cap}}</view>
+      <view class="qm-grid">
+        <view wx:for="{{qimen.cells}}" wx:key="g" class="qm-cell {{item.isCenter ? 'center' : ''}} {{item.isZhifu ? 'zhifu' : ''}} {{item.isZhishi ? 'zhishi' : ''}}">
+          <text class="qm-luoshu">{{item.g}}</text>
+          <text class="qm-gua">{{item.gua}}</text>
+          <text class="qm-dir">{{item.dir}}</text>
+          <text wx:if="{{item.shen}}" class="qm-shen">{{item.shen}}</text>
+          <text class="qm-star">{{item.star}}</text>
+          <text wx:if="{{item.men}}" class="qm-men">{{item.men}}</text>
+          <text class="qm-yi">{{item.yi}}</text>
+        </view>
+      </view>
+      <view class="qm-note">传统术数排盘，仅作文化示意，不作占断依据。</view>
+    </view>
+  </view>
+
+  <!-- 进阶：天干地支六十甲子 -->
+  <view wx:if="{{showPro && ganzhi}}" class="card">
+    <view class="card-head"><text class="ch-title">天干地支 · 六十甲子</text></view>
+    <view class="card-body">
+      <view class="gz-section">
+        <view class="gz-h">十天干（今日日干 {{ganzhi.riGan}} 高亮）</view>
+        <view class="gz-table">
+          <view wx:for="{{ganzhi.ganRows}}" wx:key="g" class="gz-tr {{item.isNow ? 'gz-now' : ''}}">
+            <text class="gz-c">{{item.g}}</text><text class="gz-c">{{item.yin}}</text><text class="gz-c wx-{{item.wx}}">{{item.wx}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="gz-section">
+        <view class="gz-h">十二地支（今日日支 {{ganzhi.riZhi}} 高亮）</view>
+        <view class="gz-table">
+          <view wx:for="{{ganzhi.zhiRows}}" wx:key="z" class="gz-tr {{item.isNow ? 'gz-now' : ''}}">
+            <text class="gz-c">{{item.z}}</text><text class="gz-c">{{item.yin}}</text><text class="gz-c wx-{{item.wx}}">{{item.wx}}</text><text class="gz-c">{{item.zodiac}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="gz-section">
+        <view class="gz-h">六十甲子（今日 {{ganzhi.riGan}}{{ganzhi.riZhi}} 高亮）</view>
+        <view class="gz-jiazi">
+          <text wx:for="{{ganzhi.jiazi}}" wx:key="gz" class="gz-jz {{item.isNow ? 'now' : ''}}">{{item.gz}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{!showPro}}" class="pro-hint">当前为「简明」模式，奇门遁甲与六十甲子已隐藏。可在「更多」中切换「进阶」。</view>
+
+  <view class="footer-note">{{disclaimerText}}</view>
 </view>

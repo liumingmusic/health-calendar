@@ -4,7 +4,8 @@
     "pages/health-calendar/almanac/index",
     "pages/health-calendar/fortune/index",
     "pages/health-calendar/dao/index",
-    "pages/health-calendar/more/index"
+    "pages/health-calendar/more/index",
+    "pages/health-calendar/profile/index"
   ],
   "window": {
     "navigationBarTitleText": "养生日历",

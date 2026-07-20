@@ -1,0 +1,69 @@
+<view class="disclaimer-bar">{{disclaimerText}}</view>
+<view class="page fortune">
+
+  <view class="card">
+    <view class="card-head"><text class="ch-title">每日签运 · 吕祖灵签</text></view>
+    <view class="card-body">
+      <view class="sign-intro">{{intro}}</view>
+
+      <!-- 签筒 -->
+      <view class="sign-stage">
+        <view class="qian-tong {{shaking ? 'shaking' : ''}}">
+          <text class="qt-text">签</text>
+        </view>
+        <view wx:if="{{shaking}}" class="shaking-tip">摇动签筒…</view>
+      </view>
+
+      <view wx:if="{{!revealed && !shaking}}" class="sign-prompt">
+        <view class="prompt-text">焚香净手，心诚意正，于心中默念所问之事，再摇签筒以求今日之签。</view>
+        <view wx:if="{{dailyNo}}" class="daily-hint">今日一签（按日轮换）：第 {{dailyNo}} 签「{{dailyTitle}}」</view>
+        <button class="big-btn" bindtap="shake">摇签求签</button>
+      </view>
+
+      <!-- 签文结果 -->
+      <view wx:if="{{revealed && current}}" class="sign-result">
+        <view class="sr-head">第 {{current.no}} 签 · {{current.title}}</view>
+        <view class="sr-poem">
+          <text wx:for="{{current.poem}}" wx:key="*this" class="sr-line">{{item}}</text>
+        </view>
+        <view class="sr-jie"><text class="sr-jie-h">解曰</text>{{current.jie}}</view>
+        <view class="sr-explain">
+          <text wx:for="{{current.explain}}" wx:key="*this" class="sr-para">{{item}}</text>
+        </view>
+        <button class="big-btn ghost" bindtap="reroll">再摇一签</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 进阶：生肖运程 -->
+  <view wx:if="{{showPro && fortune.cells.length}}" class="card">
+    <view class="card-head"><text class="ch-title">生肖运程</text></view>
+    <view class="card-body">
+      <view class="fortune-lead">{{fortune.lead}}</view>
+      <view class="zodiac-grid">
+        <view wx:for="{{fortune.cells}}" wx:key="s" class="zodiac" style="border-top-color:{{item.color}}">
+          <text class="zx-name">{{item.s}}</text>
+          <text class="zx-zhi">{{item.z}}</text>
+          <text class="zx-badge" style="background:{{item.color}}">{{item.lv}}</text>
+          <text class="zx-comment">{{item.comment}}</text>
+        </view>
+      </view>
+      <view class="fortune-zong"><text class="dz-h">本日综论</text>{{fortune.zong}}</view>
+    </view>
+  </view>
+  <view wx:if="{{!showPro}}" class="pro-hint">当前为「简明」模式，生肖运程已隐藏。可在「更多」中切换「进阶」查看。</view>
+
+  <!-- 我的签历 -->
+  <view wx:if="{{mySigns.length}}" class="card">
+    <view class="card-head plain"><text class="ch-title">我的签历</text><text class="ch-sub">{{mySigns.length}} 天</text></view>
+    <view class="card-body">
+      <view wx:for="{{mySigns}}" wx:key="date" class="my-sign-row">
+        <text class="ms-date">{{item.date}}</text>
+        <text class="ms-no">第{{item.no}}签</text>
+        <text class="ms-title">{{item.title}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer-note">{{disclaimerText}}</view>
+</view>

@@ -1,0 +1,38 @@
+/* 道家页专属 */
+.dl-block { margin-bottom: 22rpx; border-bottom: 1rpx dashed var(--line); padding-bottom: 18rpx; }
+.dl-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.dl-k { display: inline-block; color: var(--seal); font-weight: 600; font-size: 24rpx; margin-bottom: 8rpx; }
+.dl-method-name { font-size: 30rpx; font-weight: 600; }
+.dl-quote { font-size: 27rpx; color: var(--ink); line-height: 1.7; margin: 6rpx 0; }
+.dl-steps { display: flex; flex-direction: column; }
+.dl-step { font-size: 24rpx; color: var(--ink-soft); }
+.dl-benefit { font-size: 24rpx; color: var(--ink-soft); margin-top: 6rpx; }
+.dl-src { font-size: 22rpx; color: var(--ink-soft); }
+.dl-prompt { font-size: 26rpx; color: var(--seal); line-height: 1.7; }
+.dl-season { font-size: 25rpx; color: var(--ink-soft); line-height: 1.7; }
+.dl-tag { display: inline-block; font-size: 20rpx; padding: 2rpx 12rpx; border-radius: 16rpx; margin-right: 10rpx; }
+.dl-tag.ok { background: #e8f3df; color: var(--green); }
+.dl-tag.warn { background: #f7e9d8; color: #b06a2c; }
+
+.sg-item { display: flex; align-items: baseline; padding: 14rpx 0; border-bottom: 1rpx dashed var(--line); }
+.sg-item:last-child { border-bottom: none; }
+.sg-item.current { background: #f3eef8; border-radius: 10rpx; padding: 14rpx; }
+.sg-season { width: 90rpx; font-weight: 600; color: var(--seal); flex-shrink: 0; }
+.sg-gist { flex: 1; font-size: 24rpx; color: var(--ink-soft); }
+
+.quote-item, .method-item { border-bottom: 1rpx dashed var(--line); padding: 16rpx 0; }
+.quote-item:last-child, .method-item:last-child { border-bottom: none; }
+.qi-summary, .mi-summary { display: flex; align-items: center; }
+.qi-caret, .mi-caret { color: var(--seal); margin-right: 12rpx; transition: transform 0.2s; }
+.qi-caret.open, .mi-caret.open { transform: rotate(90deg); }
+.qi-text { flex: 1; font-size: 26rpx; }
+.qi-src { font-size: 22rpx; color: var(--ink-soft); }
+.qi-detail { font-size: 24rpx; color: var(--ink-soft); line-height: 1.7; margin-top: 12rpx; padding-left: 36rpx; }
+.mi-name { font-size: 27rpx; font-weight: 600; flex: 1; }
+.mi-from { font-size: 22rpx; color: var(--ink-soft); }
+.mi-detail { margin-top: 14rpx; padding-left: 36rpx; }
+.mi-quote { font-size: 25rpx; color: var(--ink); line-height: 1.7; }
+.mi-sub { font-size: 22rpx; color: var(--seal); margin: 10rpx 0 6rpx; }
+.mi-steps { display: flex; flex-direction: column; }
+.mi-step { font-size: 24rpx; color: var(--ink-soft); }
+.mi-benefit, .mi-note { font-size: 24rpx; color: var(--ink-soft); margin-top: 8rpx; }

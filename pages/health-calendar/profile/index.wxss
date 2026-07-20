@@ -1,0 +1,12 @@
+/* 生辰页专属 */
+.form-tip { font-size: 23rpx; color: var(--ink-soft); line-height: 1.6; background: #f6f0e4; border-radius: 12rpx; padding: 16rpx; margin-bottom: 18rpx; }
+.form-row { display: flex; align-items: center; padding: 18rpx 0; border-bottom: 1rpx dashed var(--line); }
+.fr-k { width: 160rpx; font-weight: 600; color: var(--seal); flex-shrink: 0; }
+.fr-picker { flex: 1; }
+.fr-val { background: #f6f0e4; border-radius: 10rpx; padding: 14rpx 20rpx; font-size: 28rpx; text-align: center; }
+.big-btn {
+  background: var(--seal); color: #fff; font-size: 30rpx; font-weight: 600;
+  border-radius: 40rpx; padding: 18rpx 0; margin-top: 28rpx;
+}
+.big-btn.ghost { background: #fff; color: var(--seal); border: 2rpx solid var(--seal); margin-top: 16rpx; }
+.form-note { font-size: 21rpx; color: var(--ink-soft); margin-top: 16rpx; line-height: 1.6; }

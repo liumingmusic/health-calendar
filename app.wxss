@@ -1,31 +1,144 @@
-/* 全局样式（多小程序共享） */
+/* 全局主题与通用组件 */
 page {
-  --bg: #f5f1e8;
-  --paper: #fffdf8;
-  --ink: #2b2620;
+  --bg: #f3ece0;
+  --paper: #fbf7ef;
+  --ink: #2c2620;
+  --ink-soft: #6b6256;
+  --line: #e3d8c5;
   --seal: #6e4a8e;
-  --line: #e3dccb;
-  --muted: #8a7d6b;
-  --spring: #5f8a3a;
-  --summer: #c4452f;
-  --longsummer: #cf9a1c;
-  --autumn: #c47a2c;
-  --winter: #3a5d7a;
+  --seal-soft: #8a6aa3;
+  --chip-bg: #f0e7d6;
+  --acu: #b8743a;
+  --green: #5f8a3a;
+  --red: #c4452f;
+  --gold: #cf9a1c;
   background: var(--bg);
   color: var(--ink);
-  font-family: -apple-system, "PingFang SC", "Songti SC", serif;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 28rpx;
   line-height: 1.6;
 }
-.page { padding-bottom: 40rpx; }
+
+view, text { box-sizing: border-box; }
+
+.page { padding: 20rpx 22rpx 60rpx; }
+
+/* 免责声明条 */
+.disclaimer-bar {
+  background: #f7e9d8;
+  color: #8a5a2b;
+  font-size: 22rpx;
+  line-height: 1.5;
+  padding: 12rpx 24rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #ecd9bf;
+}
+.footer-note {
+  margin-top: 30rpx;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.6;
+  padding: 0 16rpx;
+}
+
+/* 卡片 */
 .card {
   background: var(--paper);
   border: 1rpx solid var(--line);
   border-radius: 20rpx;
-  padding: 28rpx;
-  margin: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  margin-top: 22rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(110,74,142,0.06);
 }
-.seal-text { color: var(--seal); }
-.muted { color: var(--muted); }
-.ph-title { font-size: 34rpx; font-weight: 600; color: var(--ink); margin-bottom: 12rpx; }
+.card-head {
+  padding: 20rpx 26rpx;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.card-head.plain { background: #efe6d6; color: var(--ink); }
+.ch-title { font-size: 30rpx; font-weight: 600; }
+.ch-sub { font-size: 22rpx; opacity: 0.9; }
+.card-body { padding: 24rpx 26rpx 28rpx; }
+
+/* 区块 */
+.block { margin-bottom: 26rpx; }
+.block:last-child { margin-bottom: 0; }
+.block-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--seal);
+  margin-bottom: 14rpx;
+  display: flex;
+  align-items: center;
+}
+.dot {
+  display: inline-block;
+  width: 12rpx; height: 12rpx;
+  border-radius: 50%;
+  background: var(--seal);
+  margin-right: 12rpx;
+}
+.organ-line { font-weight: 600; color: var(--ink); margin-bottom: 8rpx; }
+.p { color: var(--ink-soft); }
+.key-line { color: var(--green); font-weight: 600; margin-top: 8rpx; }
+.tip-row { color: var(--ink-soft); margin-bottom: 12rpx; }
+
+/* 标签 / 芯片 */
+.chips { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.chip {
+  background: var(--chip-bg);
+  color: #5a4a32;
+  font-size: 24rpx;
+  padding: 8rpx 18rpx;
+  border-radius: 30rpx;
+}
+.chip.acu { background: #f4e3d2; color: var(--acu); border: 1rpx solid #e8c8a8; }
+.avoid-list { margin-top: 12rpx; }
+.avoid-li { color: var(--red); font-size: 24rpx; }
+
+/* 今日侧重 */
+.tf-items { display: flex; flex-direction: column; gap: 12rpx; }
+.tf-item {
+  background: #f6f0e4;
+  border-radius: 12rpx;
+  padding: 12rpx 16rpx;
+  font-size: 25rpx;
+  color: var(--ink);
+}
+.tf-tag {
+  display: inline-block;
+  width: 40rpx; height: 40rpx;
+  line-height: 40rpx; text-align: center;
+  border-radius: 50%;
+  color: #fff; font-size: 22rpx;
+  margin-right: 14rpx;
+}
+.tf-食 { background: var(--green); }
+.tf-居 { background: var(--seal); }
+.tf-动 { background: var(--red); }
+.tf-穴 { background: var(--acu); }
+
+/* 专属徽标 */
+.badge {
+  display: inline-block;
+  padding: 8rpx 22rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 600;
+}
+.badge-jie { background: var(--seal); }
+.badge-fu { background: #d98324; }
+.badge-nine { background: #3a6a8a; }
+.badge-term { background: var(--green); }
+
+/* 为你定制 */
+.personalized { background: #f3eef8; border: 1rpx solid #e0d2ee; border-radius: 14rpx; padding: 20rpx; }
+.pz-rel { color: var(--seal); font-weight: 600; margin-bottom: 14rpx; }
+.pz-list { margin-top: 12rpx; }
+.pz-li { font-size: 24rpx; color: var(--ink-soft); }
+.person-tip { background: #f6f0e4; border-radius: 14rpx; padding: 20rpx; }
+.mini-btn { color: var(--seal); font-weight: 600; margin-top: 10rpx; display: inline-block; }
