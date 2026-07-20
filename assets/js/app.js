@@ -1609,11 +1609,24 @@ function wireMode() {
   applyMode(cur);
   const btns = sw.querySelectorAll('.mode-btn');
   btns.forEach(b => b.classList.toggle('active', b.dataset.mode === cur));
+  const toast = (msg) => {
+    let t = document.getElementById('modeToast');
+    if (!t) { t = document.createElement('div'); t.id = 'modeToast'; t.className = 'mode-toast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+  };
   btns.forEach(b => b.addEventListener('click', () => {
     const mode = b.dataset.mode;
+    const isPro = document.body.classList.contains('mode-pro');
+    if ((mode === 'pro') === isPro) return; // 已经是该模式，跳过
     try { localStorage.setItem(MODE_KEY, mode); } catch (e) {}
     applyMode(mode);
     btns.forEach(x => x.classList.toggle('active', x === b));
+    toast(mode === 'pro'
+      ? '已切到「进阶」· 显示奇门遁甲、六十甲子、生肖运程'
+      : '已切到「简明」· 仅保留养生与八字摘要');
   }));
 }
 
