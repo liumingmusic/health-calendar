@@ -75,9 +75,12 @@ Page({
       idx: HOU_IDX[h.idx - 1], name: h.name, phenom: h.phenom,
     }));
 
+    // 当前节气的公历日期（数据里是 cur.date，形如 2026-07-07）
+    const termSolar = cur.date ? `${+cur.date.slice(5, 7)}月${+cur.date.slice(8, 10)}日` : '';
+
     this.setData({
       dateText: `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${WEEK[now.getDay()]}`,
-      termName: cur.name, termSolar: cur.solar, season, seasonColor,
+      termName: cur.name, termSolar, season, seasonColor,
       organ: info.organ || '', key: info.key || '', summary,
       badge: special.tag, badgeKind: special.kind, hourName, compass,
       personalized, focus, health, meridian, houItems,
