@@ -1,0 +1,27 @@
+<view class="page">
+  <view class="hero card">
+    <view class="date">{{dateText}}</view>
+    <view class="badge badge-{{badgeKind}}">{{badge}}</view>
+
+    <view class="compass">
+      <view wx:for="{{compass}}" wx:key="z" class="tick {{item.active ? 'active' : ''}}" style="left:{{item.x}}rpx;top:{{item.y}}rpx;">{{item.z}}</view>
+      <view class="compass-center">
+        <view class="cc-hour">{{hourName}}</view>
+        <view class="cc-sub">当前时辰</view>
+      </view>
+    </view>
+
+    <view class="term-name">{{termName}}</view>
+    <view class="term-meta">交节 {{termSolar}} · {{season}}季</view>
+  </view>
+
+  <view class="card summary">
+    <view class="summary-title seal-text">今日一句话</view>
+    <view class="summary-text">{{summary}}</view>
+    <view class="organ muted">当令脏腑：{{organ}}</view>
+  </view>
+
+  <view class="card tip muted">
+    今日养生、打卡闭环、体质定制等模块将在后续版本（M3/M4）上线；黄历八字、签运、道家养生见对应 Tab。
+  </view>
+</view>

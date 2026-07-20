@@ -1,0 +1,16 @@
+{
+  "description": "养生日历小程序",
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "libVersion": "latest",
+  "projectname": "health-calendar",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false,
+    "urlCheck": false,
+    "ignoreDevUnusedFiles": false
+  },
+  "condition": {}
+}

@@ -1,0 +1,31 @@
+/* 全局样式（多小程序共享） */
+page {
+  --bg: #f5f1e8;
+  --paper: #fffdf8;
+  --ink: #2b2620;
+  --seal: #6e4a8e;
+  --line: #e3dccb;
+  --muted: #8a7d6b;
+  --spring: #5f8a3a;
+  --summer: #c4452f;
+  --longsummer: #cf9a1c;
+  --autumn: #c47a2c;
+  --winter: #3a5d7a;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Songti SC", serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+.page { padding-bottom: 40rpx; }
+.card {
+  background: var(--paper);
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+}
+.seal-text { color: var(--seal); }
+.muted { color: var(--muted); }
+.ph-title { font-size: 34rpx; font-weight: 600; color: var(--ink); margin-bottom: 12rpx; }

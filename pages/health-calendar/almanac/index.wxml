@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="ph-title">{{title}}</view>
+    <view class="muted">建设中（M5）：八字四柱、五行分布、黄历宜忌、奇门遁甲、六十甲子等将在此呈现。</view>
+  </view>
+</view>

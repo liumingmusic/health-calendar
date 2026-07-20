@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="ph-title">{{title}}</view>
+    <view class="muted">建设中（M5）：道家养生功法、导引术将在此呈现。</view>
+  </view>
+</view>

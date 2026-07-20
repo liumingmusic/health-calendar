@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="ph-title">{{title}}</view>
+    <view class="muted">建设中（M5/M6）：全年节气总览、使用说明、双模式切换、免责声明将在此呈现。</view>
+  </view>
+</view>

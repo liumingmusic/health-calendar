@@ -1,0 +1,37 @@
+.hero { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.hero .date { font-size: 26rpx; color: var(--muted); margin-bottom: 10rpx; }
+.badge {
+  display: inline-block; padding: 6rpx 22rpx; border-radius: 999rpx;
+  font-size: 24rpx; margin-bottom: 16rpx; color: #fff;
+  background: var(--seal);
+}
+.badge-jie { background: #b5532e; }
+.badge-fu { background: #c4452f; }
+.badge-nine { background: #3a5d7a; }
+.badge-term { background: var(--seal); }
+
+.compass {
+  position: relative; width: 460rpx; height: 460rpx; margin: 8rpx 0 12rpx;
+  border-radius: 50%; border: 2rpx solid var(--line);
+  background: radial-gradient(circle at center, #fffdf8 60%, #f3ecdc 100%);
+}
+.tick {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 48rpx; height: 48rpx; line-height: 48rpx; text-align: center;
+  font-size: 28rpx; color: var(--ink); border-radius: 50%;
+}
+.tick.active { background: var(--seal); color: #fff; font-weight: 700; box-shadow: 0 2rpx 10rpx rgba(110,74,142,0.4); }
+.compass-center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  text-align: center;
+}
+.cc-hour { font-size: 40rpx; font-weight: 700; color: var(--seal); }
+.cc-sub { font-size: 22rpx; color: var(--muted); }
+
+.term-name { font-size: 48rpx; font-weight: 700; letter-spacing: 4rpx; }
+.term-meta { font-size: 26rpx; color: var(--muted); margin-top: 6rpx; }
+
+.summary-title { font-size: 28rpx; font-weight: 600; margin-bottom: 10rpx; }
+.summary-text { font-size: 30rpx; line-height: 1.7; }
+.organ { font-size: 26rpx; margin-top: 8rpx; }
+.tip { font-size: 24rpx; line-height: 1.7; }
