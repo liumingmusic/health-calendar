@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="description" content="养生日历 · 以二十四节气、七十二候、十二时辰为纲的传统时令养生小站" />
   <title>养生日历 · 天人合一 顺应四时</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260719n" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260719o" />
 </head>
 <body>
   <div class="scroll-wrap">
@@ -19,6 +19,10 @@
       </div>
       <div class="meta">
         <div class="today-date" id="todayDate">—</div>
+        <div class="mode-switch" id="modeSwitch" role="group" aria-label="显示模式">
+          <button type="button" class="mode-btn active" data-mode="novice">简明</button>
+          <button type="button" class="mode-btn" data-mode="pro">进阶</button>
+        </div>
       </div>
     </header>
 
@@ -53,10 +57,20 @@
       <button class="tab" type="button" data-tab="help">使用说明</button>
     </nav>
 
+    <!-- 全局免责声明（各页可见） -->
+    <div class="global-disclaimer" role="note">
+      <span class="gd-ico" aria-hidden="true">ⓘ</span>
+      <p>本站节气养生、八字黄历、签运运程等内容，均由内置历法离线推算，仅作<b>传统文化与养生参考</b>，<b>不构成医疗、诊断、用药或吉凶占断建议</b>。身体不适请及时就医，重大决策请依据现实理性判断。</p>
+    </div>
+
     <!-- 今日总览 -->
     <div class="tab-panel" id="tab-summary">
       <section class="panel overview-card" id="todayOverview">
         <div class="panel-head"><h2>今日总览</h2><span class="season-chip" id="ovSeason">—</span></div>
+        <div class="today-hero-line" id="todayHeroLine">
+          <span class="thl-badge" id="thlBadge">—</span>
+          <p class="thl-summary" id="thlSummary">—</p>
+        </div>
         <div class="ov-grid">
           <div class="ov-cell ov-date">
             <div class="ov-k">公历 / 农历</div>
@@ -128,6 +142,7 @@
           <span class="streak" id="streakLabel">—</span>
         </div>
         <div class="habits" id="habits"></div>
+        <div class="checkin-progress" id="checkinProgress"></div>
         <p class="checkin-tip">打卡记录仅保存在本机浏览器（localStorage），用于见证你的坚持。</p>
       </section>
     </div>
@@ -175,7 +190,7 @@
           </div>
         </details>
 
-        <details class="coll">
+        <details class="coll pro-only">
           <summary><span class="coll-t">奇门遁甲 · 九宫局盘</span><span class="coll-hint">传统术数排盘，仅作文化示意</span></summary>
           <div class="coll-body">
             <p class="qimen-cap" id="qimenCap"></p>
@@ -192,7 +207,7 @@
           </div>
         </details>
 
-        <details class="coll">
+        <details class="coll pro-only">
           <summary><span class="coll-t">天干地支 · 六十甲子</span><span class="coll-hint">记年月日时的符号，今日日干支高亮</span></summary>
           <div class="coll-body">
             <div id="ganzhiBody"></div>
@@ -391,7 +406,7 @@
 
     <footer class="site-footer">
       <p class="maxim" id="footMaxim">「致虚极，守静笃。」—— 《道德经·十六章》</p>
-      <p class="foot-note">养生日历 · 纯静态离线小站 · 内容仅为传统养生参考，不替代专业医疗</p>
+      <p class="foot-note">养生日历 · 纯静态离线小站 · 全部内容仅为传统文化与养生参考，不构成医疗诊断或吉凶断言，身体不适请及时就医</p>
     </footer>
   </div>
 
@@ -438,6 +453,6 @@
     </div>
   </div>
 
-  <script src="assets/js/app.js?v=20260719k"></script>
+  <script src="assets/js/app.js?v=20260719o"></script>
 </body>
 </html>
