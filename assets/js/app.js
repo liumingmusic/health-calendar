@@ -18,6 +18,21 @@ const HABITS = [
   { id: 'food', label: '食养' },
 ];
 const CHECKIN_KEY = 'yc_checkins_v1';
+const CHECKIN_BEST_KEY = 'yc_checkin_best_v1';   // 历史最佳连续天数
+// 打卡里程碑（连续天数 → 称号）
+const CHECKIN_MILESTONES = [
+  { days: 3, title: '初心' },
+  { days: 7, title: '一候' },
+  { days: 21, title: '成习' },
+  { days: 49, title: '筑基' },
+  { days: 100, title: '百日功' },
+  { days: 365, title: '周天' },
+];
+// 双模式（小白/进阶）
+const MODE_KEY = 'healthcal_mode_v1';
+// 季节 → 五行
+const SEASON_WX = { '春': '木', '夏': '火', '长夏': '土', '秋': '金', '冬': '水' };
+// 五行相生 WX_SHENG / 相克 WX_KE 已在文件后段（生肖运程）定义，此处复用，不重复声明
 
 // 十二地支（时辰盘用单字，更似罗盘）
 const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
@@ -50,6 +65,83 @@ async function loadJSON(url) {
   const res = await fetch(url, { cache: 'no-cache' });
   if (!res.ok) throw new Error(`加载失败 ${url}: ${res.status}`);
   return res.json();
+}
+
+// 两日期相隔天数（b - a），入参为 Date
+function dayDiff(a, b) {
+  const ms = new Date(b.getFullYear(), b.getMonth(), b.getDate())
+    - new Date(a.getFullYear(), a.getMonth(), a.getDate());
+  return Math.round(ms / 86400000);
+}
+// 求某日期当年（或跨年）夏至后第 n 个庚日（用于推三伏）；返回 Date
+// 夏至后第3个庚日=初伏，第4个庚日=中伏，立秋后第1个庚日=末伏
+function nthGengAfter(fromDate, n) {
+  // 日干：与 dayGZ 一致，庚 = gan 索引 6
+  const d = new Date(fromDate);
+  let count = 0;
+  for (let i = 0; i < 80; i++) {
+    if (dayGZ(d).gan === 6) { count++; if (count === n) return new Date(d); }
+    d.setDate(d.getDate() + 1);
+  }
+  return null;
+}
+// 计算“今日专属”标签：交节 / 三伏 / 数九 / 节气第N天
+function computeTodaySpecial(date, flat, cur, daysToNext) {
+  const today = dateStr(date);
+  const y = date.getFullYear();
+  const find = (name, yy) => flat.find(t => t.name === name && t.date.startsWith(yy + '-'));
+
+  // 1) 今日交节
+  const curInfo = flat.filter(t => t.date <= today).sort((a, b) => a.date.localeCompare(b.date)).pop();
+  if (curInfo && curInfo.date === today) {
+    return { tag: `交${cur.name}`, kind: 'jie' };
+  }
+
+  // 2) 三伏（夏至后第3庚=初伏，第4庚=中伏，立秋后第1庚=末伏）
+  const xiazhi = find('夏至', y);
+  const liqiu = find('立秋', y);
+  if (xiazhi && liqiu) {
+    const chufu = nthGengAfter(new Date(xiazhi.date + 'T00:00:00'), 3);
+    const zhongfu = nthGengAfter(new Date(xiazhi.date + 'T00:00:00'), 4);
+    const mofu = nthGengAfter(new Date(liqiu.date + 'T00:00:00'), 1);
+    if (chufu && zhongfu && mofu) {
+      const dc = dayDiff(chufu, date), dz = dayDiff(zhongfu, date), dm = dayDiff(mofu, date);
+      if (dc >= 0 && dz < 0) return { tag: `初伏第${dc + 1}天`, kind: 'fu' };
+      // 中伏可能 10 或 20 天，用末伏边界判断
+      if (dz >= 0 && dm < 0) return { tag: `中伏第${dz + 1}天`, kind: 'fu' };
+      if (dm >= 0 && dm < 10) return { tag: `末伏第${dm + 1}天`, kind: 'fu' };
+    }
+  }
+
+  // 3) 数九（冬至起，每9天一九，共八十一天）
+  const dongzhiThis = find('冬至', y);
+  const dongzhiLast = find('冬至', y - 1);
+  const NINE = ['一九', '二九', '三九', '四九', '五九', '六九', '七九', '八九', '九九'];
+  const checkNine = (dzInfo) => {
+    if (!dzInfo) return null;
+    const off = dayDiff(new Date(dzInfo.date + 'T00:00:00'), date);
+    if (off >= 0 && off < 81) {
+      const n = Math.floor(off / 9);
+      return { tag: `${NINE[n]}第${off % 9 + 1}天`, kind: 'nine' };
+    }
+    return null;
+  };
+  const n1 = checkNine(dongzhiThis) || checkNine(dongzhiLast);
+  if (n1) return n1;
+
+  // 4) 节气第N天（默认）
+  const daysIn = curInfo ? dayDiff(new Date(curInfo.date + 'T00:00:00'), date) + 1 : 1;
+  return { tag: `${cur.name}第${daysIn}天`, kind: 'term' };
+}
+
+// 当前模式（小白/进阶）
+function loadMode() {
+  try { return localStorage.getItem(MODE_KEY) === 'pro' ? 'pro' : 'novice'; }
+  catch (e) { return 'novice'; }
+}
+function applyMode(mode) {
+  document.body.classList.toggle('mode-pro', mode === 'pro');
+  document.body.classList.toggle('mode-novice', mode !== 'pro');
 }
 
 /* ============ 时辰推算 ============ */
@@ -153,6 +245,24 @@ function renderTodayOverview(date, flat, cur, daysToNext, next, curHour, curIdx)
   document.getElementById('ovSign').innerHTML =
     `<span class="ov-lv">吕祖灵签</span>第${sign.no}签「${sign.title}」`;
   document.getElementById('ovFortune').textContent = `今日最利 · ${topZ.s}`;
+
+  // ===== 首屏一句话摘要 + 今日专属徽标 =====
+  const special = computeTodaySpecial(date, flat, cur, daysToNext);
+  const badgeEl = document.getElementById('thlBadge');
+  if (badgeEl) {
+    badgeEl.textContent = special.tag;
+    badgeEl.className = 'thl-badge thl-' + special.kind;
+  }
+  const th = HEALTH_MAP[cur.name] || {};
+  const keyLine = (th.key || '顺时养正').replace(/[。.]$/, '');
+  const yiFirst = jcYJ.yi.slice(0, 2).join('、');
+  const summary =
+    `${special.kind === 'jie' ? '今日交' + cur.name : cur.name + '时节'}，` +
+    `当令养${curHour.organ}；${keyLine}。` +
+    `今日${bz.pillars.日.gz}日宜${yiFirst}，` +
+    `此刻${curHour.name}正当${curHour.meridian}，最利${topZ.s}。`;
+  const sumEl = document.getElementById('thlSummary');
+  if (sumEl) sumEl.textContent = summary;
 }
 
 /* ============ 今日养生主卡 ============ */
@@ -188,10 +298,72 @@ function healthHTML(t) {
     </div>`;
 }
 
+// 今日侧重：在当前节气条目中按日轮选一组重点（同节气内每天不同）—— #86 内容随节气动态
+function todayFocusHTML(t) {
+  const h = dateHash(todayStr());
+  const pick = (arr, salt) => (arr && arr.length) ? arr[(h + salt) % arr.length] : '';
+  const diet = pick(t.diet, 0);
+  const living = pick(t.living, 3);
+  const exercise = pick(t.exercise, 7);
+  const acu = pick(t.acupoint, 5);
+  const items = [
+    diet ? `<span class="tf-item"><i>食</i>${diet}</span>` : '',
+    living ? `<span class="tf-item"><i>居</i>${living}</span>` : '',
+    exercise ? `<span class="tf-item"><i>动</i>${exercise}</span>` : '',
+    acu ? `<span class="tf-item tf-acu"><i>穴</i>${acu}</span>` : '',
+  ].join('');
+  return `
+    <div class="block today-focus">
+      <div class="block-title"><span class="dot"></span>今日侧重 · ${t.term}当令</div>
+      <p class="tf-lead">同一节气，每天各有侧重。今日不妨从这几处着手：</p>
+      <div class="tf-items">${items}</div>
+    </div>`;
+}
+
+// 体质 × 当日时令叠加：已录入生辰时，按用户五行体质 + 当前节气五行给定制建议 —— #84
+function personalizedHTML(t) {
+  const p = loadProfile();
+  if (!p || !ALL_TERMS_FLAT.length) return '';
+  let bz, adv;
+  try {
+    bz = computeBazi(new Date(p.y, p.m - 1, p.d), p.h, ALL_TERMS_FLAT);
+    adv = constitutionAdvice(bz);
+  } catch (e) { return ''; }
+  const weak = adv.weak, rgWX = adv.rgWX;
+  const seasonWX = SEASON_WX[t.season] || '木';
+  const C = CONSTITUTION || {};
+  const cw = C[weak] || {};
+
+  // 当令五行与体质弱行的关系
+  let rel;
+  if (seasonWX === weak) {
+    rel = `当前${t.season}季正当令「${seasonWX}」，与你偏弱的「${weak}」同气，是补养${cw.organ || weak}的好时机。`;
+  } else if (WX_SHENG[seasonWX] === weak) {
+    rel = `当前${t.season}季当令「${seasonWX}」，「${seasonWX}生${weak}」，时令之气正助你涵养偏弱的「${weak}」。`;
+  } else if (WX_KE[seasonWX] === weak) {
+    rel = `当前${t.season}季当令「${seasonWX}」，「${seasonWX}克${weak}」，你偏弱的「${weak}」易受耗，尤需着意顾护${cw.organ || weak}。`;
+  } else {
+    rel = `当前${t.season}季当令「${seasonWX}」，宜顺时养正，兼顾涵养偏弱的「${weak}」（养${cw.organ || weak}）。`;
+  }
+
+  const foods = (cw.foods || []).slice(0, 5).map(f => `<span class="chip">${f}</span>`).join('');
+  const mer = cw.meridian ? `<span class="chip acu">${cw.meridian}</span>` : '';
+  const mind = cw.mindset ? `<li>情志：${cw.mindset}</li>` : '';
+  const avoid = (cw.foods_avoid || []).length ? `<li>少沾：${cw.foods_avoid.join('、')}</li>` : '';
+
+  return `
+    <div class="block personalized">
+      <div class="block-title"><span class="dot"></span>为你定制 · 体质 × 当日时令</div>
+      <p class="pz-rel">日主属「${rgWX}」，体质偏弱在「${weak}」。${rel}</p>
+      <div class="chips">${foods}${mer}</div>
+      <ul class="pz-list">${avoid}${mind}</ul>
+    </div>`;
+}
+
 function renderMainCard(t) {
   document.getElementById('seasonChip').textContent = `${t.season}季 · 交节 ${t.solar}`;
   document.getElementById('seasonChip').style.background = SEASON_COLORS[t.season];
-  let html = healthHTML(t);
+  let html = personalizedHTML(t) + todayFocusHTML(t) + healthHTML(t);
   if (CUR_HOUR) {
     html += `
       <div class="block">
@@ -506,6 +678,22 @@ function computeStreak(store) {
   }
   return streak;
 }
+function loadBestStreak() {
+  try { return parseInt(localStorage.getItem(CHECKIN_BEST_KEY), 10) || 0; }
+  catch (e) { return 0; }
+}
+function saveBestStreak(v) { try { localStorage.setItem(CHECKIN_BEST_KEY, String(v)); } catch (e) {} }
+
+// 依连续天数取当前里程碑称号 + 下一里程碑
+function milestoneOf(streak) {
+  let earned = null, next = null;
+  for (const m of CHECKIN_MILESTONES) {
+    if (streak >= m.days) earned = m;
+    else { next = m; break; }
+  }
+  return { earned, next };
+}
+
 function renderCheckin() {
   const store = loadCheckins();
   const today = todayStr();
@@ -525,8 +713,41 @@ function renderCheckin() {
     saveCheckins(s);
     renderCheckin();
   }));
+
+  // 今日完成度
+  const doneToday = HABITS.filter(h => rec[h.id]).length;
+  const total = HABITS.length;
+  const allDone = doneToday === total;
+
+  // 连续天数 + 历史最佳
   const streak = computeStreak(store);
-  document.getElementById('streakLabel').textContent = `连续打卡 ${streak} 天`;
+  let best = loadBestStreak();
+  if (streak > best) { best = streak; saveBestStreak(best); }
+
+  // 里程碑
+  const { earned, next } = milestoneOf(streak);
+  const badge = earned ? `<span class="ms-badge">🏅 ${earned.title}·满${earned.days}天</span>` : '';
+  const nextTip = next
+    ? `再坚持 <b>${next.days - streak}</b> 天达成「${next.title}」`
+    : '已抵达最高里程碑「周天」，善莫大焉';
+
+  document.getElementById('streakLabel').innerHTML =
+    `连续 <b>${streak}</b> 天 · 最佳 ${best} 天`;
+
+  // 进度面板
+  const panel = document.getElementById('checkinProgress');
+  if (panel) {
+    const dots = HABITS.map(h => `<span class="cp-dot ${rec[h.id] ? 'on' : ''}"></span>`).join('');
+    panel.innerHTML = `
+      <div class="cp-row">
+        <span class="cp-today ${allDone ? 'full' : ''}">今日完成 ${doneToday}/${total}</span>
+        <span class="cp-dots">${dots}</span>
+        ${badge}
+      </div>
+      <div class="cp-msg ${allDone ? 'full' : ''}">
+        ${allDone ? '🎉 今日四事圆满，身心俱养，明日再见！' : nextTip}
+      </div>`;
+  }
 }
 
 /* ============ 道家养生 ============ */
@@ -1020,7 +1241,7 @@ function constitutionAdvice(bz) {
       ],
     };
   });
-  return { tendency, advice };
+  return { tendency, advice, weak, strong, rgWX };
 }
 
 function wxBarsHTML(wx) {
@@ -1380,6 +1601,22 @@ function renderHelp(date, flat, curIdx, curHour) {
 }
 
 /* ============ Tab 切换 ============ */
+// 小白/进阶双模式切换 —— #85
+function wireMode() {
+  const sw = document.getElementById('modeSwitch');
+  if (!sw) return;
+  const cur = loadMode();
+  applyMode(cur);
+  const btns = sw.querySelectorAll('.mode-btn');
+  btns.forEach(b => b.classList.toggle('active', b.dataset.mode === cur));
+  btns.forEach(b => b.addEventListener('click', () => {
+    const mode = b.dataset.mode;
+    try { localStorage.setItem(MODE_KEY, mode); } catch (e) {}
+    applyMode(mode);
+    btns.forEach(x => x.classList.toggle('active', x === b));
+  }));
+}
+
 function initTabs() {
   const tabs = document.querySelectorAll('.tab');
   const panels = { summary: 'tab-summary', today: 'tab-today', bazi: 'tab-bazi', dao: 'tab-dao', fortune: 'tab-fortune', overview: 'tab-overview', help: 'tab-help' };
@@ -1425,6 +1662,7 @@ async function init() {
     CUR_HOUR = curHour;
 
     renderHeaderDate();
+    wireMode();
     renderHero(cur, daysToNext, curHour, next ? next.name : '');
     renderTodayOverview(new Date(), flat, cur, daysToNext, next, curHour, curIdx);
     renderMainCard(HEALTH_MAP[cur.name]);
