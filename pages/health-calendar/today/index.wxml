@@ -6,6 +6,11 @@
     <view class="compass">
       <view wx:for="{{compass}}" wx:key="z" class="compass-zhi {{item.active ? 'active' : ''}}"
             style="left:{{item.x}}%;top:{{item.y}}%;">{{item.z}}</view>
+      <!-- 实时时分秒指针（以当前真实时间为准） -->
+      <view class="hand hand-hour" style="transform:translateX(-50%) rotate({{hDeg}}deg)"></view>
+      <view class="hand hand-min" style="transform:translateX(-50%) rotate({{mDeg}}deg)"></view>
+      <view class="hand hand-sec" style="transform:translateX(-50%) rotate({{sDeg}}deg)"></view>
+      <view class="compass-cap"></view>
       <view class="compass-center">
         <view class="cc-term">{{termName}}</view>
         <view class="cc-hour">{{hourName}}</view>

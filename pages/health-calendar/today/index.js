@@ -22,15 +22,41 @@ Page({
     dateText: '', termName: '', termSolar: '', season: '', seasonColor: '',
     organ: '', key: '', summary: '', badge: '', badgeKind: '',
     hourName: '', compass: [],
+    hDeg: 0, mDeg: 0, sDeg: 0,
     personalized: { show: false }, focus: [], health: {},
     meridian: {}, houItems: [],
     checkin: {}, mode: 'novice',
     disclaimerText: core.DISCLAIMER,
   },
-  onLoad() { this.build(); },
+  onLoad() {
+    this.build();
+    this.startClock();
+  },
   onShow() {
     this.build();
     this.refreshCheckin();
+    this.startClock();
+  },
+  onHide() { this.stopClock(); },
+  onUnload() { this.stopClock(); },
+  startClock() {
+    if (this._clock) return;
+    this.updateClock();
+    this._clock = setInterval(() => this.updateClock(), 1000);
+  },
+  stopClock() {
+    if (this._clock) { clearInterval(this._clock); this._clock = null; }
+  },
+  updateClock() {
+    const t = new Date();
+    const h = t.getHours() % 12;
+    const m = t.getMinutes();
+    const s = t.getSeconds();
+    this.setData({
+      hDeg: (h + m / 60) * 30,
+      mDeg: (m + s / 60) * 6,
+      sDeg: s * 6,
+    });
   },
   build() {
     const flat = core.flattenTerms(solarTerms);

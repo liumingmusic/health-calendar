@@ -40,6 +40,28 @@
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  z-index: 3;
+}
+/* 实时时分秒指针：bottom 锚定圆心，transform-origin 旋转 */
+.hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: 50% 100%;
+  border-radius: 6rpx;
+  z-index: 2;
+}
+.hand-hour { width: 10rpx; height: 26%; background: #6e4a8e; }
+.hand-min { width: 7rpx;  height: 36%; background: #3a78a8; }
+.hand-sec { width: 3rpx;  height: 42%; background: #c0392b; }
+.compass-cap {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 18rpx; height: 18rpx;
+  margin: -9rpx 0 0 -9rpx;
+  border-radius: 50%;
+  background: #6e4a8e;
+  z-index: 4;
 }
 .cc-term { font-size: 44rpx; font-weight: 700; color: var(--seal); }
 .cc-hour { font-size: 26rpx; color: var(--ink-soft); margin-top: 4rpx; }
