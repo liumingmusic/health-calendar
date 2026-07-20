@@ -363,6 +363,95 @@ body {
 .ov-v-sm { font-size: 13px; color: var(--ink); line-height: 1.6; }
 .ov-v-sm .ov-lv { font-weight: 700; margin-right: 2px; }
 
+/* ---------- 打卡进度（闭环）#82 ---------- */
+.streak b { color: var(--seal); font-size: 17px; }
+.checkin-progress { margin-top: 12px; }
+.cp-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.cp-today {
+  font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--ink-soft);
+  padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--paper-2);
+}
+.cp-today.full { color: #fff; background: var(--seal); border-color: var(--seal); }
+.cp-dots { display: inline-flex; gap: 6px; }
+.cp-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); transition: all .15s; }
+.cp-dot.on { background: var(--seal); box-shadow: 0 0 0 3px #efeaf4; }
+.ms-badge {
+  font-size: 13px; font-weight: 700; color: #8a6d1c;
+  background: linear-gradient(180deg, #fbf3d6, #f4e6b8); border: 1px solid #e6cf8a;
+  padding: 3px 10px; border-radius: 999px;
+}
+.cp-msg { margin-top: 8px; font-size: 13px; color: var(--ink-soft); }
+.cp-msg b { color: var(--seal); font-size: 15px; }
+.cp-msg.full { color: var(--seal); font-weight: 700; }
+
+/* ---------- 首屏一句话摘要 + 今日专属徽标 #83 ---------- */
+.today-hero-line {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin: 4px 0 14px; padding: 12px 14px;
+  background: linear-gradient(180deg, #f7f1fa, var(--paper)); 
+  border: 1px solid var(--line); border-left: 3px solid var(--seal); border-radius: 12px;
+}
+.thl-badge {
+  flex: none; align-self: center;
+  font-family: var(--serif); font-size: 13px; font-weight: 700; color: #fff;
+  background: var(--seal); padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+}
+.thl-badge.thl-jie { background: #c4452f; }
+.thl-badge.thl-fu { background: #cf7a1c; }
+.thl-badge.thl-nine { background: #3a5d7a; }
+.thl-badge.thl-term { background: var(--seal); }
+.thl-summary { margin: 0; font-size: 14.5px; line-height: 1.7; color: var(--ink); font-family: var(--serif); }
+
+/* ---------- 今日养生：为你定制 / 今日侧重 #84 #86 ---------- */
+.block.personalized {
+  background: linear-gradient(180deg, #f7f1fa, var(--paper));
+  border: 1px solid #e3d5ee; border-left: 3px solid var(--seal);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+}
+.block.personalized .block-title { color: var(--seal); }
+.pz-rel { font-size: 14px; line-height: 1.75; color: var(--ink); margin: 4px 0 10px; }
+.pz-list { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--ink-soft); }
+.pz-list li { margin: 3px 0; }
+.block.today-focus {
+  background: var(--paper-2); border: 1px dashed var(--line-strong);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+}
+.tf-lead { font-size: 13px; color: var(--ink-soft); margin: 4px 0 10px; }
+.tf-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.tf-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px; color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line-strong); border-radius: 10px; padding: 6px 11px;
+}
+.tf-item i {
+  font-style: normal; font-size: 11px; font-weight: 700; color: #fff; background: var(--seal-soft);
+  width: 18px; height: 18px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center;
+}
+.tf-item.tf-acu i { background: var(--spring); }
+
+/* ---------- 双模式切换 #85 ---------- */
+.mode-switch {
+  display: inline-flex; margin-top: 8px; border: 1px solid var(--line-strong);
+  border-radius: 999px; overflow: hidden; background: var(--paper-2);
+}
+.mode-btn {
+  font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft);
+  padding: 5px 14px; border: none; background: transparent; cursor: pointer; min-height: 32px;
+  transition: all .12s;
+}
+.mode-btn.active { background: var(--seal); color: #fff; font-weight: 700; }
+body.mode-novice .pro-only { display: none !important; }
+
+/* ---------- 全局免责声明 #87 ---------- */
+.global-disclaimer {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 0 0 14px; padding: 9px 13px;
+  background: #fbf6ec; border: 1px solid #ecdfc4; border-radius: 10px;
+}
+.global-disclaimer .gd-ico { flex: none; color: #b98a2e; font-size: 15px; line-height: 1.5; }
+.global-disclaimer p { margin: 0; font-size: 12.5px; line-height: 1.65; color: var(--ink-soft); }
+.global-disclaimer b { color: var(--ink); }
+
 /* ---------- Footer ---------- */
 .site-footer { text-align: center; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
 .maxim { font-family: var(--serif); font-size: 17px; color: var(--ink-soft); letter-spacing: 2px; margin: 0 0 6px; }
@@ -952,6 +1041,16 @@ body {
   .brand-text h1 { font-size: 22px; letter-spacing: 3px; }
   .subtitle { letter-spacing: 2px; }
   .today-date { font-size: 15px; }
+  .mode-switch { margin-top: 6px; }
+
+  /* 首屏一句话摘要：徽标置顶、上下堆叠 */
+  .today-hero-line { flex-direction: column; gap: 8px; padding: 11px 12px; }
+  .thl-badge { align-self: flex-start; }
+  .thl-summary { font-size: 13.5px; }
+
+  /* 打卡进度 */
+  .cp-row { gap: 8px; }
+  .tf-items { gap: 6px; }
 
   /* 英雄区：时钟置顶，节气与时辰上下换行堆叠 */
   .hero {
