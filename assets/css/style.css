@@ -442,6 +442,17 @@ body {
 .mode-btn.active { background: var(--seal); color: #fff; font-weight: 700; }
 body.mode-novice .pro-only { display: none !important; }
 
+/* 双模式切换提示条 #85 */
+.mode-toast {
+  position: fixed; left: 50%; top: 14px; transform: translateX(-50%) translateY(-20px);
+  z-index: 60; max-width: 90vw;
+  background: var(--seal); color: #fff; font-size: 13.5px; line-height: 1.5;
+  padding: 9px 16px; border-radius: 999px; box-shadow: 0 8px 24px rgba(70,55,90,0.28);
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; text-align: center;
+}
+.mode-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+
 /* ---------- 全局免责声明 #87 ---------- */
 .global-disclaimer {
   display: flex; align-items: flex-start; gap: 8px;
