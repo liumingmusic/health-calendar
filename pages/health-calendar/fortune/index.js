@@ -1,8 +1,8 @@
 // 每日签运页
-const core = require('../../utils/core.js');
-const store = require('../../utils/store.js');
-const solarTerms = require('../../data/solar-terms.js');
-const sticksData = require('../../data/fortune-sticks.js');
+const core = require('../../../utils/core.js');
+const store = require('../../../utils/store.js');
+const solarTerms = require('../../../data/solar-terms.js');
+const sticksData = require('../../../data/fortune-sticks.js');
 
 const STICKS = sticksData.sticks || [];
 const SIGN_INTRO = '《吕祖灵签》共一百签，吕祖即吕洞宾，道教全真道尊为纯阳祖师。签文古奥，宜自参悟；此处仅录签诗与解曰原文，不作吉凶断言，亦不替代道观实物签谱。';

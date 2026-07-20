@@ -1,11 +1,11 @@
 // 今日（总览 + 养生合并）主页面
-const core = require('../../utils/core.js');
-const store = require('../../utils/store.js');
-const solarTerms = require('../../data/solar-terms.js');
-const healthArr = require('../../data/health.js');
-const hours = require('../../data/hours.js');
-const houArr = require('../../data/hou.js');
-const constitution = require('../../data/constitution.js');
+const core = require('../../../utils/core.js');
+const store = require('../../../utils/store.js');
+const solarTerms = require('../../../data/solar-terms.js');
+const healthArr = require('../../../data/health.js');
+const hours = require('../../../data/hours.js');
+const houArr = require('../../../data/hou.js');
+const constitution = require('../../../data/constitution.js');
 
 // 索引表（与 web 一致）
 const HEALTH_MAP = {};
@@ -61,7 +61,8 @@ Page({
 
     // 养生主卡
     const health = core.healthSections(info);
-    const focus = core.todayFocusData(info);
+    const TF = { 食: 'food', 居: 'live', 动: 'move', 穴: 'acu' };
+    const focus = core.todayFocusData(info).map(f => ({ ...f, cls: TF[f.tag] || '' }));
     const profile = store.loadProfile();
     const personalized = core.personalizedData(info, profile, flat, constitution);
     const meridian = {

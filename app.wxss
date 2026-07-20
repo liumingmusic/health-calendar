@@ -116,10 +116,10 @@ view, text { box-sizing: border-box; }
   color: #fff; font-size: 22rpx;
   margin-right: 14rpx;
 }
-.tf-食 { background: var(--green); }
-.tf-居 { background: var(--seal); }
-.tf-动 { background: var(--red); }
-.tf-穴 { background: var(--acu); }
+.tf-food { background: var(--green); }
+.tf-live { background: var(--seal); }
+.tf-move { background: var(--red); }
+.tf-acu { background: var(--acu); }
 
 /* 专属徽标 */
 .badge {

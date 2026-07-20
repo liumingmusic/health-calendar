@@ -1,6 +1,6 @@
 // 生辰录入页（子页）
-const store = require('../../utils/store.js');
-const core = require('../../utils/core.js');
+const store = require('../../../utils/store.js');
+const core = require('../../../utils/core.js');
 
 const YEARS = [];
 for (let y = 2026; y >= 1930; y--) YEARS.push(y);

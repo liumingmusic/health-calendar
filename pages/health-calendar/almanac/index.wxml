@@ -15,8 +15,8 @@
       </view>
       <view class="wx-bars">
         <view wx:for="{{almanac.wuxing}}" wx:key="name" class="wx-row">
-          <text class="wx-name wx-{{item.name}}">{{item.name}}</text>
-          <view class="wx-track"><view class="wx-fill wx-{{item.name}}" style="width:{{item.pct}}%"></view></view>
+          <text class="wx-name wx-{{item.cls}}">{{item.name}}</text>
+          <view class="wx-track"><view class="wx-fill wx-{{item.cls}}" style="width:{{item.pct}}%"></view></view>
           <text class="wx-val">{{item.value}}</text>
         </view>
       </view>
@@ -26,7 +26,7 @@
         <view class="block-title"><text class="dot"></text>我的体质（生辰推演）</view>
         <view class="pz-rel">{{profile.tendency}}</view>
         <view wx:for="{{profile.advice}}" wx:key="element" class="pv-advice">
-          <view class="pv-head"><text class="wx-dot wx-{{item.element}}"></text>涵养「{{item.element}}」· 养{{item.organ}}{{item.season ? '（当令 ' + item.season + '）' : ''}}</view>
+          <view class="pv-head"><text class="wx-dot wx-{{item.cls}}"></text>涵养「{{item.element}}」· 养{{item.organ}}{{item.season ? '（当令 ' + item.season + '）' : ''}}</view>
           <view wx:for="{{item.points}}" wx:for-item="pt" wx:key="*this" class="pv-li">{{pt}}</view>
         </view>
         <view class="mini-btn" bindtap="goProfile">查看 / 修改生辰 ›</view>
@@ -94,7 +94,7 @@
         <view class="gz-h">十天干（今日日干 {{ganzhi.riGan}} 高亮）</view>
         <view class="gz-table">
           <view wx:for="{{ganzhi.ganRows}}" wx:key="g" class="gz-tr {{item.isNow ? 'gz-now' : ''}}">
-            <text class="gz-c">{{item.g}}</text><text class="gz-c">{{item.yin}}</text><text class="gz-c wx-{{item.wx}}">{{item.wx}}</text>
+            <text class="gz-c">{{item.g}}</text><text class="gz-c">{{item.yin}}</text><text class="gz-c wx-{{item.cls}}">{{item.wx}}</text>
           </view>
         </view>
       </view>
@@ -102,7 +102,7 @@
         <view class="gz-h">十二地支（今日日支 {{ganzhi.riZhi}} 高亮）</view>
         <view class="gz-table">
           <view wx:for="{{ganzhi.zhiRows}}" wx:key="z" class="gz-tr {{item.isNow ? 'gz-now' : ''}}">
-            <text class="gz-c">{{item.z}}</text><text class="gz-c">{{item.yin}}</text><text class="gz-c wx-{{item.wx}}">{{item.wx}}</text><text class="gz-c">{{item.zodiac}}</text>
+            <text class="gz-c">{{item.z}}</text><text class="gz-c">{{item.yin}}</text><text class="gz-c wx-{{item.cls}}">{{item.wx}}</text><text class="gz-c">{{item.zodiac}}</text>
           </view>
         </view>
       </view>

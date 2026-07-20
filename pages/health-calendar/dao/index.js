@@ -1,8 +1,8 @@
 // 道家养生页
-const core = require('../../utils/core.js');
-const solarTerms = require('../../data/solar-terms.js');
-const healthArr = require('../../data/health.js');
-const dao = require('../../data/daoism.js');
+const core = require('../../../utils/core.js');
+const solarTerms = require('../../../data/solar-terms.js');
+const healthArr = require('../../../data/health.js');
+const dao = require('../../../data/daoism.js');
 
 const HEALTH_MAP = {};
 healthArr.forEach(t => { HEALTH_MAP[t.term] = t; });

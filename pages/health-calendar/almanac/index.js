@@ -1,9 +1,9 @@
 // 黄历八字页
-const core = require('../../utils/core.js');
-const store = require('../../utils/store.js');
-const solarTerms = require('../../data/solar-terms.js');
-const hours = require('../../data/hours.js');
-const constitution = require('../../data/constitution.js');
+const core = require('../../../utils/core.js');
+const store = require('../../../utils/store.js');
+const solarTerms = require('../../../data/solar-terms.js');
+const hours = require('../../../data/hours.js');
+const constitution = require('../../../data/constitution.js');
 
 Page({
   data: {
@@ -23,6 +23,13 @@ Page({
     const showPro = store.loadMode() === 'pro';
     const qimen = showPro ? core.qimenData(now, cur.name) : null;
     const ganzhi = showPro ? core.ganzhiData(now) : null;
+    const WX = { 木: 'mu', 火: 'huo', 土: 'tu', 金: 'jin', 水: 'shui' };
+    if (almanac.wuxing) almanac.wuxing.forEach(x => { x.cls = WX[x.name] || ''; });
+    if (profile && profile.advice) profile.advice.forEach(a => { a.cls = WX[a.element] || ''; });
+    if (ganzhi) {
+      ganzhi.ganRows.forEach(r => { r.cls = WX[r.wx] || ''; });
+      ganzhi.zhiRows.forEach(r => { r.cls = WX[r.wx] || ''; });
+    }
     this.setData({ almanac, profile, hasProfile: !!profile, showPro, qimen, ganzhi });
   },
   goProfile() { wx.navigateTo({ url: '../profile/index' }); },

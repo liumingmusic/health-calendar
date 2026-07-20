@@ -1,8 +1,8 @@
 // 更多页：全年总览 + 使用说明 + 设置
-const core = require('../../utils/core.js');
-const store = require('../../utils/store.js');
-const solarTerms = require('../../data/solar-terms.js');
-const healthArr = require('../../data/health.js');
+const core = require('../../../utils/core.js');
+const store = require('../../../utils/store.js');
+const solarTerms = require('../../../data/solar-terms.js');
+const healthArr = require('../../../data/health.js');
 
 const HEALTH_MAP = {};
 healthArr.forEach(t => { HEALTH_MAP[t.term] = t; });

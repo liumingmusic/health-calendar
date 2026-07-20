@@ -17,15 +17,15 @@
 .wx-fill { height: 100%; border-radius: 10rpx; }
 .wx-val { width: 40rpx; text-align: right; font-size: 24rpx; color: var(--ink-soft); }
 
-.wx-木 { color: #5f8a3a; } .wx-火 { color: #c4452f; } .wx-土 { color: #cf9a1c; } .wx-金 { color: #b8862f; } .wx-水 { color: #3a6a8a; }
-.wx-木.wx-fill, .wx-fill.wx-木 { background: #5f8a3a; }
-.wx-火.wx-fill, .wx-fill.wx-火 { background: #c4452f; }
-.wx-土.wx-fill, .wx-fill.wx-土 { background: #cf9a1c; }
-.wx-金.wx-fill, .wx-fill.wx-金 { background: #b8862f; }
-.wx-水.wx-fill, .wx-fill.wx-水 { background: #3a6a8a; }
+.wx-mu { color: #5f8a3a; } .wx-huo { color: #c4452f; } .wx-tu { color: #cf9a1c; } .wx-jin { color: #b8862f; } .wx-shui { color: #3a6a8a; }
+.wx-mu.wx-fill, .wx-fill.wx-mu { background: #5f8a3a; }
+.wx-huo.wx-fill, .wx-fill.wx-huo { background: #c4452f; }
+.wx-tu.wx-fill, .wx-fill.wx-tu { background: #cf9a1c; }
+.wx-jin.wx-fill, .wx-fill.wx-jin { background: #b8862f; }
+.wx-shui.wx-fill, .wx-fill.wx-shui { background: #3a6a8a; }
 .wx-dot { display: inline-block; width: 20rpx; height: 20rpx; border-radius: 50%; margin-right: 10rpx; }
-.wx-dot.wx-木 { background: #5f8a3a; } .wx-dot.wx-火 { background: #c4452f; }
-.wx-dot.wx-土 { background: #cf9a1c; } .wx-dot.wx-金 { background: #b8862f; } .wx-dot.wx-水 { background: #3a6a8a; }
+.wx-dot.wx-mu { background: #5f8a3a; } .wx-dot.wx-huo { background: #c4452f; }
+.wx-dot.wx-tu { background: #cf9a1c; } .wx-dot.wx-jin { background: #b8862f; } .wx-dot.wx-shui { background: #3a6a8a; }
 
 .profile-box { margin-top: 24rpx; background: #f3eef8; border: 1rpx solid #e0d2ee; border-radius: 14rpx; padding: 20rpx; }
 .profile-empty { margin-top: 24rpx; }

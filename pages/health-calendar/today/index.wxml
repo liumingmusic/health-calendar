@@ -47,7 +47,7 @@
         <view class="tip-row">同一节气，每天各有侧重。今日不妨从这几处着手：</view>
         <view class="tf-items">
           <view wx:for="{{focus}}" wx:key="tag" class="tf-item">
-            <text class="tf-tag tf-{{item.tag}}">{{item.tag}}</text>{{item.text}}
+            <text class="tf-tag tf-{{item.cls}}">{{item.tag}}</text>{{item.text}}
           </view>
         </view>
       </view>
