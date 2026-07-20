@@ -20,11 +20,11 @@
     "backgroundColor": "#fffdf8",
     "borderStyle": "white",
     "list": [
-      { "pagePath": "pages/health-calendar/today/index", "text": "今日" },
-      { "pagePath": "pages/health-calendar/almanac/index", "text": "黄历" },
-      { "pagePath": "pages/health-calendar/fortune/index", "text": "签运" },
-      { "pagePath": "pages/health-calendar/dao/index", "text": "道家" },
-      { "pagePath": "pages/health-calendar/more/index", "text": "更多" }
+      { "pagePath": "pages/health-calendar/today/index", "text": "今日", "iconPath": "assets/tab/today-off.png", "selectedIconPath": "assets/tab/today-on.png" },
+      { "pagePath": "pages/health-calendar/almanac/index", "text": "黄历", "iconPath": "assets/tab/almanac-off.png", "selectedIconPath": "assets/tab/almanac-on.png" },
+      { "pagePath": "pages/health-calendar/fortune/index", "text": "签运", "iconPath": "assets/tab/fortune-off.png", "selectedIconPath": "assets/tab/fortune-on.png" },
+      { "pagePath": "pages/health-calendar/dao/index", "text": "道家", "iconPath": "assets/tab/dao-off.png", "selectedIconPath": "assets/tab/dao-on.png" },
+      { "pagePath": "pages/health-calendar/more/index", "text": "更多", "iconPath": "assets/tab/more-off.png", "selectedIconPath": "assets/tab/more-on.png" }
     ]
   },
   "style": "v2",
