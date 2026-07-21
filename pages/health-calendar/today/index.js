@@ -141,7 +141,8 @@ Page({
 
   /* ===== 古历罗盘（canvas 2d，完整复刻 web：太极旋转 + 八卦 + 方位 + 八门 + 十二时辰 + 24 节气 + 雷达秒针） ===== */
   initClock() {
-    if (this._clock2d) return;
+    if (this._clockInit || this._clock2d) return;
+    this._clockInit = true;
     const q = wx.createSelectorQuery();
     q.select('#lunarClock').fields({ node: true, size: true }).exec(res => {
       if (!res || !res[0] || !res[0].node) return;
@@ -158,12 +159,17 @@ Page({
   },
   startClockLoop() {
     if (!this._clock2d || this._loop) return;
-    const tick = () => {
-      this._taijiAngle = (this._taijiAngle + 0.5) % 360;
-      this.drawClock();
+    let last = 0;
+    const tick = (ts) => {
+      const t = ts || Date.now();
+      if (t - last >= 40) {            // 节流到 ~25fps，降低持续重绘对渲染线程的压力
+        last = t;
+        this._taijiAngle = (this._taijiAngle + 0.6) % 360;
+        this.drawClock();
+      }
       this._loop = this._clock2d.canvas.requestAnimationFrame(tick);
     };
-    tick();
+    tick(Date.now());
   },
   stopClockLoop() {
     if (this._loop && this._clock2d) { this._clock2d.canvas.cancelAnimationFrame(this._loop); this._loop = null; }
