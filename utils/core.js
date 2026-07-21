@@ -214,8 +214,15 @@ function findCurrentTerm(flat) {
   const next = flat[idx + 1] || null;
   return { cur, next };
 }
+// 本地小时：开发者工具模拟器未勾选"使用运行时时区"时会把 new Date() 按 UTC 解析，
+// 导致 getHours() 返回 UTC 小时而非设备本地小时。这里用 getTimezoneOffset 纠偏。
+function localHour(date) {
+  const d = date || new Date();
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.getUTCHours();
+}
 function currentHourIndex() {
-  const h = new Date().getHours();
+  const h = localHour();
   return Math.floor((h + 1) / 2) % 12;
 }
 function nthGengAfter(fromDate, n) {
@@ -652,7 +659,7 @@ module.exports = {
   ZODIAC, Z_WX, SIX_HE, SAN_HE, LIU_CHONG, LIU_HAI, SAN_XING, REL_COMMENT, LUCK_COLORS, ZODIAC_ZHI,
   DISCLAIMER,
   pad, dateStr, todayStr, dateHash, dayDiff, daysBetween, jdn, gzSolve,
-  flattenTerms, findCurrentTerm, currentHourIndex, computeTodaySpecial,
+  flattenTerms, findCurrentTerm, currentHourIndex, localHour, computeTodaySpecial,
   yearGZ, monthGZ, dayGZ, hourGZ, pillar, computeBazi, dominant, lunarLabel,
   constitutionAdvice, healthSections, todayFocusData, personalizedData, baziBars,
   almanacData, qimenData, ganzhiData, zodiacFortuneData, fortuneLeadData, signExplain, signDailyIndex,

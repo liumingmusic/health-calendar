@@ -241,9 +241,9 @@ Page({
     const ms = now.getMilliseconds();
     const s = now.getSeconds() + ms / 1000;
     const m = now.getMinutes() + s / 60;
-    const ci = Math.floor((now.getHours() + 1) / 2) % 12;
+    const ci = Math.floor((core.localHour(now) + 1) / 2) % 12;
     const startH = (((ci * 2 - 1) % 24) + 24) % 24;
-    const elapsed = (((now.getHours() * 60 + m) - startH * 60) % 1440 + 1440) % 1440;
+    const elapsed = (((core.localHour(now) * 60 + m) - startH * 60) % 1440 + 1440) % 1440;
     const shiDeg = ci * 30 + 180 + (elapsed / 120) * 30;
     const hand = (deg, len, wdt, color) => {
       const a = deg * Math.PI / 180;
@@ -251,10 +251,10 @@ Page({
       ctx.strokeStyle = color; ctx.lineWidth = wdt * sc; ctx.lineCap = 'round';
       ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
     };
-    // 雷达尾迹
+    // 雷达尾迹（与秒针同一坐标系：deg 从12点顺时针；ctx.arc 原生从3点顺时针，故整体 -90°）
     ctx.fillStyle = 'rgba(110,74,142,0.12)';
     ctx.beginPath(); ctx.moveTo(cx, cy);
-    const ra0 = (s * 6 - 50) * Math.PI / 180, ra1 = (s * 6) * Math.PI / 180;
+    const ra0 = (s * 6 - 50 - 90) * Math.PI / 180, ra1 = (s * 6 - 90) * Math.PI / 180;
     ctx.arc(cx, cy, R(150), ra0, ra1); ctx.closePath(); ctx.fill();
     // 时辰针 / 分针 / 雷达光束
     hand(shiDeg, R(98), 4, '#3a78a8');
