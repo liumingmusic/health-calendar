@@ -1,33 +1,95 @@
 <view class="disclaimer-bar">{{disclaimerText}}</view>
 
 <view class="page today">
-  <!-- 英雄区：罗盘 + 节气 + 时辰 + 专属徽标 + 一句话摘要 -->
+  <!-- 英雄区：当前节气 / 古历罗盘 / 当前时辰 三栏 -->
   <view class="hero">
-    <view class="compass">
-      <view wx:for="{{compass}}" wx:key="z" class="compass-zhi {{item.active ? 'active' : ''}}"
-            style="left:{{item.x}}%;top:{{item.y}}%;">{{item.z}}</view>
-      <!-- 实时时分秒指针（以当前真实时间为准） -->
-      <view class="hand hand-hour" style="transform:translateX(-50%) rotate({{hDeg}}deg)"></view>
-      <view class="hand hand-min" style="transform:translateX(-50%) rotate({{mDeg}}deg)"></view>
-      <view class="hand hand-sec" style="transform:translateX(-50%) rotate({{sDeg}}deg)"></view>
-      <view class="compass-cap"></view>
-      <view class="compass-center">
-        <view class="cc-term">{{termName}}</view>
-        <view class="cc-hour">{{hourName}}</view>
+    <view class="hero-focus hero-term">
+      <text class="focus-label">当前节气</text>
+      <view class="focus-name">{{termName}}</view>
+      <view class="focus-meta">{{termMeta}}</view>
+    </view>
+
+    <view class="hero-clock">
+      <canvas type="2d" id="lunarClock" class="lunar-clock"></canvas>
+      <view class="clock-cap">{{hourName}}当令 · 雷达光束扫过盘面 · 当前时辰覆盖扇高亮</view>
+    </view>
+
+    <view class="hero-focus hero-hour">
+      <text class="focus-label">当前时辰</text>
+      <view class="focus-name">{{hourName}}</view>
+      <view class="focus-meta">
+        <text class="hm-mer">{{hourMer}}</text>
+        <text class="yi">宜 {{hourYi}}</text>
+        <text class="ji">忌 {{hourJi}}</text>
       </view>
     </view>
-    <view class="badge badge-{{badgeKind}}">{{badge}}</view>
-    <view class="summary">{{summary}}</view>
   </view>
 
-  <!-- 节气养生主卡 -->
-  <view class="card">
-    <view class="card-head" style="background:{{seasonColor}}">
-      <text class="ch-title">{{termName}} · {{season}}季养生</text>
-      <text class="ch-sub">交节 {{termSolar}}</text>
+  <!-- 今日总览 -->
+  <view class="card overview-card">
+    <view class="card-head">
+      <text class="ch-title">今日总览</text>
+      <text class="season-chip">{{season}}季</text>
+    </view>
+    <view class="today-hero-line">
+      <text class="thl-badge thl-{{badgeKind}}">{{badge}}</text>
+      <text class="thl-summary">{{summary}}</text>
+    </view>
+    <view class="ov-grid">
+      <view class="ov-cell">
+        <view class="ov-k">公历 / 农历</view>
+        <view class="ov-v">{{ov.date}}</view>
+        <view class="ov-sub">{{ov.ganzhi}}</view>
+      </view>
+      <view class="ov-cell">
+        <view class="ov-k">当前节气</view>
+        <view class="ov-v">{{ov.term}}</view>
+        <view class="ov-sub">{{ov.termMeta}}</view>
+      </view>
+      <view class="ov-cell">
+        <view class="ov-k">当前时辰</view>
+        <view class="ov-v">{{ov.hour}}</view>
+        <view class="ov-sub">{{ov.organ}}</view>
+      </view>
+      <view class="ov-cell ov-bazi-cell">
+        <view class="ov-k">八字四柱</view>
+        <view class="ov-bazi">{{ov.bazi}}</view>
+      </view>
+      <view class="ov-cell">
+        <view class="ov-k">今日宜忌</view>
+        <view class="ov-yi">{{ov.yi}}</view>
+        <view class="ov-ji">{{ov.ji}}</view>
+      </view>
+      <view class="ov-cell">
+        <view class="ov-k">道家功课</view>
+        <view class="ov-v-sm">{{ov.dao}}</view>
+      </view>
+      <view class="ov-cell">
+        <view class="ov-k">今日一签</view>
+        <view class="ov-v-sm">{{ov.sign}}</view>
+      </view>
+      <view class="ov-cell">
+        <view class="ov-k">生肖运程</view>
+        <view class="ov-v-sm">{{ov.fortune}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 道经今读 -->
+  <view class="card dao-daily">
+    <view class="dao-daily-tag">道经今读</view>
+    <text class="dao-daily-text">{{daoDaily.text}}</text>
+    <text class="dao-daily-src">{{daoDaily.source}}</text>
+    <text class="dao-daily-insight">{{daoDaily.insight}}</text>
+  </view>
+
+  <!-- 今日养生主卡 -->
+  <view class="card main-card">
+    <view class="card-head">
+      <text class="ch-title">今日养生</text>
+      <text class="season-chip">{{season}}季</text>
     </view>
     <view class="card-body">
-      <!-- 为你定制（体质×时令） -->
       <view wx:if="{{personalized.show}}" class="block personalized">
         <view class="block-title"><text class="dot"></text>为你定制 · 体质 × 当日时令</view>
         <view class="pz-rel">日主属「{{personalized.rgWX}}」，体质偏弱在「{{personalized.weak}}」。{{personalized.rel}}</view>
@@ -35,88 +97,55 @@
           <text wx:for="{{personalized.foods}}" wx:key="*this" class="chip">{{item}}</text>
           <text wx:if="{{personalized.meridian}}" class="chip acu">{{personalized.meridian}}</text>
         </view>
-        <view class="pz-list">
-          <view wx:if="{{personalized.avoid}}" class="pz-li">少沾：{{personalized.avoid}}</view>
-          <view wx:if="{{personalized.mindset}}" class="pz-li">情志：{{personalized.mindset}}</view>
-        </view>
-      </view>
-      <view wx:else class="block person-tip">
-        <view class="block-title"><text class="dot"></text>专属养生</view>
-        <view class="tip-row">录入生辰后，这里会按你的体质叠加当日时令给「为你定制」建议。</view>
-        <view class="mini-btn" bindtap="goProfile">去录入生辰 ›</view>
       </view>
 
-      <!-- 今日侧重 -->
-      <view class="block">
-        <view class="block-title"><text class="dot"></text>今日侧重 · {{termName}}当令</view>
-        <view class="tip-row">同一节气，每天各有侧重。今日不妨从这几处着手：</view>
+      <view class="block today-focus">
+        <view class="block-title"><text class="dot"></text>今日侧重</view>
         <view class="tf-items">
-          <view wx:for="{{focus}}" wx:key="tag" class="tf-item">
-            <text class="tf-tag tf-{{item.cls}}">{{item.tag}}</text>{{item.text}}
-          </view>
+          <text wx:for="{{focus}}" wx:key="tag" class="tf-item tf-{{item.cls}}"><text class="tf-tag">{{item.tag}}</text>{{item.text}}</text>
         </view>
       </view>
 
-      <!-- 节气气候 -->
       <view class="block">
         <view class="block-title"><text class="dot"></text>节气气候</view>
         <view class="organ-line">当令脏腑：{{health.organ}}</view>
-        <view class="p">{{health.climate}}</view>
+        <view>{{health.climate}}</view>
         <view class="key-line">养生总纲：{{health.key}}</view>
       </view>
-
-      <!-- 饮食 -->
       <view class="block">
         <view class="block-title"><text class="dot"></text>饮食 · 药食同源</view>
         <view class="chips">
           <text wx:for="{{health.diet}}" wx:key="text" class="chip">{{item.text}}</text>
         </view>
       </view>
-
-      <!-- 起居宜忌 -->
       <view class="block">
         <view class="block-title"><text class="dot"></text>起居宜忌</view>
         <view class="chips">
           <text wx:for="{{health.living}}" wx:key="text" class="chip">{{item.text}}</text>
         </view>
         <view class="avoid-list">
-          <view wx:for="{{health.avoid}}" wx:key="text" class="avoid-li">· {{item.text}}</view>
+          <text wx:for="{{health.avoid}}" wx:key="text" class="avoid-li">· {{item.text}}</text>
         </view>
       </view>
-
-      <!-- 导引术 -->
       <view class="block">
         <view class="block-title"><text class="dot"></text>导引术 · 八段锦 / 五禽戏</view>
         <view class="chips">
           <text wx:for="{{health.exercise}}" wx:key="text" class="chip">{{item.text}}</text>
         </view>
       </view>
-
-      <!-- 保健穴位 -->
       <view class="block">
         <view class="block-title"><text class="dot"></text>保健穴位</view>
         <view class="chips">
           <text wx:for="{{health.acupoint}}" wx:key="text" class="chip acu">{{item.text}}</text>
         </view>
       </view>
-
-      <!-- 本时辰经络取穴 -->
-      <view class="block">
-        <view class="block-title"><text class="dot"></text>本时辰 · 经络取穴</view>
-        <view class="organ-line">{{meridian.meridian}}（{{meridian.organ}}）</view>
-        <view class="chips">
-          <text class="chip acu">原穴 · {{meridian.yuan}}</text>
-          <text class="chip acu">络穴 · {{meridian.luo}}</text>
-          <text class="chip acu">募穴 · {{meridian.mu}}</text>
-        </view>
-      </view>
     </view>
   </view>
 
   <!-- 七十二候 -->
-  <view class="card">
-    <view class="card-head plain"><text class="ch-title">七十二候 · {{termName}}</text></view>
-    <view class="card-body">
+  <view class="card hou-panel">
+    <view class="card-head"><text class="ch-title">七十二候 · 当下三候</text></view>
+    <view class="hou-current">
       <view wx:for="{{houItems}}" wx:key="name" class="hou-item">
         <text class="h-idx">第{{item.idx}}候</text>
         <text class="h-name">{{item.name}}</text>
@@ -126,28 +155,29 @@
   </view>
 
   <!-- 打卡闭环 -->
-  <view class="card">
-    <view class="card-head plain"><text class="ch-title">每日打卡</text></view>
-    <view class="card-body">
+  <view class="card checkin-panel">
+    <view class="card-head">
+      <text class="ch-title">每日微习惯打卡</text>
+      <text class="streak">连续 {{checkin.streak}} 天 · 最佳 {{checkin.best}} 天</text>
+    </view>
+    <view class="habits">
+      <view wx:for="{{checkin.dots}}" wx:key="id" class="habit {{item.done ? 'done' : ''}}" bindtap="toggleHabit" data-id="{{item.id}}">
+        <text class="box">{{item.done ? '✓' : ''}}</text>
+        <text class="h-label">{{item.label}}</text>
+      </view>
+    </view>
+    <view class="checkin-progress">
       <view class="cp-row">
         <text class="cp-today {{checkin.allDone ? 'full' : ''}}">今日完成 {{checkin.doneToday}}/{{checkin.total}}</text>
-        <view class="cp-dots">
-          <text wx:for="{{checkin.dots}}" wx:key="id" class="cp-dot {{item.done ? 'on' : ''}}"></text>
-        </view>
+        <text class="cp-dots">
+          <text wx:for="{{checkin.dots}}" wx:key="id" class="cp-dot {{item.done ? 'on' : ''}}">●</text>
+        </text>
       </view>
-      <view wx:if="{{checkin.earnedTitle}}" class="ms-badge">🏅 {{checkin.earnedTitle}}·满{{checkin.earnedDays}}天</view>
-      <view class="cp-msg {{checkin.allDone ? 'full' : ''}}">{{checkin.nextTip}}</view>
-      <view class="streak-line">连续 <text class="bold">{{checkin.streak}}</text> 天 · 历史最佳 {{checkin.best}} 天</view>
-      <view class="habits">
-        <view wx:for="{{checkin.dots}}" wx:key="id" class="habit {{item.done ? 'done' : ''}}"
-              data-id="{{item.id}}" bindtap="toggleHabit">
-          <text class="box">{{item.done ? '✓' : ''}}</text>
-          <text class="h-label">{{item.label}}</text>
-        </view>
+      <view class="cp-msg {{checkin.allDone ? 'full' : ''}}">
+        <block wx:if="{{checkin.allDone}}">🎉 今日四事圆满，身心俱养，明日再见！</block>
+        <block wx:else>{{checkin.nextTip}}</block>
       </view>
-      <view class="checkin-tip">打卡仅保存在本机，用于见证你的坚持。</view>
     </view>
+    <text class="checkin-tip">打卡记录仅保存在本机，用于见证你的坚持。</text>
   </view>
-
-  <view class="footer-note">{{disclaimerText}}</view>
 </view>

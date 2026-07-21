@@ -1,147 +1,112 @@
-/* 今日页专属样式 */
+/* 今日页 —— 对齐 web 视觉 */
+.page.today { padding: 20rpx; }
+
+/* 英雄三栏 */
 .hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper);
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  padding: 24rpx 16rpx;
+}
+.hero-focus { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.focus-label { font-size: 22rpx; color: var(--ink-soft); }
+.focus-name { font-size: 40rpx; font-weight: 700; color: var(--seal); margin: 8rpx 0; }
+.focus-meta { font-size: 22rpx; color: var(--ink-soft); line-height: 1.6; }
+.hero-clock { flex: 1.6; display: flex; flex-direction: column; align-items: center; }
+.lunar-clock { width: 320rpx; height: 320rpx; }
+.clock-cap { font-size: 20rpx; color: var(--ink-soft); text-align: center; margin-top: 6rpx; padding: 0 10rpx; }
+.hero-hour .focus-meta { display: flex; flex-direction: column; gap: 4rpx; }
+.hm-mer { color: var(--seal); font-weight: 600; }
+.yi { color: var(--green); }
+.ji { color: var(--red); }
+
+/* 通用卡片 */
+.card {
   background: var(--paper);
   border: 1rpx solid var(--line);
   border-radius: 20rpx;
   padding: 24rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 20rpx;
 }
-/* 罗盘 */
-.compass {
-  position: relative;
-  width: 100%;
-  padding-bottom: 100%;
-  background:
-    radial-gradient(circle, #fbf7ef 0%, #f3ead8 70%, #ece0c8 100%);
-  border-radius: 50%;
-  border: 2rpx solid #e3d4b8;
-}
-.compass-zhi {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 56rpx; height: 56rpx;
-  line-height: 56rpx;
-  text-align: center;
-  border-radius: 50%;
-  font-size: 30rpx;
-  color: #7a6c52;
-  background: rgba(255,255,255,0.5);
-}
-.compass-zhi.active {
-  background: var(--seal);
-  color: #fff;
-  font-weight: 700;
-  box-shadow: 0 0 16rpx rgba(110,74,142,0.5);
-}
-.compass-center {
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  z-index: 3;
-}
-/* 实时时分秒指针：bottom 锚定圆心，transform-origin 旋转 */
-.hand {
-  position: absolute;
-  left: 50%;
-  bottom: 50%;
-  transform-origin: 50% 100%;
-  border-radius: 6rpx;
-  z-index: 2;
-}
-.hand-hour { width: 10rpx; height: 26%; background: #6e4a8e; }
-.hand-min { width: 7rpx;  height: 36%; background: #3a78a8; }
-.hand-sec { width: 3rpx;  height: 42%; background: #c0392b; }
-.compass-cap {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 18rpx; height: 18rpx;
-  margin: -9rpx 0 0 -9rpx;
-  border-radius: 50%;
-  background: #6e4a8e;
-  z-index: 4;
-}
-.cc-term { font-size: 44rpx; font-weight: 700; color: var(--seal); }
-.cc-hour { font-size: 26rpx; color: var(--ink-soft); margin-top: 4rpx; }
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx; }
+.ch-title { font-size: 32rpx; font-weight: 700; color: var(--ink); }
+.season-chip { font-size: 22rpx; color: #fff; background: var(--seal); border-radius: 20rpx; padding: 4rpx 18rpx; }
 
-.badge { margin-top: 18rpx; }
-.summary {
-  margin-top: 16rpx;
-  font-size: 26rpx;
-  line-height: 1.7;
-  color: var(--ink);
-  text-align: center;
-  background: #f6f0e4;
-  border-radius: 14rpx;
-  padding: 18rpx 20rpx;
+/* 今日总览 */
+.today-hero-line { display: flex; align-items: center; gap: 14rpx; margin-bottom: 18rpx; }
+.thl-badge {
+  flex: none; font-size: 22rpx; color: #fff; border-radius: 20rpx; padding: 6rpx 18rpx; background: var(--seal);
 }
+.thl-jie { background: var(--red); }
+.thl-fu { background: var(--gold, #b8860b); }
+.thl-shu { background: var(--green); }
+.thl-summary { font-size: 24rpx; color: var(--ink); line-height: 1.7; }
+.ov-grid { display: flex; flex-wrap: wrap; }
+.ov-cell { width: 50%; box-sizing: border-box; padding: 14rpx 16rpx; border-bottom: 1rpx solid var(--line); }
+.ov-cell:nth-child(odd) { border-right: 1rpx solid var(--line); }
+.ov-k { font-size: 22rpx; color: var(--ink-soft); }
+.ov-v { font-size: 28rpx; font-weight: 600; color: var(--ink); margin-top: 4rpx; }
+.ov-sub { font-size: 22rpx; color: var(--ink-soft); margin-top: 2rpx; }
+.ov-bazi { font-size: 26rpx; color: var(--seal); letter-spacing: 2rpx; font-weight: 600; }
+.ov-yi { font-size: 22rpx; color: var(--green); }
+.ov-ji { font-size: 22rpx; color: var(--red); }
+.ov-v-sm { font-size: 22rpx; color: var(--ink); line-height: 1.6; }
+
+/* 道经今读 */
+.dao-daily-tag { display: inline-block; font-size: 22rpx; color: #fff; background: var(--seal); border-radius: 20rpx; padding: 4rpx 18rpx; margin-bottom: 14rpx; }
+.dao-daily-text { display: block; font-size: 30rpx; font-weight: 600; color: var(--ink); line-height: 1.8; }
+.dao-daily-src { display: block; font-size: 22rpx; color: var(--seal); margin: 8rpx 0; }
+.dao-daily-insight { display: block; font-size: 24rpx; color: var(--ink-soft); line-height: 1.8; }
+
+/* 养生主卡 */
+.card-body { display: flex; flex-direction: column; gap: 22rpx; }
+.block { display: flex; flex-direction: column; gap: 8rpx; }
+.block-title { display: flex; align-items: center; font-size: 26rpx; font-weight: 700; color: var(--ink); }
+.dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--seal); margin-right: 10rpx; }
+.organ-line { font-size: 24rpx; color: var(--seal); }
+.key-line { font-size: 24rpx; color: var(--ink-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.chip { font-size: 24rpx; color: var(--ink); background: #f3ead8; border-radius: 16rpx; padding: 8rpx 18rpx; }
+.chip.acu { background: #e9f3ee; color: #2f8f78; }
+.avoid-list { display: flex; flex-direction: column; gap: 4rpx; }
+.avoid-li { font-size: 22rpx; color: var(--red); }
+
+/* 今日侧重 */
+.today-focus .tf-items { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.tf-item { display: inline-flex; align-items: center; font-size: 24rpx; color: var(--ink); background: #f3ead8; border-radius: 16rpx; padding: 8rpx 16rpx; }
+.tf-tag { display: inline-flex; align-items: center; justify-content: center; width: 30rpx; height: 30rpx; border-radius: 50%; color: #fff; font-size: 20rpx; margin-right: 8rpx; }
+.tf-food .tf-tag { background: var(--green); }
+.tf-live .tf-tag { background: var(--seal); }
+.tf-move .tf-tag { background: var(--red); }
+.tf-acu .tf-tag { background: var(--acu, #2f8f78); }
+
+/* 为你定制 */
+.personalized { background: #f6f0e4; border-radius: 16rpx; padding: 16rpx; }
+.pz-rel { font-size: 24rpx; color: var(--ink); line-height: 1.7; }
 
 /* 七十二候 */
-.hou-item {
-  display: flex;
-  align-items: center;
-  padding: 14rpx 0;
-  border-bottom: 1rpx dashed var(--line);
-}
-.hou-item:last-child { border-bottom: none; }
-.h-idx { color: var(--seal); font-weight: 600; width: 110rpx; flex-shrink: 0; }
-.h-name { width: 200rpx; font-weight: 600; flex-shrink: 0; }
-.h-phenom { color: var(--ink-soft); font-size: 24rpx; flex: 1; }
+.hou-current { display: flex; flex-direction: column; gap: 12rpx; }
+.hou-item { display: flex; align-items: center; gap: 14rpx; font-size: 24rpx; color: var(--ink); }
+.h-idx { flex: none; color: var(--seal); font-weight: 600; }
+.h-name { font-weight: 600; }
+.h-phenom { color: var(--ink-soft); }
 
 /* 打卡 */
-.cp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14rpx; }
-.cp-today { font-weight: 600; font-size: 28rpx; }
-.cp-today.full { color: var(--green); }
-.cp-dots { display: flex; gap: 12rpx; }
-.cp-dot {
-  width: 24rpx; height: 24rpx;
-  border-radius: 50%;
-  background: #e6dcc8;
-}
-.cp-dot.on { background: var(--seal); }
-.ms-badge {
-  display: inline-block;
-  background: #f3eef8;
-  color: var(--seal);
-  border: 1rpx solid #e0d2ee;
-  border-radius: 30rpx;
-  padding: 8rpx 20rpx;
-  font-size: 24rpx;
-  font-weight: 600;
-  margin-bottom: 12rpx;
-}
-.cp-msg {
-  background: #f6f0e4;
-  border-radius: 12rpx;
-  padding: 14rpx 18rpx;
-  font-size: 25rpx;
-  color: var(--ink-soft);
-  margin-bottom: 12rpx;
-}
-.cp-msg.full { background: #e8f3df; color: var(--green); font-weight: 600; }
-.streak-line { font-size: 25rpx; color: var(--ink-soft); margin-bottom: 16rpx; }
-.streak-line .bold { color: var(--seal); font-weight: 700; font-size: 30rpx; }
-.habits { display: flex; flex-wrap: wrap; gap: 16rpx; }
-.habit {
-  display: flex;
-  align-items: center;
-  background: var(--chip-bg);
-  border-radius: 14rpx;
-  padding: 16rpx 22rpx;
-  flex: 1 1 40%;
-}
-.habit.done { background: #e8f3df; }
-.habit .box {
-  width: 36rpx; height: 36rpx;
-  line-height: 36rpx; text-align: center;
-  border: 2rpx solid var(--seal);
-  border-radius: 8rpx;
-  color: var(--seal);
-  margin-right: 14rpx;
-  font-weight: 700;
-}
-.habit.done .box { background: var(--seal); color: #fff; }
-.h-label { font-size: 26rpx; }
-.checkin-tip { font-size: 22rpx; color: var(--ink-soft); margin-top: 14rpx; text-align: center; }
+.streak { font-size: 22rpx; color: var(--ink-soft); }
+.habits { display: flex; flex-wrap: wrap; gap: 14rpx; }
+.habit { display: flex; align-items: center; gap: 10rpx; border: 1rpx solid var(--line); border-radius: 16rpx; padding: 12rpx 18rpx; font-size: 24rpx; color: var(--ink); }
+.habit.done { background: #eef6f0; border-color: var(--green); color: var(--green); }
+.box { width: 30rpx; height: 30rpx; border-radius: 8rpx; border: 1rpx solid var(--line); display: inline-flex; align-items: center; justify-content: center; font-size: 22rpx; }
+.habit.done .box { background: var(--green); color: #fff; border-color: var(--green); }
+.checkin-progress { margin-top: 18rpx; }
+.cp-row { display: flex; align-items: center; justify-content: space-between; }
+.cp-today { font-size: 24rpx; color: var(--ink); }
+.cp-today.full { color: var(--green); font-weight: 600; }
+.cp-dots { letter-spacing: 6rpx; color: var(--line); }
+.cp-dot.on { color: var(--green); }
+.cp-msg { font-size: 22rpx; color: var(--ink-soft); margin-top: 10rpx; }
+.cp-msg.full { color: var(--green); }
+.checkin-tip { display: block; font-size: 20rpx; color: var(--ink-soft); margin-top: 14rpx; }

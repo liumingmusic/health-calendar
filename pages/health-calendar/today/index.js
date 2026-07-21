@@ -1,4 +1,4 @@
-// 今日（总览 + 养生合并）主页面
+// 今日（对齐 web：英雄三栏 + 古历罗盘 + 今日总览 + 今日养生）
 const core = require('../../../utils/core.js');
 const store = require('../../../utils/store.js');
 const solarTerms = require('../../../data/solar-terms.js');
@@ -6,8 +6,9 @@ const healthArr = require('../../../data/health.js');
 const hours = require('../../../data/hours.js');
 const houArr = require('../../../data/hou.js');
 const constitution = require('../../../data/constitution.js');
+const daoism = require('../../../data/daoism.js');
+const fortuneSticks = require('../../../data/fortune-sticks.js');
 
-// 索引表（与 web 一致）
 const HEALTH_MAP = {};
 healthArr.forEach(t => { HEALTH_MAP[t.term] = t; });
 const HOU_MAP = {};
@@ -16,48 +17,37 @@ houArr.forEach(g => { HOU_MAP[g.term] = g.hou; });
 const HOUR_NAMES = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时', '午时', '未时', '申时', '酉时', '戌时', '亥时'];
 const HOU_IDX = ['一', '二', '三'];
 const WEEK = core.WEEK;
+const STICKS = fortuneSticks.sticks;
+
+// —— 古历罗盘绘制常量（与 web SVG 同坐标系：deg=0 正上方，顺时针） ——
+const RIM = 156, R_JIE_TICK = 153, R_JIE = 150, R_BAGUA = 128, R_DIR = 106, R_MEN = 86, R_SHI = 64;
+function ringPoint(cx, cy, r, deg) {
+  const a = deg * Math.PI / 180;
+  return { x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) };
+}
 
 Page({
   data: {
-    dateText: '', termName: '', termSolar: '', season: '', seasonColor: '',
-    organ: '', key: '', summary: '', badge: '', badgeKind: '',
-    hourName: '', compass: [],
-    hDeg: 0, mDeg: 0, sDeg: 0,
-    personalized: { show: false }, focus: [], health: {},
-    meridian: {}, houItems: [],
+    dateText: '', termName: '', termMeta: '', season: '', seasonColor: '',
+    hourName: '', hourMer: '', hourYi: '', hourJi: '',
+    badge: '', badgeKind: '', summary: '',
+    // 今日总览 8 宫格
+    ov: { date: '', ganzhi: '', term: '', termMeta: '', hour: '', organ: '', bazi: '', yi: '', ji: '', dao: '', sign: '', fortune: '' },
+    daoDaily: { text: '', source: '', insight: '' },
+    personalized: { show: false }, focus: [], health: {}, meridian: {}, houItems: [],
     checkin: {}, mode: 'novice',
     disclaimerText: core.DISCLAIMER,
   },
-  onLoad() {
-    this.build();
-    this.startClock();
-  },
+  onLoad() { this.build(); this.initClock(); },
+  onReady() { this.initClock(); },
   onShow() {
     this.build();
     this.refreshCheckin();
-    this.startClock();
+    this.startClockLoop();
   },
-  onHide() { this.stopClock(); },
-  onUnload() { this.stopClock(); },
-  startClock() {
-    if (this._clock) return;
-    this.updateClock();
-    this._clock = setInterval(() => this.updateClock(), 1000);
-  },
-  stopClock() {
-    if (this._clock) { clearInterval(this._clock); this._clock = null; }
-  },
-  updateClock() {
-    const t = new Date();
-    const h = t.getHours() % 12;
-    const m = t.getMinutes();
-    const s = t.getSeconds();
-    this.setData({
-      hDeg: (h + m / 60) * 30,
-      mDeg: (m + s / 60) * 6,
-      sDeg: s * 6,
-    });
-  },
+  onHide() { this.stopClockLoop(); this.stopWall(); },
+  onUnload() { this.stopClockLoop(); this.stopWall(); },
+
   build() {
     const flat = core.flattenTerms(solarTerms);
     const { cur, next } = core.findCurrentTerm(flat);
@@ -70,22 +60,50 @@ Page({
     const seasonColor = core.SEASON_COLORS[season] || core.SEASON_COLORS['春'];
     const hour = hours[hIdx] || {};
 
-    // 一句话摘要
-    const summary = this.buildSummary(cur, info, special, hour, hIdx, flat);
+    // 距下一节气天数
+    let daysToNext = -1;
+    if (next && next.date) {
+      const d0 = new Date(now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate());
+      const d1 = new Date(next.date.replace(/-/g, '/'));
+      daysToNext = Math.round((d1 - d0) / 86400000);
+    }
+    const termMeta = daysToNext > 0 ? `${season}季 · 距${next ? next.name : ''} ${daysToNext}天` : `${season}季 · 今日交节`;
+    const hourYi = (hour.advice || '').split('；')[0].replace(/^宜/, '').trim();
 
-    // 罗盘：12 地支定位（午正上、子正下），百分比坐标适配各种屏宽
-    const compass = core.ZHI.map((z, i) => {
-      const angle = (i - 6) * 30;
-      const rad = (angle - 90) * Math.PI / 180;
-      return {
-        z,
-        x: Math.round(50 + 38 * Math.cos(rad)),
-        y: Math.round(50 + 38 * Math.sin(rad)),
-        active: i === hIdx,
-      };
-    });
+    // —— 八字 / 黄历宜忌（今日总览用） ——
+    const bz = core.computeBazi(now, hIdx, flat);
+    const alm = core.almanacData(now, hIdx, flat, hour);
+    const ganzhi = `${bz.pillars.年.gz}年 ${bz.pillars.月.gz}月 ${bz.pillars.日.gz}日 ${bz.pillars.时.gz}时`;
+    const baziStr = ['年', '月', '日', '时'].map(k => bz.pillars[k].gz).join(' ');
 
-    // 养生主卡
+    // —— 道家今日功课 ——
+    const dh = core.dateHash(core.todayStr());
+    const daoMethod = (daoism.methods && daoism.methods.length) ? daoism.methods[dh % daoism.methods.length] : { name: '静养' };
+    const daoQuote = daoism.quotes[(Math.floor(dh / 7) + 3) % daoism.quotes.length];
+
+    // —— 今日一签 ——
+    const sign = STICKS[core.dateHash(core.todayStr()) % STICKS.length];
+
+    // —— 生肖运程最佳 ——
+    const zf = core.zodiacFortuneData(now);
+    const topZ = (zf.cells || []).slice().sort((a, b) => b.score - a.score)[0] || { s: '—' };
+
+    // —— 一句话摘要 + 徽标 ——
+    const th = HEALTH_MAP[cur.name] || {};
+    const keyLine = (th.key || '顺时养正').replace(/[。.]$/, '');
+    const yiFirst = (alm.jcYi || []).slice(0, 2).join('、');
+    const summary =
+      `${special.kind === 'jie' ? '今日交' + cur.name : cur.name + '时节'}，` +
+      `当令养${hour.organ || info.organ}；${keyLine}。` +
+      `今日${bz.pillars.日.gz}日宜${yiFirst}，` +
+      `此刻${hour.name}正当${hour.meridian || ''}，最利${topZ.s}。`;
+
+    // —— 道经今读（按公历年内第几天轮换） ——
+    const start = new Date(now.getFullYear(), 0, 0);
+    const doy = Math.floor((now - start) / 86400000);
+    const q = daoism.quotes[doy % daoism.quotes.length];
+
+    // —— 今日养生各块 ——
     const health = core.healthSections(info);
     const TF = { 食: 'food', 居: 'live', 动: 'move', 穴: 'acu' };
     const focus = core.todayFocusData(info).map(f => ({ ...f, cls: TF[f.tag] || '' }));
@@ -95,44 +113,167 @@ Page({
       name: hour.name || '', meridian: hour.meridian || '', organ: hour.organ || '',
       yuan: hour.yuan || '', luo: hour.luo || '', mu: hour.mu || '',
     };
-
-    // 七十二候（当前节气）
     const houItems = (HOU_MAP[cur.name] || []).map(h => ({
       idx: HOU_IDX[h.idx - 1], name: h.name, phenom: h.phenom,
     }));
 
-    // 当前节气的公历日期（数据里是 cur.date，形如 2026-07-07）
-    const termSolar = cur.date ? `${+cur.date.slice(5, 7)}月${+cur.date.slice(8, 10)}日` : '';
-
     this.setData({
       dateText: `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${WEEK[now.getDay()]}`,
-      termName: cur.name, termSolar, season, seasonColor,
-      organ: info.organ || '', key: info.key || '', summary,
-      badge: special.tag, badgeKind: special.kind, hourName, compass,
+      termName: cur.name, termMeta, season, seasonColor,
+      hourName, hourMer: hour.meridian || '', hourYi, hourJi: hour.avoid || '',
+      badge: special.tag, badgeKind: special.kind, summary,
+      ov: {
+        date: `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${WEEK[now.getDay()]}`,
+        ganzhi, term: cur.name, termMeta,
+        hour: hourName, organ: '当令 · ' + (hour.organ || ''),
+        bazi: baziStr,
+        yi: '宜：' + (alm.jcYi || []).slice(0, 4).join('、'),
+        ji: '忌：' + (alm.jcJi || []).slice(0, 3).join('、'),
+        dao: `主修「${daoMethod.name}」· ${daoQuote.source}`,
+        sign: `吕祖灵签 第${sign.no}签「${sign.title}」`,
+        fortune: `今日最利 · ${topZ.s}`,
+      },
+      daoDaily: { text: `「${q.text}」`, source: q.source, insight: q.insight },
       personalized, focus, health, meridian, houItems,
       mode: store.loadMode(),
     });
   },
-  buildSummary(cur, info, special, hour, hIdx, flat) {
-    const bz = core.computeBazi(new Date(), hIdx, flat);
-    const jieBranch = core.JIE_BRANCH[core.JIE_MONTH.indexOf(
-      flat.filter(t => core.JIE_MONTH.includes(t.name)).sort((a, b) => a.date.localeCompare(b.date))
-        .filter(t => t.date <= core.todayStr()).pop().name)];
-    const jcIdx = (core.ZHI.indexOf(core.ZHI[bz.pillars.日.z]) - core.ZHI.indexOf(jieBranch) + 12) % 12;
-    const jcYJ = core.JIANCHU_YIJI[core.JIANCHU[jcIdx]];
-    const dg = core.dayGZ(new Date());
-    const rz = core.ZHI[dg.zhi];
-    const ranked = core.ZODIAC.map(z => ({ s: z.s, score: core.zodiacScore(z.z, rz).score }))
-      .sort((a, b) => b.score - a.score);
-    const topZ = ranked[0];
-    const keyLine = (info.key || '顺时养正').replace(/[。.]$/, '');
-    const yiFirst = jcYJ.yi.slice(0, 2).join('、');
-    const h = hours[hIdx] || {};
-    return (special.kind === 'jie' ? `今日交${cur.name}` : `${cur.name}时节`) +
-      `，当令养${h.organ || info.organ}；${keyLine}。` +
-      `今日${bz.pillars.日.gz}日宜${yiFirst}，` +
-      `此刻${hour.name}正当${h.meridian || ''}，最利${topZ.s}。`;
+
+  /* ===== 古历罗盘（canvas 2d，完整复刻 web：太极旋转 + 八卦 + 方位 + 八门 + 十二时辰 + 24 节气 + 雷达秒针） ===== */
+  initClock() {
+    if (this._clock2d) return;
+    const q = wx.createSelectorQuery();
+    q.select('#lunarClock').fields({ node: true, size: true }).exec(res => {
+      if (!res || !res[0] || !res[0].node) return;
+      const canvas = res[0].node;
+      const ctx = canvas.getContext('2d');
+      const dpr = (wx.getWindowInfo ? wx.getWindowInfo().pixelRatio : wx.getSystemInfoSync().pixelRatio) || 2;
+      const w = res[0].width;
+      canvas.width = w * dpr;
+      canvas.height = w * dpr;
+      this._clock2d = { canvas, ctx, dpr, size: w };
+      this._taijiAngle = 0;
+      this.startClockLoop();
+    });
   },
+  startClockLoop() {
+    if (!this._clock2d || this._loop) return;
+    const tick = () => {
+      this._taijiAngle = (this._taijiAngle + 0.5) % 360;
+      this.drawClock();
+      this._loop = this._clock2d.canvas.requestAnimationFrame(tick);
+    };
+    tick();
+  },
+  stopClockLoop() {
+    if (this._loop && this._clock2d) { this._clock2d.canvas.cancelAnimationFrame(this._loop); this._loop = null; }
+  },
+  drawClock() {
+    const c = this._clock2d; if (!c) return;
+    const ctx = c.ctx, S = c.size * c.dpr, sc = S / 320;
+    const cx = 160 * sc, cy = 160 * sc;
+    const R = r => r * sc;
+    ctx.clearRect(0, 0, S, S);
+    const seal = '#6e4a8e', paper = '#f5f1e8', ink = '#7a6c52', line = '#d8c8a8', sub = '#9a8c78';
+    // 外圈
+    ctx.strokeStyle = line; ctx.lineWidth = 2 * sc;
+    ctx.beginPath(); ctx.arc(cx, cy, R(RIM), 0, 2 * Math.PI); ctx.stroke();
+    // 24 节气
+    const curTerm = this.data.termName;
+    core.TERM_ORDER.forEach((name, i) => {
+      const deg = i * 15;
+      const p1 = ringPoint(cx, cy, R(R_JIE_TICK), deg), p2 = ringPoint(cx, cy, R(R_JIE_TICK) - 7 * sc, deg);
+      ctx.strokeStyle = (name === curTerm) ? seal : sub;
+      ctx.lineWidth = (name === curTerm) ? 2.4 * sc : 1.4 * sc;
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+      const pn = ringPoint(cx, cy, R(R_JIE), deg);
+      ctx.fillStyle = (name === curTerm) ? seal : ink;
+      ctx.font = `${(name === curTerm ? 13 : 12) * sc}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(name, pn.x, pn.y);
+    });
+    // 内圈环线
+    [138, 116, 94, 72].forEach(rr => {
+      ctx.strokeStyle = line; ctx.lineWidth = 1 * sc;
+      ctx.beginPath(); ctx.arc(cx, cy, R(rr), 0, 2 * Math.PI); ctx.stroke();
+    });
+    // 八卦
+    ctx.fillStyle = '#8a7a5e'; ctx.font = `${12 * sc}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    core.TRIGRAMS.forEach((g, i) => {
+      const p = ringPoint(cx, cy, R(R_BAGUA), i * 45 + 22.5);
+      ctx.fillText(g, p.x, p.y);
+    });
+    // 方位
+    core.DIRS.forEach(d => {
+      const p = ringPoint(cx, cy, R(R_DIR), d.deg);
+      ctx.fillStyle = d.major ? seal : sub; ctx.font = `${(d.major ? 13 : 11) * sc}px sans-serif`;
+      ctx.fillText(d.name, p.x, p.y);
+    });
+    // 八门
+    ctx.fillStyle = sub; ctx.font = `${12 * sc}px sans-serif`;
+    core.EIGHT_MEN.forEach((m, i) => {
+      const p = ringPoint(cx, cy, R(R_MEN), i * 45 - 90);
+      ctx.fillText(m, p.x, p.y);
+    });
+    // 十二时辰（当前高亮 + 覆盖扇）
+    const hIdx = core.currentHourIndex();
+    const curDeg = hIdx * 30 + 180;
+    ctx.fillStyle = 'rgba(110,74,142,0.16)';
+    ctx.beginPath();
+    const a0 = (curDeg - 15) * Math.PI / 180, a1 = (curDeg + 15) * Math.PI / 180;
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R(66), a0, a1);
+    ctx.closePath(); ctx.fill();
+    core.BRANCHES.forEach((z, i) => {
+      const p = ringPoint(cx, cy, R(R_SHI), i * 30 + 180);
+      const cur = i === hIdx;
+      ctx.fillStyle = cur ? seal : ink; ctx.font = `${(cur ? 14 : 13) * sc}px sans-serif`;
+      ctx.fillText(z, p.x, p.y);
+    });
+    // 指针
+    const now = new Date();
+    const ms = now.getMilliseconds();
+    const s = now.getSeconds() + ms / 1000;
+    const m = now.getMinutes() + s / 60;
+    const ci = Math.floor((now.getHours() + 1) / 2) % 12;
+    const startH = (((ci * 2 - 1) % 24) + 24) % 24;
+    const elapsed = (((now.getHours() * 60 + m) - startH * 60) % 1440 + 1440) % 1440;
+    const shiDeg = ci * 30 + 180 + (elapsed / 120) * 30;
+    const hand = (deg, len, wdt, color) => {
+      const a = deg * Math.PI / 180;
+      const ex = cx + len * Math.sin(a), ey = cy - len * Math.cos(a);
+      ctx.strokeStyle = color; ctx.lineWidth = wdt * sc; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+    };
+    // 雷达尾迹
+    ctx.fillStyle = 'rgba(110,74,142,0.12)';
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    const ra0 = (s * 6 - 50) * Math.PI / 180, ra1 = (s * 6) * Math.PI / 180;
+    ctx.arc(cx, cy, R(150), ra0, ra1); ctx.closePath(); ctx.fill();
+    // 时辰针 / 分针 / 雷达光束
+    hand(shiDeg, R(98), 4, '#3a78a8');
+    hand(m * 6, R(104), 3, '#6e4a8e');
+    hand(s * 6, R(150), 2, seal);
+    ctx.fillStyle = seal;
+    const bp = ringPoint(cx, cy, R(150), s * 6);
+    ctx.beginPath(); ctx.arc(bp.x, bp.y, 3 * sc, 0, 2 * Math.PI); ctx.fill();
+    // 中心轴
+    ctx.fillStyle = seal; ctx.beginPath(); ctx.arc(cx, cy, 5 * sc, 0, 2 * Math.PI); ctx.fill();
+    // 旋转太极
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(this._taijiAngle * Math.PI / 180);
+    const tr = 15 * sc;
+    ctx.fillStyle = seal; ctx.beginPath(); ctx.arc(0, 0, tr, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = paper;
+    ctx.beginPath(); ctx.arc(0, -tr / 2, tr / 2, Math.PI / 2, Math.PI * 1.5); ctx.arc(0, 0, tr / 2, Math.PI * 1.5, Math.PI / 2, true); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, tr / 2, tr / 2, -Math.PI / 2, Math.PI / 2); ctx.arc(0, 0, tr / 2, Math.PI / 2, -Math.PI / 2, true); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = paper; ctx.beginPath(); ctx.arc(0, -tr / 2, 2.6 * sc, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = seal; ctx.beginPath(); ctx.arc(0, tr / 2, 2.6 * sc, 0, 2 * Math.PI); ctx.fill();
+    ctx.restore();
+  },
+
+  /* ===== 打卡 ===== */
   refreshCheckin() {
     const storeObj = store.loadCheckins();
     const today = core.todayStr();
@@ -151,15 +292,10 @@ Page({
     store.saveCheckins(s);
     this.refreshCheckin();
   },
-  goProfile() {
-    wx.navigateTo({ url: '../profile/index' });
-  },
+  goProfile() { wx.navigateTo({ url: '../profile/index' }); },
   onShareAppMessage() {
     const d = this.data;
-    return {
-      title: `养生日历 · ${d.termName} · ${d.summary}`,
-      path: '/pages/health-calendar/today/index',
-    };
+    return { title: `养生日历 · ${d.termName} · ${d.summary}`, path: '/pages/health-calendar/today/index' };
   },
   onShareTimeline() {
     const d = this.data;
