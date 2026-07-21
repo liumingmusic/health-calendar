@@ -223,10 +223,11 @@ Page({
     });
     // 十二时辰（当前高亮 + 覆盖扇）
     const hIdx = core.currentHourIndex();
-    const curDeg = hIdx * 30 + 180;
+    // 覆盖扇用 ctx.arc（canvas 原生角度：0 在 3 点、顺时针），与 ringPoint 的时辰标签差 -90° 对齐
+    const fanDeg = hIdx * 30 + 90;
     ctx.fillStyle = 'rgba(110,74,142,0.16)';
     ctx.beginPath();
-    const a0 = (curDeg - 15) * Math.PI / 180, a1 = (curDeg + 15) * Math.PI / 180;
+    const a0 = (fanDeg - 15) * Math.PI / 180, a1 = (fanDeg + 15) * Math.PI / 180;
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, R(66), a0, a1);
     ctx.closePath(); ctx.fill();
