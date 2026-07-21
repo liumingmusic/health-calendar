@@ -3,7 +3,11 @@
 
   <!-- 今日道家功课 -->
   <view class="card">
-    <view class="card-head"><text class="ch-title">{{lesson.seasonText}}</text></view>
+    <view class="card-head">
+      <text class="ch-title">今日道家功课</text>
+      <text class="ch-sub">{{lesson.seasonText}}</text>
+    </view>
+    <view class="lesson-note">{{lessonNote}}</view>
     <view class="card-body">
       <view class="dl-block">
         <text class="dl-k">主修功法</text>
@@ -30,10 +34,11 @@
     </view>
   </view>
 
-  <!-- 季节要旨 -->
+  <!-- 四时顺要 -->
   <view class="card">
-    <view class="card-head plain"><text class="ch-title">四季养生要旨</text></view>
+    <view class="card-head plain"><text class="ch-title">四时顺要 · 顺应自然</text></view>
     <view class="card-body">
+      <view class="dao-lead">{{daoLead}}</view>
       <view wx:for="{{seasonGist}}" wx:key="season" class="sg-item {{item.current ? 'current' : ''}}">
         <text class="sg-season">{{item.season}}</text>
         <text class="sg-gist">{{item.gist}}</text>
@@ -41,24 +46,9 @@
     </view>
   </view>
 
-  <!-- 养生箴言 -->
+  <!-- 功法全录 -->
   <view class="card">
-    <view class="card-head plain"><text class="ch-title">养生箴言 · 《道德经》《庄子》</text></view>
-    <view class="card-body">
-      <view wx:for="{{quotes}}" wx:key="text" class="quote-item" data-i="{{index}}" bindtap="toggleQuote">
-        <view class="qi-summary">
-          <text class="qi-caret {{item.open ? 'open' : ''}}">▸</text>
-          <text class="qi-text">「{{item.text}}」</text>
-          <text class="qi-src">{{item.source}}</text>
-        </view>
-        <view wx:if="{{item.open}}" class="qi-detail">{{item.plain}}</view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 功法 -->
-  <view class="card">
-    <view class="card-head plain"><text class="ch-title">道家功法</text></view>
+    <view class="card-head plain"><text class="ch-title">功法全录 · 守静 · 吐纳 · 导引</text></view>
     <view class="card-body">
       <view wx:for="{{methods}}" wx:key="name" class="method-item" data-i="{{index}}" bindtap="toggleMethod">
         <view class="mi-summary">
@@ -75,6 +65,21 @@
           <view class="mi-benefit"><text class="dl-tag ok">功效</text>{{item.benefit}}</view>
           <view class="mi-note"><text class="dl-tag warn">注意</text>{{item.note}}</view>
         </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 道经全览 -->
+  <view class="card">
+    <view class="card-head plain"><text class="ch-title">道经全览 · 养生名句</text></view>
+    <view class="card-body">
+      <view wx:for="{{quotes}}" wx:key="text" class="quote-item" data-i="{{index}}" bindtap="toggleQuote">
+        <view class="qi-summary">
+          <text class="qi-caret {{item.open ? 'open' : ''}}">▸</text>
+          <text class="qi-text">「{{item.text}}」</text>
+          <text class="qi-src">{{item.source}}</text>
+        </view>
+        <view wx:if="{{item.open}}" class="qi-detail">{{item.plain}}</view>
       </view>
     </view>
   </view>

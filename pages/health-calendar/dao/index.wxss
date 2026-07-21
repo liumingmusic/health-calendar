@@ -1,4 +1,11 @@
 /* 道家页专属 */
+.card-head { color: var(--ink); display: flex; justify-content: space-between; align-items: baseline; padding: 20rpx 26rpx; border-bottom: 1rpx solid var(--line); }
+.ch-title { font-size: 30rpx; font-weight: 700; color: var(--seal); }
+.ch-sub { font-size: 21rpx; color: var(--ink-soft); }
+
+.lesson-note { font-size: 22rpx; color: var(--ink-soft); line-height: 1.6; padding: 14rpx 26rpx 4rpx; }
+.dao-lead { font-size: 24rpx; color: var(--ink-soft); line-height: 1.7; margin-bottom: 16rpx; }
+
 .dl-block { margin-bottom: 22rpx; border-bottom: 1rpx dashed var(--line); padding-bottom: 18rpx; }
 .dl-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .dl-k { display: inline-block; color: var(--seal); font-weight: 600; font-size: 24rpx; margin-bottom: 8rpx; }

@@ -1,4 +1,4 @@
-// 道家养生页
+// 道家养生页（对齐 web：今日功课 + 四时顺要 + 功法全录 + 道经全览）
 const core = require('../../../utils/core.js');
 const solarTerms = require('../../../data/solar-terms.js');
 const healthArr = require('../../../data/health.js');
@@ -16,9 +16,13 @@ const DAO_PROMPTS = [
   '行住坐卧，常令脊直肩松，气自下沉。',
 ];
 
+const LESSON_NOTE = '每日功课依公历日期推算，每天不同、人人相同（并非随机）；下方功法与道经点标题即可展开。';
+const DAO_LEAD = '道家养生以「清静无为、顺应自然」为纲，重在恬淡寡欲、形神双养。以下皆为传统静功与吐纳导引之法，点到即止、不涉宗教仪轨，可作日常调养参考。';
+
 Page({
   data: {
-    seasonText: '', lesson: {}, seasonGist: [],
+    seasonText: '', lessonNote: LESSON_NOTE, daoLead: DAO_LEAD,
+    lesson: {}, seasonGist: [],
     quotes: [], methods: [],
     disclaimerText: core.DISCLAIMER,
   },
