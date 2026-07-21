@@ -2,20 +2,21 @@
 <view class="page fortune">
 
   <view class="card">
-    <view class="card-head"><text class="ch-title">每日签运 · 吕祖灵签</text></view>
+    <view class="card-head"><text class="ch-title">每日一签 · 吕祖灵签</text></view>
     <view class="card-body">
       <view class="sign-intro">{{intro}}</view>
 
       <!-- 签筒 -->
       <view class="sign-stage">
         <view class="qian-tong {{shaking ? 'shaking' : ''}}">
-          <text class="qt-text">签</text>
+          <view class="qt-stick" wx:for="{{[1,2,3,4,5]}}" wx:key="*this" style="left:{{item * 28 - 14}}rpx"></view>
+          <view class="qt-tube"></view>
         </view>
-        <view wx:if="{{shaking}}" class="shaking-tip">摇动签筒…</view>
+        <view wx:if="{{shaking}}" class="shaking-tip">诚心求签中……</view>
       </view>
 
       <view wx:if="{{!revealed && !shaking}}" class="sign-prompt">
-        <view class="prompt-text">焚香净手，心诚意正，于心中默念所问之事，再摇签筒以求今日之签。</view>
+        <view class="prompt-text">{{prompt}}</view>
         <view wx:if="{{dailyNo}}" class="daily-hint">今日一签（按日轮换）：第 {{dailyNo}} 签「{{dailyTitle}}」</view>
         <button class="big-btn" bindtap="shake">摇签求签</button>
       </view>
@@ -27,17 +28,20 @@
           <text wx:for="{{current.poem}}" wx:key="*this" class="sr-line">{{item}}</text>
         </view>
         <view class="sr-jie"><text class="sr-jie-h">解曰</text>{{current.jie}}</view>
+        <view class="sr-explain-title">编者白话疏解</view>
         <view class="sr-explain">
           <text wx:for="{{current.explain}}" wx:key="*this" class="sr-para">{{item}}</text>
         </view>
         <button class="big-btn ghost" bindtap="reroll">再摇一签</button>
       </view>
+
+      <view class="sign-note">{{signNote}}</view>
     </view>
   </view>
 
   <!-- 进阶：生肖运程 -->
   <view wx:if="{{showPro && fortune.cells.length}}" class="card">
-    <view class="card-head"><text class="ch-title">生肖运程</text></view>
+    <view class="card-head"><text class="ch-title">今日运程 · 生肖 · 干支</text></view>
     <view class="card-body">
       <view class="fortune-lead">{{fortune.lead}}</view>
       <view class="zodiac-grid">
@@ -49,6 +53,7 @@
         </view>
       </view>
       <view class="fortune-zong"><text class="dz-h">本日综论</text>{{fortune.zong}}</view>
+      <view class="fortune-note">{{fortuneNote}}</view>
     </view>
   </view>
   <view wx:if="{{!showPro}}" class="pro-hint">当前为「简明」模式，生肖运程已隐藏。可在「更多」中切换「进阶」查看。</view>
