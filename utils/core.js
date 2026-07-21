@@ -431,7 +431,7 @@ function almanacData(date, hourIdx, flat, curHour) {
     chong: cs.chong, sha: cs.sha,
     peng: `${riGan}${PENG_GAN[bz.riGan]}；${riZhi}${PENG_ZHI[ZHI.indexOf(riZhi)]}`,
     xi: XISHEN[riGan], cai: CAISHEN[riGan], fu: FUSHEN[riGan],
-    taiDir, suiPo, sanSha,
+    taiDir, nianZhi, suiPo, sanSha,
     meridianName: h.name || '', meridianText: h.meridian || '', meridianOrgan: h.organ || '',
     yuan: h.yuan || '', luo: h.luo || '', mu: h.mu || '',
     cardSummary: `今日${riGan}${riZhi}日（${bz.pillars.日.nayin}）· ${jc}日 · ${zs.n}${zs.type}道\n宜：${jcYJ.yi.slice(0, 5).join('、')}　忌：${jcYJ.ji.slice(0, 4).join('、')}\n吉神 喜神${XISHEN[riGan]} · 财神${CAISHEN[riGan]} · 福神${FUSHEN[riGan]}`,

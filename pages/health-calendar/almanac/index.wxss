@@ -1,4 +1,20 @@
 /* 黄历页专属 */
+.card-head { color: var(--ink); display: flex; justify-content: space-between; align-items: baseline; padding: 20rpx 26rpx; border-bottom: 1rpx solid var(--line); }
+.ch-title { font-size: 30rpx; font-weight: 700; color: var(--seal); }
+.ch-sub { font-size: 21rpx; color: var(--ink-soft); }
+
+.alm-top-head { padding: 6rpx 4rpx 0; }
+.ph-title { font-size: 34rpx; font-weight: 700; color: var(--ink); font-family: serif; }
+
+/* 今日一眼通 */
+.summary-card { background: linear-gradient(180deg, #f1ebf6, #f6f0e4); border-left: 6rpx solid var(--seal); }
+.sc-inner {
+  white-space: pre-line;
+  font-family: serif; font-size: 27rpx; line-height: 1.95; color: var(--ink);
+  padding: 22rpx 26rpx;
+}
+
+/* 八字四柱 */
 .pillars { display: flex; gap: 12rpx; }
 .pillar {
   flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -27,24 +43,35 @@
 .wx-dot.wx-mu { background: #5f8a3a; } .wx-dot.wx-huo { background: #c4452f; }
 .wx-dot.wx-tu { background: #cf9a1c; } .wx-dot.wx-jin { background: #b8862f; } .wx-dot.wx-shui { background: #3a6a8a; }
 
+/* 八字四柱命盘：五行标签（对齐 web wx-tag） */
+.wx-tags { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 18rpx; }
+.wx-tag { font-size: 24rpx; padding: 6rpx 20rpx; border-radius: 999rpx; color: #fff; font-weight: 600; }
+.wx-tag.wx-mu { background: #5f8a3a; } .wx-tag.wx-huo { background: #c4452f; }
+.wx-tag.wx-tu { background: #cf9a1c; } .wx-tag.wx-jin { background: #b8862f; } .wx-tag.wx-shui { background: #3a6a8a; }
+.bazi-summary { font-size: 25rpx; color: var(--ink-soft); margin-top: 16rpx; font-family: serif; }
+
+/* 生辰体质 */
 .profile-box { margin-top: 24rpx; background: #f3eef8; border: 1rpx solid #e0d2ee; border-radius: 14rpx; padding: 20rpx; }
-.profile-empty { margin-top: 24rpx; }
-.pz-rel { color: var(--seal); font-weight: 600; margin-bottom: 14rpx; }
+.profile-empty { margin-top: 4rpx; }
+.pz-rel { color: var(--seal); font-weight: 600; margin: 18rpx 0 14rpx; }
 .pv-advice { margin-top: 14rpx; }
 .pv-head { font-weight: 600; display: flex; align-items: center; margin-bottom: 6rpx; }
 .pv-li { font-size: 24rpx; color: var(--ink-soft); }
 
-.alm-row { display: flex; align-items: baseline; padding: 8rpx 0; font-size: 26rpx; }
-.alm-k { width: 110rpx; color: var(--seal); font-weight: 600; flex-shrink: 0; }
+/* 黄历宜忌三子卡 */
+.alm-subcard { background: #f6f0e4; border: 1rpx solid var(--line); border-top: 4rpx solid var(--seal-soft); border-radius: 14rpx; padding: 18rpx 20rpx; margin-bottom: 16rpx; }
+.alm-h { font-size: 28rpx; font-weight: 700; color: var(--seal); margin-bottom: 12rpx; font-family: serif; }
+.alm-row { display: flex; align-items: baseline; padding: 7rpx 0; font-size: 26rpx; }
+.alm-k { width: 96rpx; color: var(--ink-soft); font-size: 23rpx; flex-shrink: 0; }
 .alm-row .small { font-size: 22rpx; color: var(--ink-soft); }
-.alm-yi, .alm-ji { font-size: 25rpx; padding: 6rpx 0; }
+.alm-yi, .alm-ji { font-size: 25rpx; padding: 5rpx 0; }
 .alm-yi { color: var(--green); }
 .alm-ji { color: var(--red); }
 .huang { color: var(--green); font-weight: 600; }
 .hei { color: var(--red); font-weight: 600; }
-.alm-grid { display: flex; flex-wrap: wrap; margin-top: 8rpx; }
-.alm-grid .alm-row { width: 50%; }
-.alm-mer { margin-top: 16rpx; border-top: 1rpx dashed var(--line); padding-top: 16rpx; }
+.organ-line { font-weight: 600; color: var(--ink); margin-bottom: 8rpx; font-size: 26rpx; }
+.alm-mer-tip { font-size: 21rpx; color: var(--ink-soft); margin-top: 10rpx; line-height: 1.6; }
+.alm-note { font-size: 22rpx; color: var(--ink-soft); margin-top: 6rpx; line-height: 1.7; }
 
 /* 奇门九宫 */
 .qm-cap { font-size: 24rpx; color: var(--seal); margin-bottom: 14rpx; text-align: center; }

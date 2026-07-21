@@ -1,9 +1,55 @@
 <view class="disclaimer-bar">{{disclaimerText}}</view>
 <view class="page almanac">
 
-  <!-- 八字四柱 -->
+  <view class="panel-head alm-top-head"><text class="ph-title">八字 · 黄历 · 今日一览</text></view>
+
+  <!-- 1. 我的生辰体质（顶部，对齐 web profile-panel） -->
   <view class="card">
-    <view class="card-head"><text class="ch-title">八字四柱</text><text class="ch-sub">{{almanac.summary}}</text></view>
+    <view class="card-head">
+      <text class="ch-title">我的生辰体质</text>
+      <text class="ch-sub">生辰仅存本地 · 仅供参考，不作吉凶断言</text>
+    </view>
+    <view class="card-body">
+      <block wx:if="{{hasProfile}}">
+        <view class="pillars">
+          <view wx:for="{{profile.pillars}}" wx:key="label" class="pillar {{item.label === '日主' ? 'rz' : ''}}">
+            <text class="p-label">{{item.label}}</text>
+            <text class="p-gz">{{item.gz}}</text>
+            <text class="p-wx">{{item.wx}}</text>
+            <text class="p-nayin">{{item.nayin}}</text>
+          </view>
+        </view>
+        <view class="wx-bars">
+          <view wx:for="{{profile.wuxing}}" wx:key="name" class="wx-row">
+            <text class="wx-name wx-{{item.cls}}">{{item.name}}</text>
+            <view class="wx-track"><view class="wx-fill wx-{{item.cls}}" style="width:{{item.pct}}%"></view></view>
+            <text class="wx-val">{{item.value}}</text>
+          </view>
+        </view>
+        <view class="pz-rel">{{profile.tendency}}</view>
+        <view wx:for="{{profile.advice}}" wx:key="element" class="pv-advice">
+          <view class="pv-head"><text class="wx-dot wx-{{item.cls}}"></text>涵养「{{item.element}}」· 养{{item.organ}}{{item.season ? '（当令 ' + item.season + '）' : ''}}</view>
+          <view wx:for="{{item.points}}" wx:for-item="pt" wx:key="*this" class="pv-li">{{pt}}</view>
+        </view>
+      </block>
+      <view wx:else class="profile-empty">
+        <view class="tip-row">录入生辰，可推演你的五行体质与个性化养生倾向。</view>
+      </view>
+      <view class="mini-btn" bindtap="goProfile">{{hasProfile ? '查看 / 修改生辰 ›' : '去录入生辰 ›'}}</view>
+    </view>
+  </view>
+
+  <!-- 2. 今日一眼通（对齐 web baziSummaryCard） -->
+  <view class="card summary-card">
+    <view class="sc-inner">{{almanac.cardSummary}}</view>
+  </view>
+
+  <!-- 3. 八字四柱 · 命盘 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="ch-title">八字四柱 · 命盘</text>
+      <text class="ch-sub">四柱 = 年/月/日/时 各一组干支</text>
+    </view>
     <view class="card-body">
       <view class="pillars">
         <view wx:for="{{almanac.pillars}}" wx:key="label" class="pillar {{item.label === '日主' ? 'rz' : ''}}">
@@ -13,62 +59,19 @@
           <text class="p-nayin">{{item.nayin}}</text>
         </view>
       </view>
-      <view class="wx-bars">
-        <view wx:for="{{almanac.wuxing}}" wx:key="name" class="wx-row">
-          <text class="wx-name wx-{{item.cls}}">{{item.name}}</text>
-          <view class="wx-track"><view class="wx-fill wx-{{item.cls}}" style="width:{{item.pct}}%"></view></view>
-          <text class="wx-val">{{item.value}}</text>
-        </view>
+      <view class="wx-tags">
+        <text wx:for="{{almanac.wuxing}}" wx:key="name" class="wx-tag wx-{{item.cls}}">{{item.name}} {{item.value}}</text>
       </view>
-
-      <!-- 生辰板块 -->
-      <view wx:if="{{hasProfile}}" class="profile-box">
-        <view class="block-title"><text class="dot"></text>我的体质（生辰推演）</view>
-        <view class="pz-rel">{{profile.tendency}}</view>
-        <view wx:for="{{profile.advice}}" wx:key="element" class="pv-advice">
-          <view class="pv-head"><text class="wx-dot wx-{{item.cls}}"></text>涵养「{{item.element}}」· 养{{item.organ}}{{item.season ? '（当令 ' + item.season + '）' : ''}}</view>
-          <view wx:for="{{item.points}}" wx:for-item="pt" wx:key="*this" class="pv-li">{{pt}}</view>
-        </view>
-        <view class="mini-btn" bindtap="goProfile">查看 / 修改生辰 ›</view>
-      </view>
-      <view wx:else class="profile-empty">
-        <view class="tip-row">录入生辰，可推演你的五行体质与个性化养生倾向。</view>
-        <view class="mini-btn" bindtap="goProfile">去录入生辰 ›</view>
-      </view>
+      <view class="bazi-summary">{{almanac.summary}}</view>
     </view>
   </view>
 
-  <!-- 黄历宜忌 -->
-  <view class="card">
-    <view class="card-head"><text class="ch-title">黄历宜忌</text></view>
-    <view class="card-body">
-      <view class="alm-row"><text class="alm-k">建除</text><text>{{almanac.jc}}日</text></view>
-      <view class="alm-yi">宜：{{almanac.jcYi}}</view>
-      <view class="alm-ji">忌：{{almanac.jcJi}}</view>
-      <view class="alm-row"><text class="alm-k">值神</text><text class="{{almanac.zhiShenType === '黄' ? 'huang' : 'hei'}}">{{almanac.zhiShen}}（{{almanac.zhiShenType}}道）</text></view>
-      <view class="alm-row"><text class="alm-k">冲煞</text><text>冲{{almanac.chong}}煞{{almanac.sha}}</text></view>
-      <view class="alm-row"><text class="alm-k">彭祖</text><text class="small">{{almanac.peng}}</text></view>
-      <view class="alm-grid">
-        <view class="alm-row"><text class="alm-k">喜神</text><text>{{almanac.xi}}</text></view>
-        <view class="alm-row"><text class="alm-k">财神</text><text>{{almanac.cai}}</text></view>
-        <view class="alm-row"><text class="alm-k">福神</text><text>{{almanac.fu}}</text></view>
-        <view class="alm-row"><text class="alm-k">太岁</text><text>{{almanac.taiDir}}</text></view>
-        <view class="alm-row"><text class="alm-k">岁破</text><text>{{almanac.suiPo}}</text></view>
-        <view class="alm-row"><text class="alm-k">三煞</text><text>{{almanac.sanSha}}方</text></view>
-      </view>
-      <view class="alm-mer">
-        <view class="block-title"><text class="dot"></text>经络 · 取穴（{{almanac.meridianName}}）</view>
-        <view class="organ-line">{{almanac.meridianText}}（{{almanac.meridianOrgan}}）</view>
-        <view class="alm-row"><text class="alm-k">原穴</text><text>{{almanac.yuan}}</text></view>
-        <view class="alm-row"><text class="alm-k">络穴</text><text>{{almanac.luo}}</text></view>
-        <view class="alm-row"><text class="alm-k">募穴</text><text>{{almanac.mu}}</text></view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 进阶：奇门遁甲 -->
+  <!-- 4. 进阶：奇门遁甲 -->
   <view wx:if="{{showPro && qimen}}" class="card">
-    <view class="card-head"><text class="ch-title">奇门遁甲 · 九宫局盘</text></view>
+    <view class="card-head">
+      <text class="ch-title">奇门遁甲 · 九宫局盘</text>
+      <text class="ch-sub">传统术数排盘，仅作文化示意</text>
+    </view>
     <view class="card-body">
       <view class="qm-cap">{{qimen.cap}}</view>
       <view class="qm-grid">
@@ -82,13 +85,53 @@
           <text class="qm-yi">{{item.yi}}</text>
         </view>
       </view>
-      <view class="qm-note">传统术数排盘，仅作文化示意，不作占断依据。</view>
+      <view class="qm-note">九宫洛书、八门九星八神与三奇六仪，据当日节气与干支离线排盘，为传统术数文化示意，仅供观赏，不作占断。</view>
     </view>
   </view>
 
-  <!-- 进阶：天干地支六十甲子 -->
+  <!-- 5. 黄历宜忌 · 方位 · 取穴 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="ch-title">黄历宜忌 · 方位 · 取穴</text>
+      <text class="ch-sub">今日宜做什么、忌什么、吉神方位</text>
+    </view>
+    <view class="card-body">
+      <view class="alm-subcard">
+        <view class="alm-h">黄历宜忌</view>
+        <view class="alm-row"><text class="alm-k">建除</text><text>{{almanac.jc}}日</text></view>
+        <view class="alm-yi">宜：{{almanac.jcYiText}}</view>
+        <view class="alm-ji">忌：{{almanac.jcJiText}}</view>
+        <view class="alm-row"><text class="alm-k">值神</text><text class="{{almanac.zhiShenType === '黄' ? 'huang' : 'hei'}}">{{almanac.zhiShen}}（{{almanac.zhiShenType}}道）</text></view>
+        <view class="alm-row"><text class="alm-k">冲煞</text><text>冲{{almanac.chong}}煞{{almanac.sha}}</text></view>
+        <view class="alm-row"><text class="alm-k">彭祖</text><text class="small">{{almanac.peng}}</text></view>
+      </view>
+      <view class="alm-subcard">
+        <view class="alm-h">吉神方位</view>
+        <view class="alm-row"><text class="alm-k">喜神</text><text>{{almanac.xi}}</text></view>
+        <view class="alm-row"><text class="alm-k">财神</text><text>{{almanac.cai}}</text></view>
+        <view class="alm-row"><text class="alm-k">福神</text><text>{{almanac.fu}}</text></view>
+        <view class="alm-row"><text class="alm-k">太岁</text><text>{{almanac.taiDir}}（{{almanac.nianZhi}}）</text></view>
+        <view class="alm-row"><text class="alm-k">岁破</text><text>{{almanac.suiPo}}</text></view>
+        <view class="alm-row"><text class="alm-k">三煞</text><text>{{almanac.sanSha}}方</text></view>
+      </view>
+      <view class="alm-subcard alm-meridian">
+        <view class="alm-h">经络 · 取穴（{{almanac.meridianName}}）</view>
+        <view class="organ-line">{{almanac.meridianText}}（{{almanac.meridianOrgan}}）</view>
+        <view class="alm-row"><text class="alm-k">原穴</text><text>{{almanac.yuan}}</text></view>
+        <view class="alm-row"><text class="alm-k">络穴</text><text>{{almanac.luo}}</text></view>
+        <view class="alm-row"><text class="alm-k">募穴</text><text>{{almanac.mu}}</text></view>
+        <view class="alm-mer-tip">原穴为本经气血输注之处，络穴联络表里两经，募穴为脏腑之气结聚于胸腹之所。</view>
+      </view>
+      <view class="alm-note">干支、八字、黄历、方位、取穴均由内置历法离线推算，仅供传统养生与文化参考，不替代专业命理或医疗建议。</view>
+    </view>
+  </view>
+
+  <!-- 6. 进阶：天干地支六十甲子 -->
   <view wx:if="{{showPro && ganzhi}}" class="card">
-    <view class="card-head"><text class="ch-title">天干地支 · 六十甲子</text></view>
+    <view class="card-head">
+      <text class="ch-title">天干地支 · 六十甲子</text>
+      <text class="ch-sub">记年月日时的符号，今日日干支高亮</text>
+    </view>
     <view class="card-body">
       <view class="gz-section">
         <view class="gz-h">十天干（今日日干 {{ganzhi.riGan}} 高亮）</view>
