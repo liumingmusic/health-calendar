@@ -214,12 +214,12 @@ function findCurrentTerm(flat) {
   const next = flat[idx + 1] || null;
   return { cur, next };
 }
-// 本地小时：开发者工具模拟器未勾选"使用运行时时区"时会把 new Date() 按 UTC 解析，
-// 导致 getHours() 返回 UTC 小时而非设备本地小时。这里用 getTimezoneOffset 纠偏。
+// 本地小时（中国标准时间 / 东八区）：农历·节气·时辰本就以中国时间为准，不依赖设备/模拟器时区。
+// 微信开发者工具模拟器的 JS 时区常被误配（getTimezoneOffset 不可信），直接用 UTC 为基准 +8 小时，
+// 既能规避模拟器时区错乱导致的"亥→寅 / 子→卯"等 +6 小时偏移，也保证用户在海外时仍按中国时区显示养生内容。
 function localHour(date) {
   const d = date || new Date();
-  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-  return local.getUTCHours();
+  return (d.getUTCHours() + 8) % 24;
 }
 function currentHourIndex() {
   const h = localHour();
