@@ -5,6 +5,7 @@ const solarTerms = require('../../../data/solar-terms.js');
 const healthArr = require('../../../data/health.js');
 const hours = require('../../../data/hours.js');
 const hou = require('../../../data/hou.js');
+const tick = require('../../../utils/tick.js');
 
 const HEALTH_MAP = {};
 healthArr.forEach(t => { HEALTH_MAP[t.term] = t; });
@@ -73,7 +74,12 @@ Page({
     mode: 'novice', hasProfile: false,
     disclaimerText: core.DISCLAIMER,
   },
-  onShow() { this.build(); },
+  onShow() {
+    this.build();
+    tick.bindTimeTick(this, () => { this.build(); });
+  },
+  onHide() { tick.unbindTimeTick(this); },
+  onUnload() { tick.unbindTimeTick(this); },
   build() {
     const flat = core.flattenTerms(solarTerms);
     const { cur } = core.findCurrentTerm(flat);

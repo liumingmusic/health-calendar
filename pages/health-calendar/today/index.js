@@ -8,6 +8,7 @@ const houArr = require('../../../data/hou.js');
 const constitution = require('../../../data/constitution.js');
 const daoism = require('../../../data/daoism.js');
 const fortuneSticks = require('../../../data/fortune-sticks.js');
+const tick = require('../../../utils/tick.js');
 
 const HEALTH_MAP = {};
 healthArr.forEach(t => { HEALTH_MAP[t.term] = t; });
@@ -44,9 +45,10 @@ Page({
     this.build();
     this.refreshCheckin();
     this.startClockLoop();
+    tick.bindTimeTick(this, () => { this.build(); this.refreshCheckin(); });
   },
-  onHide() { this.stopClockLoop(); this.stopWall(); },
-  onUnload() { this.stopClockLoop(); this.stopWall(); },
+  onHide() { this.stopClockLoop(); this.stopWall(); tick.unbindTimeTick(this); },
+  onUnload() { this.stopClockLoop(); this.stopWall(); tick.unbindTimeTick(this); },
 
   build() {
     const flat = core.flattenTerms(solarTerms);

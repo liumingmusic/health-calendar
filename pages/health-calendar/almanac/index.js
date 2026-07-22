@@ -4,6 +4,7 @@ const store = require('../../../utils/store.js');
 const solarTerms = require('../../../data/solar-terms.js');
 const hours = require('../../../data/hours.js');
 const constitution = require('../../../data/constitution.js');
+const tick = require('../../../utils/tick.js');
 
 const WX = { 木: 'mu', 火: 'huo', 土: 'tu', 金: 'jin', 水: 'shui' };
 
@@ -13,7 +14,12 @@ Page({
     almanac: {}, showPro: false, qimen: null, ganzhi: null,
     disclaimerText: core.DISCLAIMER,
   },
-  onShow() { this.build(); },
+  onShow() {
+    this.build();
+    tick.bindTimeTick(this, () => { this.build(); });
+  },
+  onHide() { tick.unbindTimeTick(this); },
+  onUnload() { tick.unbindTimeTick(this); },
   build() {
     const flat = core.flattenTerms(solarTerms);
     const { cur } = core.findCurrentTerm(flat);
